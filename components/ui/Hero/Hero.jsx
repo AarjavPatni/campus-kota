@@ -26,7 +26,7 @@ const Hero = () => (
                         </p>
                         <div className="flex justify-center font-medium text-sm">
                             <NavLink
-                                href="/#pricing"
+                                href="javascript:$crisp.push(['do', 'chat:open']);"
                                 className="flex items-center text-white bg-purple-600 hover:bg-purple-500 active:bg-purple-700 "
                             >
                                 Contact Us

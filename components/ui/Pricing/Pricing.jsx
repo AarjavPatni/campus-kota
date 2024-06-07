@@ -5,49 +5,46 @@ import Button from "../Button";
 const Pricing = () => {
 
     const plans = [
+        // {
+        //     name: "Basic plan",
+        //     desc: "For new creators building their list",
+        //     price: 0,
+        //     isMostPop: false,
+        //     features: [
+        //         "300 emails/day",
+        //         "Customizable Email Templates",
+        //         "Drag & Drop Editor",
+        //         "Transactional Emails",
+        //         "SMS & WhatsApp Campaigns",
+        //         "Phone support",
+        //     ],
+        // },
         {
-            name: "Basic plan",
-            desc: "For new creators building their list",
-            price: 0,
-            isMostPop: false,
-            features: [
-                "300 emails/day",
-                "Customizable Email Templates",
-                "Drag & Drop Editor",
-                "Transactional Emails",
-                "SMS & WhatsApp Campaigns",
-                "Phone support",
-
-            ],
-        },
-        {
-            name: "Starter",
-            desc: "Ideal for growing businesses",
-            price: 12,
+            name: "Starting From",
+            // desc: "",
+            price: 4000,
             isMostPop: true,
             features: [
-                "From 20k emails/month",
-                "Marketing Automation",
-                "A/B testing",
-                "Advanced statistics",
-                "Multi-user access",
-                "Send time optimization",
+                "Fully Furnished",
+                "Meals Twice a Day",
+                "High-Speed Internet",
+                "24/7 Security",
             ],
         },
-        {
-            name: "Business",
-            desc: "Built for marketing managers",
-            price: 32,
-            isMostPop: false,
-            features: [
-                "Everything in Starter",
-                "Enterprise-grade Security",
-                "Advanced Integrations",
-                "Sub-account Management",
-                "Tailored Onboarding",
-                "Personalized support",
-            ],
-        },
+        // {
+        //     name: "Business",
+        //     desc: "Built for marketing managers",
+        //     price: 32,
+        //     isMostPop: false,
+        //     features: [
+        //         "Everything in Starter",
+        //         "Enterprise-grade Security",
+        //         "Advanced Integrations",
+        //         "Sub-account Management",
+        //         "Tailored Onboarding",
+        //         "Personalized support",
+        //     ],
+        // },
     ];
 
     const mostPopPricingBg = "radial-gradient(130.39% 130.39% at 51.31% -0.71%, #1F2937 0%, rgba(31, 41, 55, 0) 100%)"
@@ -56,7 +53,7 @@ const Pricing = () => {
         <SectionWrapper id="pricing" className='custom-screen'>
             <div className='relative max-w-xl mx-auto text-center'>
                 <h2 className='text-gray-50 text-3xl font-semibold sm:text-4xl'>
-                    Find a plan to power your business
+                    Low Price without Compromise
                 </h2>
             </div>
             <LayoutEffect
@@ -66,12 +63,13 @@ const Pricing = () => {
                     falseState: "opacity-0"
                 }}
             >
-                <div className='mt-16 justify-center gap-6 sm:grid sm:grid-cols-2 sm:space-y-0 lg:grid-cols-3'>
+                <div className='mt-16 flex justify-center'>
                     {
                         plans.map((item, idx) => (
-                            <div key={idx} className={`relative flex-1 flex items-stretch flex-col rounded-xl border border-gray-800 mt-6 sm:mt-0 ${item.isMostPop ? "border border-purple-500" : ""}`}
+                            <div key={idx} className={`relative flex flex-col items-stretch rounded-xl border border-gray-800 ${item.isMostPop ? "border-purple-500" : ""}`}
                                 style={{
-                                    backgroundImage: item.isMostPop ? mostPopPricingBg : ""
+                                    backgroundImage: item.isMostPop ? mostPopPricingBg : "",
+                                    width: "350px"
                                 }}
                             >
                                 <div className="p-8 space-y-4 border-b border-gray-800 text-center">
@@ -79,11 +77,11 @@ const Pricing = () => {
                                         {item.name}
                                     </span>
                                     <div className='text-gray-50 text-3xl font-semibold'>
-                                        ${item.price} <span className="text-xl text-gray-400 font-normal">/mo</span>
+                                    ₹{item.price} <span className="text-xl text-gray-400 font-normal">/mo</span>
                                     </div>
-                                    <p className="text-gray-400">
+                                    {/* <p className="text-gray-400">
                                         {item.desc}
-                                    </p>
+                                    </p> */}
                                 </div>
                                 <div className="p-8">
                                     <ul className='space-y-3'>
@@ -107,7 +105,7 @@ const Pricing = () => {
                                     </ul>
                                     <div className="pt-8">
                                         <Button className={`w-full rounded-full text-white ring-offset-2 focus:ring ${item.isMostPop ? "bg-purple-600 hover:bg-purple-500 focus:bg-purple-700 ring-purple-600" : "bg-gray-800 hover:bg-gray-700 ring-gray-800"}`}>
-                                            Get Started
+                                            Contact Us
                                         </Button>
                                     </div>
                                 </div>
@@ -120,4 +118,4 @@ const Pricing = () => {
     );
 };
 
-export default Pricing
+export default Pricing;

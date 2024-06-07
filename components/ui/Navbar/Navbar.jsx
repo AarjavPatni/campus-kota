@@ -13,6 +13,7 @@ const Navbar = () => {
         { name: "Pricing", href: "/#pricing" },
         { name: "Testimonials", href: "/#testimonials" },
         { name: "FAQs", href: "/#faqs" },
+        { name: "Gallery", href: "/gallery"}
     ]
 
     useEffect(() => {
@@ -45,9 +46,6 @@ const Navbar = () => {
                             }
                         </ul>
                         <div className="gap-x-6 items-center justify-end mt-6 space-y-6 md:flex md:space-y-0 md:mt-0">
-                            <Link href="/login" className="block hover:text-gray-50">
-                                Sign in
-                            </Link>
                             <NavLink href="/pricing" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900 md:inline-flex">
                                 Start now
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">

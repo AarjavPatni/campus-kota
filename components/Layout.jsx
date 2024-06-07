@@ -6,8 +6,8 @@ const Layout = ({ children }) => {
     return (
         <>
             <Head>
-                <title>Mailgo</title>
-                <meta name='description' content="Gain control of your business's growth with Mailgo's comprehensive marketing, automation, and email marketing platform." />
+                <title>Campus Kota</title>
+                <meta name='description' content="A student hostel located in India's education hub with close proximity to the Allen coaching center. We ensure the best living experience for your child." />
                 <meta name='viewport' content='width=device-width, initial-scale=1' />
                 <link rel='icon' href='/favicon.ico' />
             </Head>

@@ -53,9 +53,9 @@ const Testimonial = () => {
     return (
         <SectionWrapper>
             <div id="testimonials" className="custom-screen text-gray-300">
-                <div className="max-w-2xl text-center md:mx-auto">
+                <div className="max-w-md text-center xs:mx-auto">
                     <h2 className="text-gray-50 text-3xl font-semibold sm:text-4xl">
-                        Mailgo is loved by the best founders around the world
+                        Campus Kota is loved by students and parents alike
                     </h2>
                 </div>
                 <GradientWrapper wrapperClassName="max-w-sm h-40 top-12 inset-x-0" className="mt-12">

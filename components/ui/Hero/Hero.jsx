@@ -1,7 +1,6 @@
 import GradientWrapper from "@/components/GradientWrapper"
 import Image from "next/image"
 import NavLink from "../NavLink"
-import HeroImg from "@/public/images/hero-2.png"
 import LayoutEffect from "@/components/LayoutEffect"
 
 const Hero = () => (
@@ -39,7 +38,7 @@ const Hero = () => (
                     </div>
                     <GradientWrapper className="mt-16 sm:mt-28" wrapperClassName="max-w-3xl h-[250px] top-12 inset-0 sm:h-[300px] lg:h-[650px]">
                         <Image
-                            src={HeroImg}
+                            src="/images/hero-2.png"
                             className="shadow-lg rounded-2xl m-auto"
                             alt="Campus Kota"
                         />

@@ -5,6 +5,7 @@ import Hero from "@/components/ui/Hero";
 import Pricing from "@/components/ui/Pricing";
 import Testimonial from "@/components/ui/Testimonial";
 import VisualFeatures from "@/components/ui/VisualFeatures";
+import Location from "@/components/ui/Location";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       {/* <Testimonial /> */}
       <Pricing />
       <FAQs />
+      <Location />
     </>
   );
 }

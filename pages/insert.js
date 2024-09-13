@@ -1,9 +1,9 @@
-import Form from '../components/Form';
+import InsertionForm from '../components/InsertionForm';
 
 export default function Home() {
   return (
     <div>
-      <Form />
+      <InsertionForm />
     </div>
   );
 }

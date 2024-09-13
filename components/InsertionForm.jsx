@@ -22,7 +22,7 @@ const validationSchema = Yup.object({
   approved: Yup.boolean(),
 });
 
-const Form = () => {
+const InsertionForm = () => {
   const formik = useFormik({
     initialValues: {
       room_name: "",
@@ -425,4 +425,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default InsertionForm;

@@ -19,46 +19,50 @@ const validationSchema = Yup.object({
   security_deposit: Yup.number().required("Security Deposit is required"),
   monthly_rent: Yup.number().required("Monthly Rent is required"),
   start_date: Yup.date().required("Start Date is required"),
-  end_date: Yup.date().required("End Date is required"),
+  end_date: Yup.date(),
   approved: Yup.boolean(),
 });
 
-const UpdationForm = ({ uid }) => {
+const StudentDetailsForm = ({ uid }) => {
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
 
+  console.log("uid", uid);
+
   useEffect(() => {
-    const fetchStudentDetails = async () => {
-      let { data: student_details, error } = await supabase
-        .from("student_details")
-        .select("*")
-        .eq("uid", uid);
+    if (uid) {
+      const fetchStudentDetails = async () => {
+        let { data: student_details, error } = await supabase
+          .from("student_details")
+          .select("*")
+          .eq("uid", uid);
 
-      if (error) {
-        console.error("Error fetching student details:", error);
-      } else {
-        setStudentDetails(student_details[0]); // Assuming there's only one student per room_name
-      }
-    };
+        if (error) {
+          console.error("Error fetching student details:", error);
+        } else {
+          setStudentDetails(student_details[0]); // Assuming there's only one student per room_name
+        }
+      };
 
-    fetchStudentDetails();
+      fetchStudentDetails();
+    }
   }, [uid]);
 
   const formik = useFormik({
     initialValues: {
-      room_number: "",
-      first_name: "",
-      last_name: "",
-      father_name: "",
-      course: "",
-      institute: "",
-      student_mobile: "",
-      parent_mobile: "",
-      guardian_mobile: "",
+      room_number: "200",
+      first_name: "aarjav",
+      last_name: "patni",
+      father_name: "nitesh",
+      course: "jee",
+      institute: "allen",
+      student_mobile: "1234567890",
+      parent_mobile: "1234567890",
+      guardian_mobile: "1234567890",
       remarks: "",
-      address: "",
-      security_deposit: "",
-      monthly_rent: "",
+      address: "adfasdf",
+      security_deposit: "5000",
+      monthly_rent: "5000",
       start_date: "",
       end_date: "",
       approved: false,
@@ -79,7 +83,7 @@ const UpdationForm = ({ uid }) => {
         student_mobile: values.student_mobile,
         parent_mobile: values.parent_mobile,
         guardian_mobile: values.guardian_mobile,
-        remarks: values.remarks, // Do not capitalize
+        remarks: values.remarks,
         address: capitalize(values.address),
         security_deposit: values.security_deposit,
         monthly_rent: values.monthly_rent,
@@ -90,18 +94,41 @@ const UpdationForm = ({ uid }) => {
       capitalizedValues.room_name =
         capitalizedValues.room_number.toString() + capitalizedValues.first_name;
 
-      const { data, status } = await supabase
-        .from("student_details")
-        .update([capitalizedValues])
-        .eq("uid", uid)
-        .select();
+      if (capitalizedValues.end_date === "") {
+        capitalizedValues.end_date = "9999-12-31";
+      }
+      let resp, status;
+
+      if (uid) {
+        const response = await supabase
+          .from("student_details")
+          .update([capitalizedValues])
+          .eq("uid", uid)
+          .select();
+
+        resp = response;
+        status = resp.status;
+      } else {
+        const response = await supabase
+          .from("student_details")
+          .insert([capitalizedValues])
+          .select();
+
+        resp = response;
+        status = resp.status;
+      }
 
       if (status === 201) {
-        console.log("Data inserted successfully:", data);
         formik.resetForm();
+        console.log("Data inserted successfully:", resp);
         alert("Data inserted successfully");
+      } else if (status === 200) {
+        formik.resetForm();
+        console.log("Data updated successfully:", resp);
+        alert("Data updated successfully");
       } else {
         console.error("Error inserting data:", status);
+        console.log(resp);
       }
     },
   });
@@ -133,6 +160,7 @@ const UpdationForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={uid ? true : false}
               />
               {formik.touched.room_number && formik.errors.room_number && (
                 <div className="text-red-500 text-sm mt-1">
@@ -155,6 +183,7 @@ const UpdationForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={uid ? true : false}
               />
               {formik.touched.first_name && formik.errors.first_name && (
                 <div className="text-red-500 text-sm mt-1">
@@ -463,21 +492,30 @@ const UpdationForm = ({ uid }) => {
                 Approved
               </label>
             </div>
-            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+            {(uid && (
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                <button
+                  type="submit"
+                  className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
+                  onClick={() => setToggleForm(null)}
+                >
+                  Return to List
+                </button>
+              </div>
+            )) || (
               <button
                 type="submit"
                 className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
               >
-                Update
+                Submit
               </button>
-              <button
-                type="button"
-                className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
-                onClick={() => setToggleForm(null)}
-              >
-                Return to List
-              </button>
-            </div>
+            )}
           </form>
         </div>
       ) : (
@@ -488,4 +526,4 @@ const UpdationForm = ({ uid }) => {
   );
 };
 
-export default UpdationForm;
+export default StudentDetailsForm;

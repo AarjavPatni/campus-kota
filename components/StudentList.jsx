@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/pages/supabaseClient";
 import Link from "next/link";
-import UpdationForm from "./UpdationForm";
+import UpdationForm from "./StudentDetailsForm";
 import {
   Table,
   TableBody,

@@ -40,7 +40,7 @@ const StudentDetailsForm = ({ uid }) => {
         if (error) {
           console.error("Error fetching student details:", error);
         } else {
-          setStudentDetails(student_details[0]); // Assuming there's only one student per room_name
+          setStudentDetails(student_details[0]);
         }
       };
 
@@ -63,7 +63,7 @@ const StudentDetailsForm = ({ uid }) => {
       address: "adfasdf",
       security_deposit: "5000",
       monthly_rent: "5000",
-      start_date: "",
+      start_date: (new Date()).toISOString().split('T')[0],
       end_date: "",
       approved: false,
     },
@@ -73,7 +73,6 @@ const StudentDetailsForm = ({ uid }) => {
       const capitalize = (str) =>
         str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
       const capitalizedValues = {
-        ...values,
         room_number: values.room_number,
         first_name: capitalize(values.first_name),
         last_name: capitalize(values.last_name),
@@ -91,12 +90,11 @@ const StudentDetailsForm = ({ uid }) => {
         end_date: values.end_date,
         approved: values.approved,
       };
-      capitalizedValues.room_name =
-        capitalizedValues.room_number.toString() + capitalizedValues.first_name;
 
       if (capitalizedValues.end_date === "") {
         capitalizedValues.end_date = "9999-12-31";
       }
+      console.log(capitalizedValues);
       let resp, status;
 
       if (uid) {
@@ -128,7 +126,7 @@ const StudentDetailsForm = ({ uid }) => {
         alert("Data updated successfully");
       } else {
         console.error("Error inserting data:", status);
-        console.log(resp);
+        console.log(resp.error);
       }
     },
   });

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/pages/supabaseClient";
+import { supabase } from "@/supabaseClient";
 import Link from "next/link";
 import {
   Table,

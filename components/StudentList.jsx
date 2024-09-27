@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/pages/supabaseClient";
 import Link from "next/link";
-import UpdationForm from "./StudentDetailsForm";
 import {
   Table,
   TableBody,
@@ -10,6 +9,7 @@ import {
   TableHeadCell,
   TableRow,
 } from "flowbite-react";
+import StudentDetailsForm from "./StudentDetailsForm";
 
 export function StudentList() {
   const [studentDetails, setStudentDetails] = useState([]);
@@ -37,7 +37,7 @@ export function StudentList() {
   return (
     <div>
       {selectedStudentUID ? (
-        <UpdationForm uid={selectedStudentUID} />
+        <StudentDetailsForm uid={selectedStudentUID} />
       ) : (
         <div className="mx-auto max-w-screen-md">
           <Table striped>

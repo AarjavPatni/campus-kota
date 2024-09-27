@@ -1,5 +1,5 @@
 import { Button } from "flowbite-react";
-import { supabase } from "../pages/supabaseClient";
+import { supabase } from "@/supabaseClient";
 import { useCallback, useState } from "react";
 
 export const BillGenerator = () => {

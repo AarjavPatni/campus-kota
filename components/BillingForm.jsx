@@ -6,6 +6,7 @@ import { StudentList } from "./StudentList";
 import { BillingList } from "./BillingList";
 
 const validationSchema = Yup.object({
+  room_name: Yup.string().required("Room Name is required"),
   security_deposit: Yup.number().required("Security Deposit is required"),
   monthly_rent: Yup.number().required("Monthly Rent is required"),
   electricity_charge: Yup.number().required("Electricity Charge is required"),
@@ -41,6 +42,7 @@ const BillingForm = ({ bill_key }) => {
   const formik = useFormik({
     initialValues: {
       ...billingDetails,
+      room_name: billingDetails?.room_name || "",
       security_deposit: billingDetails?.security_deposit || 0,
       monthly_rent: billingDetails?.monthly_rent || 0,
       electricity_charge: billingDetails?.electricity_charge || 0,
@@ -105,6 +107,29 @@ const BillingForm = ({ bill_key }) => {
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <h2 className="text-2xl font-bold mb-4">Billing Details Form</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="room_name"
+                className="block text-sm font-medium mb-1"
+              >
+                Room Name:
+              </label>
+              <input
+                type="text"
+                id="room_name"
+                name="room_name"
+                value={formik.values.room_name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={true}
+              />
+              {formik.touched.room_name && formik.errors.room_name && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.room_name}
+                </div>
+              )}
+            </div>
             <div>
               <label
                 htmlFor="security_deposit"

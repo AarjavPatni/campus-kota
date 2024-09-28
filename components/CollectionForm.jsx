@@ -74,17 +74,20 @@ const CollectionForm = ({ uid }) => {
       other_charge: 0,
       year: new Date().getFullYear(),
       month: new Date().getMonth() + 1,
-      payment_date: new Date().toISOString().replace('Z', '+05:30').split('T')[0],
+      payment_date: new Date()
+        .toISOString()
+        .replace("Z", "+05:30")
+        .split("T")[0],
       payment_method: "",
       approved: false,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       let resp, status;
-
+      console.log("TEST");
       console.log(values);
 
-      const response = await supabase.from("billing").insert([values]).select();
+      const response = await supabase.from("collection").insert([values]).select();
 
       resp = response;
       status = resp.status;
@@ -106,7 +109,11 @@ const CollectionForm = ({ uid }) => {
 
   useEffect(() => {
     if (collectionDetails || studentDetails) {
-        formik.setValues({ ...collectionDetails, ...studentDetails, invoice_key: nextInvoiceKey });
+      formik.setValues({
+        ...collectionDetails,
+        ...studentDetails,
+        invoice_key: nextInvoiceKey,
+      });
     }
   }, [collectionDetails, studentDetails, nextInvoiceKey]);
 
@@ -114,7 +121,7 @@ const CollectionForm = ({ uid }) => {
     <div>
       {toggleForm ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
-          <h2 className="text-2xl font-bold mb-4">Billing Details Form</h2>
+          <h2 className="text-2xl font-bold mb-4">Collection Form</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             <div>
               <label
@@ -369,30 +376,21 @@ const CollectionForm = ({ uid }) => {
                 Approved
               </label>
             </div>
-            {(uid && (
-              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-                <button
-                  type="submit"
-                  className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
-                >
-                  Insert
-                </button>
-                <button
-                  type="button"
-                  className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
-                  onClick={() => setToggleForm(null)}
-                >
-                  Return to List
-                </button>
-              </div>
-            )) || (
+            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
               <button
                 type="submit"
                 className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
               >
-                Submit
+                Insert
               </button>
-            )}
+              <button
+                type="button"
+                className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
+                onClick={() => setToggleForm(null)}
+              >
+                Return to List
+              </button>
+            </div>
           </form>
         </div>
       ) : (

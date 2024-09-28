@@ -59,6 +59,7 @@ const BillingForm = ({ bill_key }) => {
       let resp, status;
 
       console.log(values);
+      delete values.bill_key;
 
       if (bill_key) {
         console.log(values, bill_key);
@@ -317,30 +318,22 @@ const BillingForm = ({ bill_key }) => {
                 Approved
               </label>
             </div>
-            {(bill_key && (
-              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-                <button
-                  type="submit"
-                  className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
-                >
-                  Update
-                </button>
-                <button
-                  type="button"
-                  className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
-                  onClick={() => setToggleForm(null)}
-                >
-                  Return to List
-                </button>
-              </div>
-            )) || (
+
+            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
               <button
                 type="submit"
                 className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
               >
-                Submit
+                Update
               </button>
-            )}
+              <button
+                type="button"
+                className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
+                onClick={() => setToggleForm(null)}
+              >
+                Return to List
+              </button>
+            </div>
           </form>
         </div>
       ) : (

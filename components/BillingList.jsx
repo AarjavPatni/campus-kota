@@ -10,11 +10,13 @@ import {
   TableHeadCell,
   TableRow,
 } from "flowbite-react";
+import CollectionForm from "./CollectionForm";
 
 export function BillingList() {
   const [billingDetails, setBillingDetails] = useState([]);
   const [error, setError] = useState(null);
   const [selectedBillKey, setSelectedBillKey] = useState(null);
+  const [selectedUID, setSelectedUID] = useState(null);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
 
@@ -22,7 +24,7 @@ export function BillingList() {
     const fetchBillDetails = async () => {
       let { data, error } = await supabase
         .from("billing")
-        .select("bill_key,room_name,year,month,bill_date,approved")
+        .select("bill_key,uid,room_name,year,month,bill_date,approved")
         .eq("year", year)
         .eq("month", month);
 
@@ -42,6 +44,8 @@ export function BillingList() {
     <div>
       {selectedBillKey ? (
         <BillingForm bill_key={selectedBillKey} />
+      ) : selectedUID ? (
+        <CollectionForm uid={selectedUID} />
       ) : (
         <div className="mx-auto max-w-screen-md">
           <div className="flex space-x-4">
@@ -118,6 +122,17 @@ export function BillingList() {
                       className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
                     >
                       Edit
+                    </Link>
+                    <br />
+                    <Link
+                      href="#"
+                      onClick={() => {
+                        console.log(bill.uid);
+                        setSelectedUID(bill.uid);
+                      }}
+                      className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                    >
+                      Collect
                     </Link>
                   </TableCell>
                 </TableRow>

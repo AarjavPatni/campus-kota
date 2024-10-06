@@ -11,11 +11,13 @@ import {
 } from "flowbite-react";
 import StudentDetailsForm from "./StudentDetailsForm";
 import { ToggleSwitch } from "flowbite-react";
+import CollectionForm from "./CollectionForm";
 
 export function StudentList() {
   const [studentDetails, setStudentDetails] = useState([]);
   const [error, setError] = useState(null);
   const [selectedStudentUID, setSelectedStudentUID] = useState(null);
+  const [collectionUID, setCollectionUID] = useState(null);
   const [showAllRecords, setShowAllRecords] = useState(false);
 
   useEffect(() => {
@@ -47,6 +49,8 @@ export function StudentList() {
     <div>
       {selectedStudentUID ? (
         <StudentDetailsForm uid={selectedStudentUID} />
+      ) : collectionUID ? (
+        <CollectionForm uid={collectionUID} returnToBill={false} />
       ) : (
         <div className="mx-auto max-w-screen-md flex flex-col gap-4">
           <ToggleSwitch
@@ -61,6 +65,7 @@ export function StudentList() {
               <TableHeadCell>Student Contact No.</TableHeadCell>
               <TableHeadCell>
                 <span className="sr-only">Edit</span>
+                <span className="sr-only">Collect</span>
               </TableHeadCell>
             </TableHead>
             <TableBody className="divide-y">
@@ -83,6 +88,17 @@ export function StudentList() {
                       className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
                     >
                       Edit
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      href="#"
+                      onClick={() => {
+                        setCollectionUID(student.uid);
+                      }}
+                      className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                    >
+                      Collect
                     </Link>
                   </TableCell>
                 </TableRow>

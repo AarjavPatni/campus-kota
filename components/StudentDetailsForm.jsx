@@ -139,23 +139,23 @@ const StudentDetailsForm = ({ uid }) => {
 
       const showToast = () => {
         setToggleToast(true);
-        setTimeout(() => setToastOpacity(1), 10); // Start fade-in after a brief delay
+        setTimeout(() => setToastOpacity(1), 10);
+
         setTimeout(() => {
-          setToastOpacity(0); // Start fade-out
-          setTimeout(() => setToggleToast(false), 300); // Hide toast after fade-out
-        }, 3000);
+          setToastOpacity(0);
+          setTimeout(() => setToggleToast(false), 300);
+          window.location.href = "/";
+        }, 2000);
       };
 
       if (status === 201) {
         formik.resetForm();
         console.log("Data inserted successfully:", resp);
         showToast();
-        window.location.href = "/";
       } else if (status === 200) {
         formik.resetForm();
         console.log("Data updated successfully:", resp);
         showToast();
-        window.location.href = "/";
       } else {
         console.error("Error inserting data:", status);
         console.log(resp.error);

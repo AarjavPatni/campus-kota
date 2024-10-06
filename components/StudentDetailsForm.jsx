@@ -5,6 +5,7 @@ import { supabase } from "@/supabaseClient";
 import { StudentList } from "./StudentList";
 import { Toast } from "flowbite-react";
 import { HiCheck } from "react-icons/hi";
+import { redirect } from "next/navigation";
 
 const validationSchema = Yup.object({
   room_number: Yup.number()
@@ -149,10 +150,12 @@ const StudentDetailsForm = ({ uid }) => {
         formik.resetForm();
         console.log("Data inserted successfully:", resp);
         showToast();
+        window.location.href = "/";
       } else if (status === 200) {
         formik.resetForm();
         console.log("Data updated successfully:", resp);
         showToast();
+        window.location.href = "/";
       } else {
         console.error("Error inserting data:", status);
         console.log(resp.error);

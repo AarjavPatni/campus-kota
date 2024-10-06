@@ -3,9 +3,14 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { supabase } from "@/supabaseClient";
 import { StudentList } from "./StudentList";
+import { Toast } from "flowbite-react";
+import { HiCheck } from "react-icons/hi";
 
 const validationSchema = Yup.object({
-  room_number: Yup.number().required("Room Number is required").integer().positive(),
+  room_number: Yup.number()
+    .required("Room Number is required")
+    .integer()
+    .positive(),
   first_name: Yup.string().required("First Name is required"),
   last_name: Yup.string().required("Last Name is required"),
   father_name: Yup.string().required("Father's Name is required"),
@@ -17,8 +22,14 @@ const validationSchema = Yup.object({
   guardian_mobile: Yup.string().required("Guardian Mobile is required"),
   remarks: Yup.string(),
   address: Yup.string().required("Address is required"),
-  security_deposit: Yup.number().required("Security Deposit is required").integer().positive(),
-  monthly_rent: Yup.number().required("Monthly Rent is required").integer().positive(),
+  security_deposit: Yup.number()
+    .required("Security Deposit is required")
+    .integer()
+    .positive(),
+  monthly_rent: Yup.number()
+    .required("Monthly Rent is required")
+    .integer()
+    .positive(),
   start_date: Yup.date().required("Start Date is required"),
   end_date: Yup.date(),
   active: Yup.boolean(),
@@ -28,6 +39,7 @@ const validationSchema = Yup.object({
 const StudentDetailsForm = ({ uid }) => {
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
+  const [toggleToast, setToggleToast] = useState(false);
 
   console.log("uid", uid);
 
@@ -126,11 +138,23 @@ const StudentDetailsForm = ({ uid }) => {
       if (status === 201) {
         formik.resetForm();
         console.log("Data inserted successfully:", resp);
-        alert("Data inserted successfully");
+        const showToast = () => {
+          setToggleToast(true);
+          setTimeout(() => {
+            setToggleToast(false);
+          }, 3000); // Toast will be visible for 3 seconds
+        };
+        showToast();
       } else if (status === 200) {
         formik.resetForm();
         console.log("Data updated successfully:", resp);
-        alert("Data updated successfully");
+        const showToast = () => {
+          setToggleToast(true);
+          setTimeout(() => {
+            setToggleToast(false);
+          }, 3000); // Toast will be visible for 3 seconds
+        };
+        showToast();
       } else {
         console.error("Error inserting data:", status);
         console.log(resp.error);
@@ -308,10 +332,7 @@ const StudentDetailsForm = ({ uid }) => {
                 )}
             </div>
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium mb-1"
-              >
+              <label htmlFor="email" className="block text-sm font-medium mb-1">
                 Email:
               </label>
               <input
@@ -323,12 +344,11 @@ const StudentDetailsForm = ({ uid }) => {
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />
-              {formik.touched.email &&
-                formik.errors.email && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.email}
-                  </div>
-                )}
+              {formik.touched.email && formik.errors.email && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.email}
+                </div>
+              )}
             </div>
             <div>
               <label
@@ -564,6 +584,17 @@ const StudentDetailsForm = ({ uid }) => {
         <StudentList />
       )}
       ;
+      {toggleToast ? (
+        <div className="fixed bottom-28 right-4 z-50">
+          <Toast className="flex items-center bg-white shadow-lg rounded-lg p-4">
+            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
+              <HiCheck className="h-5 w-5" />
+            </div>
+            <div className="ml-3 text-sm font-normal">Data Updated</div>
+            <Toast.Toggle />
+          </Toast>
+        </div>
+      ) : null}
     </div>
   );
 };

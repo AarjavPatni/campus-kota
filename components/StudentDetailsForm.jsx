@@ -21,6 +21,7 @@ const validationSchema = Yup.object({
   monthly_rent: Yup.number().required("Monthly Rent is required").integer().positive(),
   start_date: Yup.date().required("Start Date is required"),
   end_date: Yup.date(),
+  active: Yup.boolean(),
   approved: Yup.boolean(),
 });
 
@@ -68,6 +69,7 @@ const StudentDetailsForm = ({ uid }) => {
       monthly_rent: studentDetails?.monthly_rent || "",
       start_date: studentDetails?.start_date || "",
       end_date: studentDetails?.end_date || "",
+      active: studentDetails?.active || true,
       approved: studentDetails?.approved || false,
     },
     validationSchema: validationSchema,
@@ -92,6 +94,7 @@ const StudentDetailsForm = ({ uid }) => {
         monthly_rent: values.monthly_rent,
         start_date: values.start_date,
         end_date: values.end_date,
+        active: values.active,
         approved: values.approved,
       };
 
@@ -502,6 +505,20 @@ const StudentDetailsForm = ({ uid }) => {
                   {formik.errors.end_date}
                 </div>
               )}
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="active"
+                name="active"
+                checked={formik.values.active}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="mr-2"
+              />
+              <label htmlFor="active" className="text-sm font-medium">
+                Active
+              </label>
             </div>
             <div className="flex items-center">
               <input

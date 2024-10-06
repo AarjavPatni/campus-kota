@@ -40,6 +40,7 @@ const StudentDetailsForm = ({ uid }) => {
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
   const [toggleToast, setToggleToast] = useState(false);
+  const [toastOpacity, setToastOpacity] = useState(0);
 
   console.log("uid", uid);
 
@@ -135,25 +136,22 @@ const StudentDetailsForm = ({ uid }) => {
         status = resp.status;
       }
 
+      const showToast = () => {
+        setToggleToast(true);
+        setTimeout(() => setToastOpacity(1), 10); // Start fade-in after a brief delay
+        setTimeout(() => {
+          setToastOpacity(0); // Start fade-out
+          setTimeout(() => setToggleToast(false), 300); // Hide toast after fade-out
+        }, 3000);
+      };
+
       if (status === 201) {
         formik.resetForm();
         console.log("Data inserted successfully:", resp);
-        const showToast = () => {
-          setToggleToast(true);
-          setTimeout(() => {
-            setToggleToast(false);
-          }, 3000); // Toast will be visible for 3 seconds
-        };
         showToast();
       } else if (status === 200) {
         formik.resetForm();
         console.log("Data updated successfully:", resp);
-        const showToast = () => {
-          setToggleToast(true);
-          setTimeout(() => {
-            setToggleToast(false);
-          }, 3000); // Toast will be visible for 3 seconds
-        };
         showToast();
       } else {
         console.error("Error inserting data:", status);
@@ -583,9 +581,11 @@ const StudentDetailsForm = ({ uid }) => {
       ) : (
         <StudentList />
       )}
-      ;
-      {toggleToast ? (
-        <div className="fixed bottom-28 right-4 z-50">
+      {toggleToast && (
+        <div
+          className="fixed bottom-28 right-4 z-50 transition-opacity duration-300 ease-in-out"
+          style={{ opacity: toastOpacity }}
+        >
           <Toast className="flex items-center bg-white shadow-lg rounded-lg p-4">
             <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
               <HiCheck className="h-5 w-5" />
@@ -594,7 +594,7 @@ const StudentDetailsForm = ({ uid }) => {
             <Toast.Toggle />
           </Toast>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

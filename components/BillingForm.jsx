@@ -256,6 +256,7 @@ const BillingForm = ({ bill_key }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={true}
               />
               {formik.touched.year && formik.errors.year && (
                 <div className="text-red-500 text-sm mt-1">
@@ -275,6 +276,7 @@ const BillingForm = ({ bill_key }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={true}
               />
               {formik.touched.month && formik.errors.month && (
                 <div className="text-red-500 text-sm mt-1">
@@ -294,7 +296,13 @@ const BillingForm = ({ bill_key }) => {
                 id="bill_date"
                 name="bill_date"
                 value={formik.values.bill_date}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  const selectedDate = new Date(e.target.value);
+                  console.log(selectedDate.getUTCDate());
+                  formik.setFieldValue("month", selectedDate.getUTCMonth() + 1);
+                  formik.setFieldValue("year", selectedDate.getUTCFullYear());
+                }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />

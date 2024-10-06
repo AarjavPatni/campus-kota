@@ -12,6 +12,7 @@ const validationSchema = Yup.object({
   course: Yup.string().required("Course is required"),
   institute: Yup.string().required("Institute is required"),
   student_mobile: Yup.string().required("Student Mobile is required"),
+  email: Yup.string().required("Email is required"),
   parent_mobile: Yup.string().required("Parent Mobile is required"),
   guardian_mobile: Yup.string().required("Guardian Mobile is required"),
   remarks: Yup.string(),
@@ -58,6 +59,7 @@ const StudentDetailsForm = ({ uid }) => {
       course: studentDetails?.course || "",
       institute: studentDetails?.institute || "",
       student_mobile: studentDetails?.student_mobile || "",
+      email: studentDetails?.email || "",
       parent_mobile: studentDetails?.parent_mobile || "",
       guardian_mobile: studentDetails?.guardian_mobile || "",
       remarks: studentDetails?.remarks || "",
@@ -81,6 +83,7 @@ const StudentDetailsForm = ({ uid }) => {
         course: values.course.toUpperCase(),
         institute: capitalize(values.institute),
         student_mobile: values.student_mobile,
+        email: values.email,
         parent_mobile: values.parent_mobile,
         guardian_mobile: values.guardian_mobile,
         remarks: values.remarks,
@@ -298,6 +301,29 @@ const StudentDetailsForm = ({ uid }) => {
                 formik.errors.student_mobile && (
                   <div className="text-red-500 text-sm mt-1">
                     {formik.errors.student_mobile}
+                  </div>
+                )}
+            </div>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium mb-1"
+              >
+                Email:
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+              />
+              {formik.touched.email &&
+                formik.errors.email && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.email}
                   </div>
                 )}
             </div>

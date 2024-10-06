@@ -133,29 +133,6 @@ const BillingForm = ({ bill_key }) => {
             </div>
             <div>
               <label
-                htmlFor="security_deposit"
-                className="block text-sm font-medium mb-1"
-              >
-                Security Deposit:
-              </label>
-              <input
-                type="number"
-                id="security_deposit"
-                name="security_deposit"
-                value={formik.values.security_deposit}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.security_deposit &&
-                formik.errors.security_deposit && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.security_deposit}
-                  </div>
-                )}
-            </div>
-            <div>
-              <label
                 htmlFor="monthly_rent"
                 className="block text-sm font-medium mb-1"
               >
@@ -312,6 +289,30 @@ const BillingForm = ({ bill_key }) => {
                 </div>
               )}
             </div>
+            <div>
+              <label
+                htmlFor="security_deposit"
+                className="block text-sm font-medium mb-1"
+              >
+                Security Deposit:
+              </label>
+              <input
+                type="number"
+                id="security_deposit"
+                name="security_deposit"
+                value={formik.values.security_deposit}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+              />
+              {formik.touched.security_deposit &&
+                formik.errors.security_deposit && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.security_deposit}
+                  </div>
+                )}
+            </div>
+
             <div className="flex items-center">
               <input
                 type="checkbox"

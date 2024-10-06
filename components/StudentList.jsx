@@ -20,7 +20,8 @@ export function StudentList() {
     const fetchStudentDetails = async () => {
       let { data, error } = await supabase
         .from("student_details")
-        .select("uid,room_number,first_name,student_mobile");
+        .select("uid,room_number,first_name,student_mobile")
+        .eq("active", true);
 
       if (error) {
         setError(error);

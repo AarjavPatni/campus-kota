@@ -10,11 +10,13 @@ import {
   TableRow,
 } from "flowbite-react";
 import StudentDetailsForm from "./StudentDetailsForm";
+import { ToggleSwitch } from "flowbite-react";
 
 export function StudentList() {
   const [studentDetails, setStudentDetails] = useState([]);
   const [error, setError] = useState(null);
   const [selectedStudentUID, setSelectedStudentUID] = useState(null);
+  const [showAllRecords, setShowAllRecords] = useState(false);
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
@@ -22,6 +24,12 @@ export function StudentList() {
         .from("student_details")
         .select("uid,room_number,first_name,student_mobile")
         .eq("active", true);
+
+      if (showAllRecords) {
+        ({ data, error } = await supabase
+          .from("student_details")
+          .select("uid,room_number,first_name,student_mobile"));
+      }
 
       if (error) {
         setError(error);
@@ -31,7 +39,7 @@ export function StudentList() {
     };
 
     fetchStudentDetails();
-  }, []);
+  }, [showAllRecords]);
 
   if (error) return <div>Error fetching data: {error.message}</div>;
 
@@ -40,7 +48,12 @@ export function StudentList() {
       {selectedStudentUID ? (
         <StudentDetailsForm uid={selectedStudentUID} />
       ) : (
-        <div className="mx-auto max-w-screen-md">
+        <div className="mx-auto max-w-screen-md flex flex-col gap-4">
+          <ToggleSwitch
+            checked={showAllRecords}
+            label="Show Inactive Records"
+            onChange={setShowAllRecords}
+          />
           <Table striped>
             <TableHead>
               <TableHeadCell>Room Number</TableHeadCell>
@@ -65,9 +78,7 @@ export function StudentList() {
                     <Link
                       href="#"
                       onClick={() => {
-                        setSelectedStudentUID(
-                          student.uid
-                        );
+                        setSelectedStudentUID(student.uid);
                       }}
                       className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
                     >

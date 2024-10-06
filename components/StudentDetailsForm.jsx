@@ -68,7 +68,7 @@ const StudentDetailsForm = ({ uid }) => {
       security_deposit: studentDetails?.security_deposit || "",
       monthly_rent: studentDetails?.monthly_rent || "",
       start_date: studentDetails?.start_date || "",
-      end_date: studentDetails?.end_date || "",
+      end_date: studentDetails?.end_date || "9999-12-31",
       active: studentDetails?.active || true,
       approved: studentDetails?.approved || false,
     },

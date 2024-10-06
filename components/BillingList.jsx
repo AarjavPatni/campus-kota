@@ -24,7 +24,7 @@ export function BillingList() {
     const fetchBillDetails = async () => {
       let { data, error } = await supabase
         .from("billing")
-        .select("bill_key,uid,room_name,year,month,bill_date,approved")
+        .select("bill_key,uid,room_name,monthly_rent,electricity_charge,laundry_charge,other_charge,year,month,bill_date,approved")
         .eq("year", year)
         .eq("month", month);
 
@@ -95,8 +95,8 @@ export function BillingList() {
           <Table striped>
             <TableHead>
               <TableHeadCell>Room Name</TableHeadCell>
-              <TableHeadCell>Year</TableHeadCell>
-              <TableHeadCell>Month</TableHeadCell>
+              <TableHeadCell>Monthly Rent</TableHeadCell>
+              <TableHeadCell>Total Charges</TableHeadCell>
               <TableHeadCell>
                 <span className="sr-only">Edit</span>
               </TableHeadCell>
@@ -110,8 +110,8 @@ export function BillingList() {
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                     {bill.room_name}
                   </TableCell>
-                  <TableCell>{bill.year}</TableCell>
-                  <TableCell>{bill.month}</TableCell>
+                  <TableCell>{bill.monthly_rent}</TableCell>
+                  <TableCell>{parseInt(bill.electricity_charge) + parseInt(bill.laundry_charge) + parseInt(bill.other_charge)}</TableCell>
                   <TableCell>
                     <Link
                       href="#"

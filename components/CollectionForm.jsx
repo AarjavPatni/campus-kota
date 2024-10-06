@@ -20,7 +20,7 @@ const validationSchema = Yup.object({
   approved: Yup.boolean(),
 });
 
-const CollectionForm = ({ uid }) => {
+const CollectionForm = ({ uid, returnToBill = true }) => {
   const [collectionDetails, setCollectionDetails] = useState(null);
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
@@ -87,7 +87,10 @@ const CollectionForm = ({ uid }) => {
       console.log("TEST");
       console.log(values);
 
-      const response = await supabase.from("collection").insert([values]).select();
+      const response = await supabase
+        .from("collection")
+        .insert([values])
+        .select();
 
       resp = response;
       status = resp.status;
@@ -393,8 +396,10 @@ const CollectionForm = ({ uid }) => {
             </div>
           </form>
         </div>
-      ) : (
+      ) : returnToBill ? (
         <BillingList />
+      ) : (
+        <StudentList />
       )}
     </div>
   );

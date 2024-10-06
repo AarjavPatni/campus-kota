@@ -360,8 +360,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               >
-                <option value="UPI">UPI</option>
                 <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
                 <option value="Cheque">Cheque</option>
               </select>
             </div>

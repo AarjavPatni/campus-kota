@@ -48,13 +48,13 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
         console.error("Error fetching collection data:", collection_error);
       } else if (collection_data.length > 0) {
         setCollectionDetails(collection_data[0]);
-        const nextInvoiceKey = `${new Date().getFullYear()}-${uid}-${
+        const nextInvoiceKey = `${new Date().getUTCFullYear()}-${uid}-${
           collection_data[0].invoice_key.split("-")[-1] + 1
         }`;
         setNextInvoiceKey(nextInvoiceKey);
       } else {
         setCollectionDetails(null);
-        const nextInvoiceKey = `${new Date().getFullYear()}-${uid}-1`;
+        const nextInvoiceKey = `${new Date().getUTCFullYear()}-${uid}-1`;
         setNextInvoiceKey(nextInvoiceKey);
       }
     };
@@ -72,11 +72,11 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
       electricity_charge: 0,
       laundry_charge: 0,
       other_charge: 0,
-      year: new Date().getFullYear(),
-      month: new Date().getMonth() + 1,
+      year: new Date().getUTCFullYear(),
+      month: new Date().getUTCMonth() + 1,
       payment_date: new Date()
         .toISOString()
-        .replace("Z", "+05:30")
+        .replace("Z", "+5:30")
         .split("T")[0],
       payment_method: "",
       approved: false,
@@ -297,6 +297,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={true}
               />
               {formik.touched.year && formik.errors.year && (
                 <div className="text-red-500 text-sm mt-1">
@@ -316,6 +317,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={true}
               />
               {formik.touched.month && formik.errors.month && (
                 <div className="text-red-500 text-sm mt-1">
@@ -335,7 +337,16 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 id="payment_date"
                 name="payment_date"
                 value={formik.values.payment_date}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  const selectedDate = new Date(e.target.value);
+                  console.log(selectedDate.getUTCDate());
+                  formik.setFieldValue("month", selectedDate.getUTCMonth() + 1);
+                  formik.setFieldValue("year", selectedDate.getUTCFullYear());
+                }}
+                defaultValue={() => {
+                  new Date().toISOString().replace("Z", "+5:30").split("T")[0];
+                }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />

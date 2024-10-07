@@ -10,11 +10,14 @@ const validationSchema = Yup.object({
   invoice_key: Yup.string().required("Invoice Key is required"),
   security_deposit: Yup.number().required("Security Deposit is required"),
   monthly_rent: Yup.number().required("Monthly Rent is required"),
-  electricity_charge: Yup.number().required("Electricity Charge is required"),
-  laundry_charge: Yup.number().required("Laundry Charge is required"),
-  other_charge: Yup.number().required("Other Charge is required"),
-  year: Yup.number().required("Year is required"),
-  month: Yup.number().required("Month is required"),
+  electricity_charge: Yup.number().integer().default(0),
+  laundry_charge: Yup.number().integer().default(0),
+  other_charge: Yup.number().integer().default(0),
+  total_charges: Yup.number()
+    .integer()
+    .positive("Total charges must be greater than 0"),
+  year: Yup.number().required(),
+  month: Yup.number().required(),
   payment_date: Yup.date().required("Payment Date is required"),
   payment_method: Yup.string().required("Payment Method is required"),
   approved: Yup.boolean(),
@@ -35,7 +38,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
 
       let { data: student_details, error: student_error } = await supabase
         .from("student_details")
-        .select("*")
+        .select("uid,room_name,security_deposit,monthly_rent")
         .eq("uid", uid);
 
       if (student_error) {
@@ -46,16 +49,25 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
 
       if (collection_error) {
         console.error("Error fetching collection data:", collection_error);
-      } else if (collection_data.length > 0) {
-        setCollectionDetails(collection_data[0]);
-        const nextInvoiceKey = `${new Date().getUTCFullYear()}-${uid}-${
-          collection_data[0].invoice_key.split("-")[-1] + 1
-        }`;
-        setNextInvoiceKey(nextInvoiceKey);
       } else {
-        setCollectionDetails(null);
-        const nextInvoiceKey = `${new Date().getUTCFullYear()}-${uid}-1`;
-        setNextInvoiceKey(nextInvoiceKey);
+        if (collection_data.length > 0) {
+          setCollectionDetails(collection_data[0]);
+          // sort by invoice_key
+          collection_data.sort((a, b) => {
+            const invoiceKeyA = a.invoice_key.replace(/-/g, "");
+            const invoiceKeyB = b.invoice_key.replace(/-/g, "");
+            return parseInt(invoiceKeyB) - parseInt(invoiceKeyA);
+          });
+          const nextInvoiceIndex =
+            parseInt(collection_data[0].invoice_key.split("-").pop()) + 1;
+          console.log(collection_data[0]);
+          setNextInvoiceKey(
+            `${new Date().getUTCFullYear()}-${uid}-${nextInvoiceIndex}`
+          );
+        } else {
+          setCollectionDetails(null);
+          setNextInvoiceKey(`${new Date().getUTCFullYear()}-${uid}-1`);
+        }
       }
     };
 
@@ -64,7 +76,6 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
 
   const formik = useFormik({
     initialValues: {
-      ...studentDetails,
       invoice_key: nextInvoiceKey || "",
       room_name: studentDetails?.room_name || "",
       security_deposit: 0,
@@ -72,40 +83,29 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
       electricity_charge: 0,
       laundry_charge: 0,
       other_charge: 0,
+      total_charges: 0,
       year: new Date().getUTCFullYear(),
       month: new Date().getUTCMonth() + 1,
       payment_date: new Date()
         .toISOString()
         .replace("Z", "+5:30")
         .split("T")[0],
-      payment_method: "",
+      payment_method: "Cash",
       approved: false,
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: async (values) => {
-      let resp, status;
-      console.log("TEST");
-      console.log(values);
-
       const response = await supabase
         .from("collection")
         .insert([values])
         .select();
 
-      resp = response;
-      status = resp.status;
-
-      if (status === 201) {
-        formik.resetForm();
-        console.log("Data inserted successfully:", resp);
-        alert("Data inserted successfully");
-      } else if (status === 200) {
-        formik.resetForm();
-        console.log("Data updated successfully:", resp);
-        alert("Data updated successfully");
+      if (response.error) {
+        console.error("Error inserting/updating data:", response.error);
+        alert("Error inserting/updating data");
       } else {
-        console.error("Error inserting/updating data:", status);
-        console.log(resp.error);
+        formik.resetForm();
+        alert("Data inserted/updated successfully");
       }
     },
   });
@@ -113,6 +113,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
   useEffect(() => {
     if (collectionDetails || studentDetails) {
       formik.setValues({
+        ...formik.values,
         ...collectionDetails,
         ...studentDetails,
         invoice_key: nextInvoiceKey,
@@ -126,6 +127,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <h2 className="text-2xl font-bold mb-4">Collection Form</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
+            {/* Invoice Key */}
             <div>
               <label
                 htmlFor="invoice_key"
@@ -141,7 +143,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={true}
+                readOnly
               />
               {formik.touched.invoice_key && formik.errors.invoice_key && (
                 <div className="text-red-500 text-sm mt-1">
@@ -149,6 +151,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 </div>
               )}
             </div>
+
+            {/* Room Name */}
             <div>
               <label
                 htmlFor="room_name"
@@ -164,7 +168,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={true}
+                readOnly
               />
               {formik.touched.room_name && formik.errors.room_name && (
                 <div className="text-red-500 text-sm mt-1">
@@ -172,6 +176,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 </div>
               )}
             </div>
+
+            {/* Security Deposit */}
             <div>
               <label
                 htmlFor="security_deposit"
@@ -195,6 +201,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                   </div>
                 )}
             </div>
+
+            {/* Monthly Rent */}
             <div>
               <label
                 htmlFor="monthly_rent"
@@ -217,6 +225,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 </div>
               )}
             </div>
+
+            {/* Electricity Charge */}
             <div>
               <label
                 htmlFor="electricity_charge"
@@ -229,7 +239,16 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 id="electricity_charge"
                 name="electricity_charge"
                 value={formik.values.electricity_charge}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 0;
+                  formik.setFieldValue("electricity_charge", value);
+                  formik.setFieldValue(
+                    "total_charges",
+                    value +
+                      formik.values.laundry_charge +
+                      formik.values.other_charge
+                  );
+                }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />
@@ -240,6 +259,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                   </div>
                 )}
             </div>
+
+            {/* Laundry Charge */}
             <div>
               <label
                 htmlFor="laundry_charge"
@@ -252,7 +273,16 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 id="laundry_charge"
                 name="laundry_charge"
                 value={formik.values.laundry_charge}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 0;
+                  formik.setFieldValue("laundry_charge", value);
+                  formik.setFieldValue(
+                    "total_charges",
+                    formik.values.electricity_charge +
+                      value +
+                      formik.values.other_charge
+                  );
+                }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />
@@ -263,19 +293,30 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                   </div>
                 )}
             </div>
+
+            {/* Other Charges */}
             <div>
               <label
                 htmlFor="other_charge"
                 className="block text-sm font-medium mb-1"
               >
-                Other Charge:
+                Other Charges:
               </label>
               <input
                 type="number"
                 id="other_charge"
                 name="other_charge"
                 value={formik.values.other_charge}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 0;
+                  formik.setFieldValue("other_charge", value);
+                  formik.setFieldValue(
+                    "total_charges",
+                    formik.values.electricity_charge +
+                      formik.values.laundry_charge +
+                      value
+                  );
+                }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />
@@ -285,6 +326,33 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 </div>
               )}
             </div>
+
+            {/* Total Charges */}
+            <div>
+              <label
+                htmlFor="total_charges"
+                className="block text-sm font-medium mb-1"
+              >
+                Total Charges:
+              </label>
+              <input
+                type="number"
+                id="total_charges"
+                name="total_charges"
+                value={formik.values.total_charges}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly
+              />
+              {formik.touched.total_charges && formik.errors.total_charges && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.total_charges}
+                </div>
+              )}
+            </div>
+
+            {/* Year */}
             <div>
               <label htmlFor="year" className="block text-sm font-medium mb-1">
                 Year:
@@ -297,7 +365,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={true}
+                readOnly
               />
               {formik.touched.year && formik.errors.year && (
                 <div className="text-red-500 text-sm mt-1">
@@ -305,6 +373,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 </div>
               )}
             </div>
+
+            {/* Month */}
             <div>
               <label htmlFor="month" className="block text-sm font-medium mb-1">
                 Month:
@@ -317,7 +387,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={true}
+                readOnly
               />
               {formik.touched.month && formik.errors.month && (
                 <div className="text-red-500 text-sm mt-1">
@@ -325,6 +395,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 </div>
               )}
             </div>
+
+            {/* Payment Date */}
             <div>
               <label
                 htmlFor="payment_date"
@@ -338,17 +410,16 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 name="payment_date"
                 value={formik.values.payment_date}
                 onChange={(e) => {
-                  formik.handleChange(e);
-                  const selectedDate = new Date(e.target.value);
-                  console.log(selectedDate.getUTCDate());
-                  formik.setFieldValue("month", selectedDate.getUTCMonth() + 1);
-                  formik.setFieldValue("year", selectedDate.getUTCFullYear());
-                }}
-                defaultValue={() => {
-                  new Date().toISOString().replace("Z", "+5:30").split("T")[0];
+                  const date = new Date(e.target.value);
+                  formik.setFieldValue("payment_date", e.target.value);
+                  formik.setFieldValue("month", date.getUTCMonth() + 1);
+                  formik.setFieldValue("year", date.getUTCFullYear());
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                defaultValue={() => {
+                  new Date().toISOString().replace("Z", "+5:30").split("T")[0];
+                }}
               />
               {formik.touched.payment_date && formik.errors.payment_date && (
                 <div className="text-red-500 text-sm mt-1">
@@ -356,6 +427,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 </div>
               )}
             </div>
+
+            {/* Payment Method */}
             <div>
               <label
                 htmlFor="payment_method"
@@ -370,12 +443,21 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                defaultValue="Cash"
               >
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>
                 <option value="Cheque">Cheque</option>
               </select>
+              {formik.touched.payment_method &&
+                formik.errors.payment_method && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.payment_method}
+                  </div>
+                )}
             </div>
+
+            {/* Approved */}
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -390,6 +472,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 Approved
               </label>
             </div>
+
+            {/* Buttons */}
             <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
               <button
                 type="submit"
@@ -400,7 +484,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
               <button
                 type="button"
                 className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
-                onClick={() => setToggleForm(null)}
+                onClick={() => setToggleForm(false)}
               >
                 Return to List
               </button>

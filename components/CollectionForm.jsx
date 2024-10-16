@@ -4,6 +4,8 @@ import * as Yup from "yup";
 import { supabase } from "@/supabaseClient";
 import { StudentList } from "./StudentList";
 import { BillingList } from "./BillingList";
+import { Toast } from "flowbite-react";
+import { HiCheck } from "react-icons/hi";
 
 const validationSchema = Yup.object({
   room_name: Yup.string().required("Room Name is required"),
@@ -16,6 +18,9 @@ const validationSchema = Yup.object({
   total_charges: Yup.number()
     .integer()
     .positive("Total charges must be greater than 0"),
+  total_amount: Yup.number()
+    .integer()
+    .positive("Total amount must be greater than 0"),
   year: Yup.number().required(),
   month: Yup.number().required(),
   payment_date: Yup.date().required("Payment Date is required"),
@@ -28,6 +33,8 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
   const [nextInvoiceKey, setNextInvoiceKey] = useState(null);
+  const [toggleToast, setToggleToast] = useState(false);
+  const [toastOpacity, setToastOpacity] = useState(0);
 
   useEffect(() => {
     const fetchPastCollections = async () => {
@@ -84,6 +91,7 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
       laundry_charge: 0,
       other_charge: 0,
       total_charges: 0,
+      total_amount: 0,
       year: new Date().getUTCFullYear(),
       month: new Date().getUTCMonth() + 1,
       payment_date: new Date()
@@ -95,17 +103,29 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
     },
     validationSchema,
     onSubmit: async (values) => {
+      delete values.total_amount
+      delete values.total_charges
       const response = await supabase
         .from("collection")
         .insert([values])
         .select();
 
+      const showToast = () => {
+        setToggleToast(true);
+        setTimeout(() => setToastOpacity(1), 10);
+
+        setTimeout(() => {
+          setToastOpacity(0);
+          setTimeout(() => setToggleToast(false), 300);
+          window.location.href = "/";
+        }, 2000);
+      };
+
       if (response.error) {
         console.error("Error inserting/updating data:", response.error);
-        alert("Error inserting/updating data");
       } else {
         formik.resetForm();
-        alert("Data inserted/updated successfully");
+        showToast();
       }
     },
   });
@@ -190,7 +210,18 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 id="security_deposit"
                 name="security_deposit"
                 value={formik.values.security_deposit}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 0;
+                  formik.setFieldValue("security_deposit", value);
+                  formik.setFieldValue(
+                    "total_amount",
+                    value +
+                      formik.values.laundry_charge +
+                      formik.values.other_charge +
+                      formik.values.monthly_rent +
+                      formik.values.security_deposit
+                  );
+                }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />
@@ -215,7 +246,18 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                 id="monthly_rent"
                 name="monthly_rent"
                 value={formik.values.monthly_rent}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 0;
+                  formik.setFieldValue("monthly_rent", value);
+                  formik.setFieldValue(
+                    "total_amount",
+                    value +
+                      formik.values.laundry_charge +
+                      formik.values.other_charge +
+                      formik.values.monthly_rent +
+                      formik.values.security_deposit
+                  );
+                }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />
@@ -247,6 +289,14 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                     value +
                       formik.values.laundry_charge +
                       formik.values.other_charge
+                  );
+                  formik.setFieldValue(
+                    "total_amount",
+                    value +
+                      formik.values.laundry_charge +
+                      formik.values.other_charge +
+                      formik.values.monthly_rent +
+                      formik.values.security_deposit
                   );
                 }}
                 onBlur={formik.handleBlur}
@@ -282,6 +332,14 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                       value +
                       formik.values.other_charge
                   );
+                  formik.setFieldValue(
+                    "total_amount",
+                    value +
+                      formik.values.laundry_charge +
+                      formik.values.other_charge +
+                      formik.values.monthly_rent +
+                      formik.values.security_deposit
+                  );
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
@@ -316,6 +374,14 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
                       formik.values.laundry_charge +
                       value
                   );
+                  formik.setFieldValue(
+                    "total_amount",
+                    value +
+                      formik.values.laundry_charge +
+                      formik.values.other_charge +
+                      formik.values.monthly_rent +
+                      formik.values.security_deposit
+                  );
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
@@ -348,6 +414,30 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
               {formik.touched.total_charges && formik.errors.total_charges && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.total_charges}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="total_amount"
+                className="block text-sm font-medium mb-1"
+              >
+                Total Amount:
+              </label>
+              <input
+                type="number"
+                id="total_amount"
+                name="total_amount"
+                value={formik.values.total_amount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly
+              />
+              {formik.touched.total_amount && formik.errors.total_amount && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.total_amount}
                 </div>
               )}
             </div>
@@ -495,6 +585,20 @@ const CollectionForm = ({ uid, returnToBill = true }) => {
         <BillingList />
       ) : (
         <StudentList />
+      )}
+      {toggleToast && (
+        <div
+          className="fixed bottom-28 right-4 z-50 transition-opacity duration-300 ease-in-out"
+          style={{ opacity: toastOpacity }}
+        >
+          <Toast className="flex items-center bg-white shadow-lg rounded-lg p-4">
+            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
+              <HiCheck className="h-5 w-5" />
+            </div>
+            <div className="ml-3 text-sm font-normal">Data Updated</div>
+            <Toast.Toggle />
+          </Toast>
+        </div>
       )}
     </div>
   );

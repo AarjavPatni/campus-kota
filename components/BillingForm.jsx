@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { supabase } from "@/supabaseClient";
-import { StudentList } from "./StudentList";
 import { BillingList } from "./BillingList";
+import { Toast } from "flowbite-react";
+import { HiCheck } from "react-icons/hi";
 
 const validationSchema = Yup.object({
   room_name: Yup.string().required("Room Name is required"),
@@ -21,6 +22,8 @@ const validationSchema = Yup.object({
 const BillingForm = ({ bill_key }) => {
   const [billingDetails, setBillingDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
+  const [toggleToast, setToggleToast] = useState(false);
+  const [toastOpacity, setToastOpacity] = useState(0);
 
   useEffect(() => {
     const fetchBillingData = async () => {
@@ -81,14 +84,25 @@ const BillingForm = ({ bill_key }) => {
         status = resp.status;
       }
 
+      const showToast = () => {
+        setToggleToast(true);
+        setTimeout(() => setToastOpacity(1), 10);
+
+        setTimeout(() => {
+          setToastOpacity(0);
+          setTimeout(() => setToggleToast(false), 300);
+          window.location.href = "/";
+        }, 2000);
+      };
+
       if (status === 201) {
         formik.resetForm();
         console.log("Data inserted successfully:", resp);
-        alert("Data inserted successfully");
+        showToast();
       } else if (status === 200) {
         formik.resetForm();
         console.log("Data updated successfully:", resp);
-        alert("Data updated successfully");
+        showToast();
       } else {
         console.error("Error inserting/updating data:", status);
         console.log(resp.error);
@@ -108,6 +122,35 @@ const BillingForm = ({ bill_key }) => {
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <h2 className="text-2xl font-bold mb-4">Billing Details Form</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="bill_date"
+                className="block text-sm font-medium mb-1"
+              >
+                Bill Date:
+              </label>
+              <input
+                type="date"
+                id="bill_date"
+                name="bill_date"
+                value={formik.values.bill_date}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  const selectedDate = new Date(e.target.value);
+                  console.log(selectedDate.getUTCDate());
+                  formik.setFieldValue("month", selectedDate.getUTCMonth() + 1);
+                  formik.setFieldValue("year", selectedDate.getUTCFullYear());
+                }}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={bill_key ? true : false}
+              />
+              {formik.touched.bill_date && formik.errors.bill_date && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.bill_date}
+                </div>
+              )}
+            </div>
             <div>
               <label
                 htmlFor="room_name"
@@ -263,34 +306,6 @@ const BillingForm = ({ bill_key }) => {
             </div>
             <div>
               <label
-                htmlFor="bill_date"
-                className="block text-sm font-medium mb-1"
-              >
-                Bill Date:
-              </label>
-              <input
-                type="date"
-                id="bill_date"
-                name="bill_date"
-                value={formik.values.bill_date}
-                onChange={(e) => {
-                  formik.handleChange(e);
-                  const selectedDate = new Date(e.target.value);
-                  console.log(selectedDate.getUTCDate());
-                  formik.setFieldValue("month", selectedDate.getUTCMonth() + 1);
-                  formik.setFieldValue("year", selectedDate.getUTCFullYear());
-                }}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.bill_date && formik.errors.bill_date && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.bill_date}
-                </div>
-              )}
-            </div>
-            <div>
-              <label
                 htmlFor="security_deposit"
                 className="block text-sm font-medium mb-1"
               >
@@ -347,6 +362,20 @@ const BillingForm = ({ bill_key }) => {
         </div>
       ) : (
         <BillingList />
+      )}
+      {toggleToast && (
+        <div
+          className="fixed bottom-28 right-4 z-50 transition-opacity duration-300 ease-in-out"
+          style={{ opacity: toastOpacity }}
+        >
+          <Toast className="flex items-center bg-white shadow-lg rounded-lg p-4">
+            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
+              <HiCheck className="h-5 w-5" />
+            </div>
+            <div className="ml-3 text-sm font-normal">Data Updated</div>
+            <Toast.Toggle />
+          </Toast>
+        </div>
       )}
     </div>
   );

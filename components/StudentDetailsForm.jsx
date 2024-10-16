@@ -5,7 +5,6 @@ import { supabase } from "@/supabaseClient";
 import { StudentList } from "./StudentList";
 import { Toast } from "flowbite-react";
 import { HiCheck } from "react-icons/hi";
-import { redirect } from "next/navigation";
 
 const validationSchema = Yup.object({
   room_number: Yup.number()

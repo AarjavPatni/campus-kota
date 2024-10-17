@@ -41,6 +41,8 @@ export const BillGenerator = () => {
                 room_name: student.room_name,
                 monthly_rent: student.monthly_rent,
                 security_deposit: student.security_deposit,
+                laundry_charge: student.laundry_charge,
+                other_charge: student.other_charge,
                 year: end.split("-")[0],
                 month: end.split("-")[1],
                 bill_date: new Date().toISOString().split("T")[0],
@@ -115,7 +117,7 @@ export const BillGenerator = () => {
           if (response.status === 204) {
             console.log("new_rent end_date updated", new_rent);
           } else {
-            console.error("Error updating end_data:", response.body);
+            console.error("Error updating end_date:", response.body);
           }
         }
 

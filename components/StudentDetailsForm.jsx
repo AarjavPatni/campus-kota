@@ -30,6 +30,8 @@ const validationSchema = Yup.object({
     .required("Monthly Rent is required")
     .integer()
     .positive(),
+  laundry_charge: Yup.number(),
+  other_charge: Yup.number(),
   start_date: Yup.date().required("Start Date is required"),
   end_date: Yup.date(),
   active: Yup.boolean(),
@@ -80,6 +82,8 @@ const StudentDetailsForm = ({ uid }) => {
       address: studentDetails?.address || "",
       security_deposit: studentDetails?.security_deposit || "",
       monthly_rent: studentDetails?.monthly_rent || "",
+      laundry_charge: studentDetails?.laundry_charge || 0,
+      other_charge: studentDetails?.other_charge || 0,
       start_date: studentDetails?.start_date || "",
       end_date: studentDetails?.end_date || "9999-12-31",
       active: studentDetails?.active || true,
@@ -105,6 +109,8 @@ const StudentDetailsForm = ({ uid }) => {
         address: capitalize(values.address),
         security_deposit: values.security_deposit,
         monthly_rent: values.monthly_rent,
+        laundry_charge: values.laundry_charge,
+        other_charge: values.other_charge,
         start_date: values.start_date,
         end_date: values.end_date,
         active: values.active,
@@ -479,6 +485,51 @@ const StudentDetailsForm = ({ uid }) => {
               {formik.touched.monthly_rent && formik.errors.monthly_rent && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.monthly_rent}
+                </div>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="laundry_charge"
+                className="block text-sm font-medium mb-1"
+              >
+                Laundry Charge:
+              </label>
+              <input
+                type="number"
+                id="laundry_charge"
+                name="laundry_charge"
+                value={formik.values.laundry_charge}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+              />
+              {formik.touched.laundry_charge &&
+                formik.errors.laundry_charge && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.laundry_charge}
+                  </div>
+                )}
+            </div>
+            <div>
+              <label
+                htmlFor="other_charge"
+                className="block text-sm font-medium mb-1"
+              >
+                Other Charges:
+              </label>
+              <input
+                type="number"
+                id="other_charge"
+                name="other_charge"
+                value={formik.values.other_charge}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+              />
+              {formik.touched.other_charge && formik.errors.other_charge && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.other_charge}
                 </div>
               )}
             </div>

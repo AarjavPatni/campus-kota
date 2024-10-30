@@ -28,7 +28,7 @@ const validationSchema = Yup.object({
   approved: Yup.boolean(),
 });
 
-const CollectionForm = ({ uid, returnToBill = true }) => {
+const CollectionForm = ({ uid, returnToBill = true, invoice_key = null }) => {
   const [collectionDetails, setCollectionDetails] = useState(null);
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);

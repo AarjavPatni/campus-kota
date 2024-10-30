@@ -59,7 +59,11 @@ export function CollectionList() {
   return (
     <div>
       {selectedInvoiceKey ? (
-        <CollectionForm invoice_key={selectedInvoiceKey} />
+        <CollectionForm
+          uid={selectedUID}
+          invoice_key={selectedInvoiceKey}
+          returnToBill={false}
+        />
       ) : selectedUID ? (
         <CollectionForm uid={selectedUID} invoice_key={selectedInvoiceKey} />
       ) : (
@@ -131,8 +135,8 @@ export function CollectionList() {
           <Table striped>
             <TableHead>
               <TableHeadCell>Room Name</TableHeadCell>
-              <TableHeadCell>Monthly Rent</TableHeadCell>
-              <TableHeadCell>Total Charges</TableHeadCell>
+              <TableHeadCell>Payment Date</TableHeadCell>
+              <TableHeadCell>Total Amount</TableHeadCell>
               <TableHeadCell>
                 <span className="sr-only">Edit</span>
               </TableHeadCell>
@@ -146,11 +150,9 @@ export function CollectionList() {
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                     {invoice.room_name}
                   </TableCell>
-                  <TableCell>{invoice.monthly_rent}</TableCell>
+                  <TableCell>{invoice.payment_date}</TableCell>
                   <TableCell>
-                    {parseInt(invoice.electricity_charge) +
-                      parseInt(invoice.laundry_charge) +
-                      parseInt(invoice.other_charge)}
+                    {invoice.total_amount}
                   </TableCell>
                   <TableCell>
                     <Link

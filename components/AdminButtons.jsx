@@ -12,8 +12,8 @@ const AdminButtons = () => {
       <Button href="/billingList" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">
         Billing List
       </Button>
-      <Button href="/collectionForm" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">
-        Collection Form
+      <Button href="/collectionList" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">
+        Collection List
       </Button>
     </div>
   );

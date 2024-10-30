@@ -15,7 +15,7 @@ export const BillGenerator = () => {
     .toISOString()
     .split("T")[0];
 
-  const firstDateOfLastMonth = new Date(
+  const firstDateOfPrevMonth = new Date(
     Date.UTC(new Date().getFullYear(), new Date().getMonth() - 1, 1)
   )
     .toISOString()
@@ -23,11 +23,21 @@ export const BillGenerator = () => {
 
   const generateBill = useCallback(() => {
     const fetchStudentDetails = async (start, end) => {
+      // Gets all students living during the month of start.
+      // Assumes that the minimum length of stay is 1 month.
       let { data: student_details, error } = await supabase
         .from("student_details")
         .select("*")
         .lt("start_date", start)
         .gte("end_date", end);
+
+      const startYear = start.split("-")[0];
+      const startMonth = start.split("-")[1];
+      const currYear = firstDateOfMonth.split("-")[0];
+      const currMonth = firstDateOfMonth.split("-")[1];
+
+      console.log(startYear === currYear && startMonth === currMonth);
+      console.log(startYear, startMonth, currYear, currMonth);
 
       if (error) {
         console.error("Error fetching student details:", error);
@@ -40,11 +50,14 @@ export const BillGenerator = () => {
                 uid: student.uid,
                 room_name: student.room_name,
                 monthly_rent: student.monthly_rent,
-                security_deposit: student.security_deposit,
+                security_deposit:
+                  startYear === currYear && startMonth === currMonth
+                    ? student.security_deposit
+                    : 0,
                 laundry_charge: student.laundry_charge,
                 other_charge: student.other_charge,
-                year: end.split("-")[0],
-                month: end.split("-")[1],
+                year: end.split("-")[0], // ! is this correct?
+                month: end.split("-")[1], // ! is this correct?
                 bill_date: new Date().toISOString().split("T")[0],
                 approved: student.approved,
               },
@@ -53,7 +66,7 @@ export const BillGenerator = () => {
 
           if (response.status === 201) {
             console.log("Data inserted successfully:", response.status);
-          } else if (response.statusText === "Conflict") {
+          } else if (response.status === 409) {
             console.log("Data already exists:", response.status);
           } else {
             console.error(response);
@@ -63,8 +76,8 @@ export const BillGenerator = () => {
     };
 
     fetchStudentDetails(firstDateOfNextMonth, firstDateOfMonth);
-    fetchStudentDetails(firstDateOfMonth, firstDateOfLastMonth);
-  }, [firstDateOfLastMonth, firstDateOfMonth, firstDateOfNextMonth]);
+    fetchStudentDetails(firstDateOfMonth, firstDateOfPrevMonth);
+  }, [firstDateOfPrevMonth, firstDateOfMonth, firstDateOfNextMonth]);
 
   const updateBill = useCallback(
     async (record_month, record_year) => {

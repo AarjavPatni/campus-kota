@@ -28,7 +28,11 @@ const validationSchema = Yup.object({
   approved: Yup.boolean(),
 });
 
-const CollectionForm = ({ uid, returnToBill = true, invoice_key = null }) => {
+const CollectionForm = ({
+  uid,
+  returnToBill = true,
+  invoice_key = undefined,
+}) => {
   const [collectionDetails, setCollectionDetails] = useState(null);
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
@@ -38,10 +42,19 @@ const CollectionForm = ({ uid, returnToBill = true, invoice_key = null }) => {
 
   useEffect(() => {
     const fetchPastCollections = async () => {
-      let { data: collection_data, error: collection_error } = await supabase
-        .from("collection")
-        .select("invoice_key")
-        .eq("uid", uid);
+      let collection_data;
+      let collection_error;
+      if (invoice_key === undefined) {
+        collection_data = await supabase
+          .from("collection")
+          .select("invoice_key")
+          .eq("uid", uid);
+      } else {
+        collection_data = await supabase
+          .from("collection")
+          .select("invoice_key")
+          .eq("invoice_key", invoice_key);
+      }
 
       let { data: student_details, error: student_error } = await supabase
         .from("student_details")
@@ -103,12 +116,25 @@ const CollectionForm = ({ uid, returnToBill = true, invoice_key = null }) => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      delete values.total_amount
-      delete values.total_charges
-      const response = await supabase
-        .from("collection")
-        .insert([values])
-        .select();
+      delete values.total_amount;
+      delete values.total_charges;
+      let resp, status;
+      if (invoice_key === undefined) {
+        const response = await supabase
+          .from("collection")
+          .insert([values])
+          .select();
+        resp = response;
+        status = resp.status;
+      } else {
+        const response = await supabase
+          .from("collection")
+          .update(values)
+          .eq("invoice_key", invoice_key)
+          .select();
+        resp = response;
+        status = resp.status;
+      }
 
       const showToast = () => {
         setToggleToast(true);
@@ -121,11 +147,17 @@ const CollectionForm = ({ uid, returnToBill = true, invoice_key = null }) => {
         }, 2000);
       };
 
-      if (response.error) {
-        console.error("Error inserting/updating data:", response.error);
-      } else {
+      if (status === 201) {
         formik.resetForm();
+        console.log("Data inserted successfully:", resp);
         showToast();
+      } else if (status === 200) {
+        formik.resetForm();
+        console.log("Data updated successfully:", resp);
+        showToast();
+      } else {
+        console.error("Error inserting/updating data:", status);
+        console.log(resp.error);
       }
     },
   });
@@ -564,21 +596,32 @@ const CollectionForm = ({ uid, returnToBill = true, invoice_key = null }) => {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-              <button
-                type="submit"
-                className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
-              >
-                Insert
-              </button>
-              <button
-                type="button"
-                className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
-                onClick={() => setToggleForm(false)}
-              >
-                Return to List
-              </button>
-            </div>
+            {invoice_key === undefined ? (
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                <button
+                  type="submit"
+                  className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
+                >
+                  Insert
+                </button>
+                <button
+                  type="button"
+                  className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
+                  onClick={() => setToggleForm(false)}
+                >
+                  Return to List
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                <button
+                  type="submit"
+                  className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
+                >
+                  Update
+                </button>
+              </div>
+            )}
           </form>
         </div>
       ) : returnToBill ? (

@@ -15,9 +15,6 @@ const validationSchema = Yup.object({
   electricity_charge: Yup.number().integer().default(0),
   laundry_charge: Yup.number().integer().default(0),
   other_charge: Yup.number().integer().default(0),
-  total_charges: Yup.number()
-    .integer()
-    .positive("Total charges must be greater than 0"),
   total_amount: Yup.number()
     .integer()
     .positive("Total amount must be greater than 0"),
@@ -103,7 +100,6 @@ const CollectionForm = ({
       electricity_charge: 0,
       laundry_charge: 0,
       other_charge: 0,
-      total_charges: 0,
       total_amount: 0,
       year: new Date().getUTCFullYear(),
       month: new Date().getUTCMonth() + 1,
@@ -117,9 +113,8 @@ const CollectionForm = ({
     validationSchema,
     onSubmit: async (values) => {
       delete values.total_amount;
-      delete values.total_charges;
       let resp, status;
-      if (invoice_key === undefined) {
+      if (!invoice_key) {
         const response = await supabase
           .from("collection")
           .insert([values])
@@ -127,6 +122,7 @@ const CollectionForm = ({
         resp = response;
         status = resp.status;
       } else {
+        console.log("updating...");
         const response = await supabase
           .from("collection")
           .update(values)
@@ -172,6 +168,17 @@ const CollectionForm = ({
       });
     }
   }, [collectionDetails, studentDetails, nextInvoiceKey]);
+
+  useEffect(() => {
+    formik.setFieldValue(
+      "total_amount",
+      formik.values.laundry_charge +
+        formik.values.other_charge +
+        formik.values.monthly_rent +
+        formik.values.electricity_charge +
+        formik.values.security_deposit
+    );
+  }, [formik.values]);
 
   return (
     <div>
@@ -245,14 +252,6 @@ const CollectionForm = ({
                 onChange={(e) => {
                   const value = parseInt(e.target.value) || 0;
                   formik.setFieldValue("security_deposit", value);
-                  formik.setFieldValue(
-                    "total_amount",
-                    value +
-                      formik.values.laundry_charge +
-                      formik.values.other_charge +
-                      formik.values.monthly_rent +
-                      formik.values.security_deposit
-                  );
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
@@ -281,14 +280,6 @@ const CollectionForm = ({
                 onChange={(e) => {
                   const value = parseInt(e.target.value) || 0;
                   formik.setFieldValue("monthly_rent", value);
-                  formik.setFieldValue(
-                    "total_amount",
-                    value +
-                      formik.values.laundry_charge +
-                      formik.values.other_charge +
-                      formik.values.monthly_rent +
-                      formik.values.security_deposit
-                  );
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
@@ -316,20 +307,6 @@ const CollectionForm = ({
                 onChange={(e) => {
                   const value = parseInt(e.target.value) || 0;
                   formik.setFieldValue("electricity_charge", value);
-                  formik.setFieldValue(
-                    "total_charges",
-                    value +
-                      formik.values.laundry_charge +
-                      formik.values.other_charge
-                  );
-                  formik.setFieldValue(
-                    "total_amount",
-                    value +
-                      formik.values.laundry_charge +
-                      formik.values.other_charge +
-                      formik.values.monthly_rent +
-                      formik.values.security_deposit
-                  );
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
@@ -358,20 +335,6 @@ const CollectionForm = ({
                 onChange={(e) => {
                   const value = parseInt(e.target.value) || 0;
                   formik.setFieldValue("laundry_charge", value);
-                  formik.setFieldValue(
-                    "total_charges",
-                    formik.values.electricity_charge +
-                      value +
-                      formik.values.other_charge
-                  );
-                  formik.setFieldValue(
-                    "total_amount",
-                    value +
-                      formik.values.laundry_charge +
-                      formik.values.other_charge +
-                      formik.values.monthly_rent +
-                      formik.values.security_deposit
-                  );
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
@@ -400,20 +363,6 @@ const CollectionForm = ({
                 onChange={(e) => {
                   const value = parseInt(e.target.value) || 0;
                   formik.setFieldValue("other_charge", value);
-                  formik.setFieldValue(
-                    "total_charges",
-                    formik.values.electricity_charge +
-                      formik.values.laundry_charge +
-                      value
-                  );
-                  formik.setFieldValue(
-                    "total_amount",
-                    value +
-                      formik.values.laundry_charge +
-                      formik.values.other_charge +
-                      formik.values.monthly_rent +
-                      formik.values.security_deposit
-                  );
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
@@ -421,31 +370,6 @@ const CollectionForm = ({
               {formik.touched.other_charge && formik.errors.other_charge && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.other_charge}
-                </div>
-              )}
-            </div>
-
-            {/* Total Charges */}
-            <div>
-              <label
-                htmlFor="total_charges"
-                className="block text-sm font-medium mb-1"
-              >
-                Total Charges:
-              </label>
-              <input
-                type="number"
-                id="total_charges"
-                name="total_charges"
-                value={formik.values.total_charges}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly
-              />
-              {formik.touched.total_charges && formik.errors.total_charges && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.total_charges}
                 </div>
               )}
             </div>

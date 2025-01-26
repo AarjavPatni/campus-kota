@@ -123,17 +123,6 @@ export function BillingList() {
                     >
                       Edit
                     </Link>
-                    <br />
-                    <Link
-                      href="#"
-                      onClick={() => {
-                        console.log(bill.uid);
-                        setSelectedUID(bill.uid);
-                      }}
-                      className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                    >
-                      Collect
-                    </Link>
                   </TableCell>
                 </TableRow>
               ))}

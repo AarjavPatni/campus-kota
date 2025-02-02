@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { supabase } from "@/supabaseClient";
 import { StudentList } from "./StudentList";
 import { Toast } from "flowbite-react";
-import { HiCheck } from "react-icons/hi";
+import { HiCheck, HiX } from "react-icons/hi";
 
 const validationSchema = Yup.object({
   room_number: Yup.number()
@@ -42,7 +42,9 @@ const StudentDetailsForm = ({ uid }) => {
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
   const [toggleToast, setToggleToast] = useState(false);
-  const [toastOpacity, setToastOpacity] = useState(0);
+  const [toastOpacity, setToastOpacity] = useState(1);
+  const [sendEmailFlag, setSendEmailFlag] = useState(false);
+  const [toastMessage, setToastMessage] = useState({ text: "", type: "" });
 
   console.log("uid", uid);
 
@@ -91,79 +93,79 @@ const StudentDetailsForm = ({ uid }) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      // Capitalize all fields except remarks
-      const capitalize = (str) =>
-        str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-      const capitalizedValues = {
-        room_number: values.room_number,
-        first_name: capitalize(values.first_name),
-        last_name: capitalize(values.last_name),
-        father_name: capitalize(values.father_name),
-        course: values.course.toUpperCase(),
-        institute: capitalize(values.institute),
-        student_mobile: values.student_mobile,
-        email: values.email,
-        parent_mobile: values.parent_mobile,
-        guardian_mobile: values.guardian_mobile,
-        remarks: values.remarks,
-        address: capitalize(values.address),
-        security_deposit: values.security_deposit,
-        monthly_rent: values.monthly_rent,
-        laundry_charge: values.laundry_charge,
-        other_charge: values.other_charge,
-        start_date: values.start_date,
-        end_date: values.end_date,
-        active: values.active,
-        approved: values.approved,
-      };
+      try {
+        // Capitalize all fields except remarks
+        const capitalize = (str) =>
+          str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        const capitalizedValues = {
+          room_number: values.room_number,
+          first_name: capitalize(values.first_name),
+          last_name: capitalize(values.last_name),
+          father_name: capitalize(values.father_name),
+          course: values.course.toUpperCase(),
+          institute: capitalize(values.institute),
+          student_mobile: values.student_mobile,
+          email: values.email,
+          parent_mobile: values.parent_mobile,
+          guardian_mobile: values.guardian_mobile,
+          remarks: values.remarks,
+          address: capitalize(values.address),
+          security_deposit: values.security_deposit,
+          monthly_rent: values.monthly_rent,
+          laundry_charge: values.laundry_charge,
+          other_charge: values.other_charge,
+          start_date: values.start_date,
+          end_date: values.end_date,
+          active: values.active,
+          approved: values.approved,
+        };
 
-      if (capitalizedValues.end_date === "") {
-        capitalizedValues.end_date = "9999-12-31";
-      }
-      console.log(capitalizedValues);
-      let resp, status;
+        if (capitalizedValues.end_date === "") {
+          capitalizedValues.end_date = "9999-12-31";
+        }
+        console.log(capitalizedValues);
 
-      if (uid) {
-        const response = await supabase
-          .from("student_details")
-          .update([capitalizedValues])
-          .eq("uid", uid)
-          .select();
+        // Single database operation
+        const { data, error, status } = uid
+          ? await supabase.from("student_details").update(values).eq("uid", uid)
+          : await supabase.from("student_details").insert([values]);
 
-        resp = response;
-        status = resp.status;
-      } else {
-        const response = await supabase
-          .from("student_details")
-          .insert([capitalizedValues])
-          .select();
+        if (error) throw error;
 
-        resp = response;
-        status = resp.status;
-      }
+        if (sendEmailFlag) {
+          try {
+            await sendEmail(values);
+            setToastMessage({
+              text: "Data Updated and Email Sent Successfully!",
+              type: "success",
+            });
+          } catch (emailError) {
+            setToastMessage({
+              text: "Data Updated But Email Failed - Check Logs",
+              type: "error",
+            });
+            console.error("Email Error:", emailError);
+          }
+          setSendEmailFlag(false); // Reset flag after processing
+        } else {
+          setToastMessage({
+            text: "Data Updated Successfully!",
+            type: "success",
+          });
+        }
 
-      const showToast = () => {
+        formik.resetForm();
         setToggleToast(true);
-        setTimeout(() => setToastOpacity(1), 10);
-
-        setTimeout(() => {
-          setToastOpacity(0);
-          setTimeout(() => setToggleToast(false), 300);
-          window.location.href = "/";
-        }, 2000);
-      };
-
-      if (status === 201) {
-        formik.resetForm();
-        console.log("Data inserted successfully:", resp);
-        showToast();
-      } else if (status === 200) {
-        formik.resetForm();
-        console.log("Data updated successfully:", resp);
-        showToast();
-      } else {
-        console.error("Error inserting data:", status);
-        console.log(resp.error);
+        setToastOpacity(1);
+        setTimeout(() => (window.location.href = "/"), 2000);
+      } catch (dbError) {
+        setToastMessage({
+          text: "Update Failed - Check Logs",
+          type: "error",
+        });
+        setToggleToast(true);
+        setToastOpacity(1);
+        console.error("Database Error:", dbError);
       }
     },
   });
@@ -174,12 +176,35 @@ const StudentDetailsForm = ({ uid }) => {
     }
   }, [studentDetails]);
 
+  const handleSubmitAndEmail = (e) => {
+    e.preventDefault();
+    setSendEmailFlag(true);
+    formik.handleSubmit();
+  };
+
+  const sendEmail = async (values) => {
+    const response = await fetch("/api/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: values.email,
+        firstName: values.first_name,
+        ...values,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Email failed with status: " + response.status);
+    }
+    return response;
+  };
+
   return (
     <div>
       {toggleForm ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <h2 className="text-2xl font-bold mb-4">Student Details Form</h2>
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmitAndEmail} className="space-y-4">
             <div>
               <label
                 htmlFor="room_number"
@@ -622,12 +647,21 @@ const StudentDetailsForm = ({ uid }) => {
                 </button>
               </div>
             )) || (
-              <button
-                type="submit"
-                className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
-              >
-                Submit
-              </button>
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                <button
+                  type="button"
+                  onClick={handleSubmitAndEmail}
+                  className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
+                >
+                  Submit and Email
+                </button>
+                <button
+                  type="submit"
+                  className="w-full bg-gray-800 text-white p-2 rounded hover:bg-gray-700 transition"
+                >
+                  Submit
+                </button>
+              </div>
             )}
           </form>
         </div>
@@ -640,10 +674,20 @@ const StudentDetailsForm = ({ uid }) => {
           style={{ opacity: toastOpacity }}
         >
           <Toast className="flex items-center bg-white shadow-lg rounded-lg p-4">
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
-              <HiCheck className="h-5 w-5" />
+            <div
+              className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                toastMessage.type === "success"
+                  ? "bg-green-100 text-green-500"
+                  : "bg-red-100 text-red-500"
+              }`}
+            >
+              {toastMessage.type === "success" ? (
+                <HiCheck className="h-5 w-5" />
+              ) : (
+                <HiX className="h-5 w-5" />
+              )}
             </div>
-            <div className="ml-3 text-sm font-normal">Data Updated</div>
+            <div className="ml-3 text-sm font-normal">{toastMessage.text}</div>
             <Toast.Toggle />
           </Toast>
         </div>

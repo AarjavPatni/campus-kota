@@ -160,11 +160,12 @@ const StudentDetailsForm = ({ uid }) => {
         setTimeout(() => (window.location.href = "/"), 2000);
       } catch (dbError) {
         setToastMessage({
-          text: "Update Failed - Check Logs",
+          text: `Update Failed - Error: ${dbError.message}`,
           type: "error",
         });
-        setToggleToast(true);
         setToastOpacity(1);
+        setToggleToast(false);
+        setTimeout(() => setToggleToast(true), 100);
         console.error("Database Error:", dbError);
       }
     },
@@ -660,7 +661,8 @@ const StudentDetailsForm = ({ uid }) => {
                   Save and Email
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={formik.handleSubmit}
                   className="w-full bg-gray-800 text-white p-2 rounded hover:bg-gray-700 transition"
                 >
                   Save

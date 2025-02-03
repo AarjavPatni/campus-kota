@@ -483,7 +483,9 @@ const StudentDetailsForm = ({ uid }) => {
                 value={formik.values.monthly_rent}
                 onChange={(e) => {
                   formik.handleChange(e);
-                  formik.setFieldValue('security_deposit', e.target.value);
+                  if (!uid) {
+                    formik.setFieldValue('security_deposit', e.target.value);
+                  }
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
@@ -509,7 +511,7 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly
+                readOnly={!uid}
               />
               {formik.touched.security_deposit &&
                 formik.errors.security_deposit && (

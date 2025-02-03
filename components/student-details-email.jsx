@@ -105,18 +105,6 @@ export const EmailTemplate = ({ firstName, ...formDetails }) => (
                 })}
               </td>
             </tr>
-            {formDetails.end_date && (
-              <tr style={{ borderBottom: '1px solid #1f2937' }}>
-                <td style={{ padding: '12px 0', fontWeight: '600' }}>Move-out Date</td>
-                <td style={{ padding: '12px 0' }}>
-                  {new Date(formDetails.end_date).toLocaleDateString('en-IN', { 
-                    day: 'numeric', 
-                    month: 'long', 
-                    year: 'numeric' 
-                  })}
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>

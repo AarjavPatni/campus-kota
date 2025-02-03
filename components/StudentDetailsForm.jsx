@@ -70,26 +70,26 @@ const StudentDetailsForm = ({ uid }) => {
   const formik = useFormik({
     initialValues: {
       ...studentDetails,
-      room_number: studentDetails?.room_number || "",
-      first_name: studentDetails?.first_name || "",
-      last_name: studentDetails?.last_name || "",
-      father_name: studentDetails?.father_name || "",
-      course: studentDetails?.course || "",
-      institute: studentDetails?.institute || "",
-      student_mobile: studentDetails?.student_mobile || "",
-      email: studentDetails?.email || "",
-      parent_mobile: studentDetails?.parent_mobile || "",
-      guardian_mobile: studentDetails?.guardian_mobile || "",
-      remarks: studentDetails?.remarks || "",
-      address: studentDetails?.address || "",
-      security_deposit: studentDetails?.security_deposit || "",
-      monthly_rent: studentDetails?.monthly_rent || "",
-      laundry_charge: studentDetails?.laundry_charge || 0,
-      other_charge: studentDetails?.other_charge || 0,
-      start_date: studentDetails?.start_date || "",
-      end_date: studentDetails?.end_date || "9999-12-31",
-      active: studentDetails?.active || true,
-      approved: studentDetails?.approved || false,
+      room_number: "110",
+      first_name: "John",
+      last_name: "Doe",
+      father_name: "Jane Doe",
+      course: "Computer Science",
+      institute: "University of Technology",
+      student_mobile: "1234567890",
+      email: "john.doe12@example.com",
+      parent_mobile: "0987654321",
+      guardian_mobile: "555-555-5555",
+      remarks: "Excellent student",
+      address: "123 Main St, Anytown, USA",
+      security_deposit: 1000,
+      monthly_rent: 1500,
+      laundry_charge: 50,
+      other_charge: 100,
+      start_date: "2022-01-01",
+      end_date: "2023-12-31",
+      active: true,
+      approved: true,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -125,10 +125,22 @@ const StudentDetailsForm = ({ uid }) => {
         }
         console.log(capitalizedValues);
 
+        // For updates, exclude room_name; for inserts, include it
+        const updateValues = uid
+          ? Object.keys(capitalizedValues).reduce((acc, key) => {
+              if (key !== 'room_name') {
+                acc[key] = capitalizedValues[key];
+              }
+              return acc;
+            }, {})
+          : capitalizedValues;
+
         // Single database operation
         const { data, error, status } = uid
-          ? await supabase.from("student_details").update(values).eq("uid", uid)
-          : await supabase.from("student_details").insert([values]);
+          ? await supabase.from("student_details").update(updateValues).eq("uid", uid)
+          : await supabase.from("student_details").insert([updateValues]);
+        
+        console.log(sendEmailFlag);
 
         if (error) throw error;
 
@@ -205,7 +217,7 @@ const StudentDetailsForm = ({ uid }) => {
       {toggleForm ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <h2 className="text-2xl font-bold mb-4">Student Details Form</h2>
-          <form onSubmit={handleSaveAndEmail} className="space-y-4">
+          <form onSubmit={uid ? formik.handleSubmit : handleSaveAndEmail} className="space-y-4">
             <div>
               <label
                 htmlFor="room_number"
@@ -656,8 +668,7 @@ const StudentDetailsForm = ({ uid }) => {
             )) || (
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                 <button
-                  type="button"
-                  onClick={handleSaveAndEmail}
+                  type="submit"
                   className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
                 >
                   Save and Email

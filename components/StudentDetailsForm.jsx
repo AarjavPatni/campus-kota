@@ -470,6 +470,31 @@ const StudentDetailsForm = ({ uid }) => {
             </div>
             <div>
               <label
+                htmlFor="monthly_rent"
+                className="block text-sm font-medium mb-1"
+              >
+                Monthly Rent:
+              </label>
+              <input
+                type="number"
+                id="monthly_rent"
+                name="monthly_rent"
+                value={formik.values.monthly_rent}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  formik.setFieldValue('security_deposit', e.target.value);
+                }}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+              />
+              {formik.touched.monthly_rent && formik.errors.monthly_rent && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.monthly_rent}
+                </div>
+              )}
+            </div>
+            <div>
+              <label
                 htmlFor="security_deposit"
                 className="block text-sm font-medium mb-1"
               >
@@ -483,6 +508,7 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly
               />
               {formik.touched.security_deposit &&
                 formik.errors.security_deposit && (
@@ -490,28 +516,6 @@ const StudentDetailsForm = ({ uid }) => {
                     {formik.errors.security_deposit}
                   </div>
                 )}
-            </div>
-            <div>
-              <label
-                htmlFor="monthly_rent"
-                className="block text-sm font-medium mb-1"
-              >
-                Monthly Rent:
-              </label>
-              <input
-                type="number"
-                id="monthly_rent"
-                name="monthly_rent"
-                value={formik.values.monthly_rent}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.monthly_rent && formik.errors.monthly_rent && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.monthly_rent}
-                </div>
-              )}
             </div>
             <div>
               <label

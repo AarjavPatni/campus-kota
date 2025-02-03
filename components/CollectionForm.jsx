@@ -97,8 +97,8 @@ const CollectionForm = ({
       receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
       invoice_key: nextInvoiceKey || "",
       room_name: studentDetails?.room_name || "",
-      security_deposit: 0,
       monthly_rent: 0,
+      security_deposit: 0,
       electricity_charge: 0,
       laundry_charge: 0,
       other_charge: 0,
@@ -163,12 +163,14 @@ const CollectionForm = ({
 
   useEffect(() => {
     if (collectionDetails || studentDetails) {
+      const { security_deposit, ...restCollection } = collectionDetails || {};
+      const { security_deposit: studentSecurity, ...restStudent } = studentDetails || {};
       formik.setValues({
         ...formik.values,
-        ...collectionDetails,
-        ...studentDetails,
+        ...restCollection,
+        ...restStudent,
         invoice_key: nextInvoiceKey,
-        receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`
+        receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
       });
     }
   }, [collectionDetails, studentDetails, nextInvoiceKey]);

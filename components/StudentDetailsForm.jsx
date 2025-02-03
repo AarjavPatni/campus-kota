@@ -493,14 +493,10 @@ const StudentDetailsForm = ({ uid }) => {
                 id="monthly_rent"
                 name="monthly_rent"
                 value={formik.values.monthly_rent}
-                onChange={(e) => {
-                  formik.handleChange(e);
-                  if (!uid) {
-                    formik.setFieldValue('security_deposit', e.target.value);
-                  }
-                }}
+                onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={uid && formik.values.approved}
               />
               {formik.touched.monthly_rent && formik.errors.monthly_rent && (
                 <div className="text-red-500 text-sm mt-1">
@@ -523,7 +519,7 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={!uid}
+                readOnly={uid && formik.values.approved}
               />
               {formik.touched.security_deposit &&
                 formik.errors.security_deposit && (
@@ -547,6 +543,7 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={uid && formik.values.approved}
               />
               {formik.touched.laundry_charge &&
                 formik.errors.laundry_charge && (
@@ -570,6 +567,7 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={uid && formik.values.approved}
               />
               {formik.touched.other_charge && formik.errors.other_charge && (
                 <div className="text-red-500 text-sm mt-1">
@@ -592,6 +590,7 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={uid && formik.values.approved}
               />
               {formik.touched.start_date && formik.errors.start_date && (
                 <div className="text-red-500 text-sm mt-1">

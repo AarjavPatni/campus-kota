@@ -71,6 +71,34 @@ const StudentDetailsForm = ({ uid }) => {
     }
   }, [uid]);
 
+  const getChanges = (oldData, newData) => {
+    const changes = {};
+    Object.keys(newData).forEach(key => {
+      if (oldData[key] !== newData[key]) {
+        changes[key] = {
+          old: oldData[key],
+          new: newData[key]
+        };
+      }
+    });
+    return changes;
+  };
+
+  const sendInfoEmail = async (changes, values) => {
+    const response = await fetch("/api/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: "info@campuskota.in",
+        subject: "Student Record Update",
+        changes: changes,
+        student: values
+      }),
+    });
+    if (!response.ok) throw new Error("Info email failed");
+    return response;
+  };
+
   const formik = useFormik({
     initialValues: {
       ...studentDetails,
@@ -155,35 +183,50 @@ const StudentDetailsForm = ({ uid }) => {
 
         if (error) throw error;
 
+        let allEmailsSuccessful = true;
+
+        // Info email for updates
+        if (uid) {
+          const changes = getChanges(studentDetails, capitalizedValues);
+          if (Object.keys(changes).length > 0) {
+            try {
+              await sendInfoEmail(changes, capitalizedValues);
+            } catch (infoError) {
+              allEmailsSuccessful = false;
+              console.error("Info email error:", infoError);
+            }
+          }
+        }
+
+        // Student email if flag set
         if (sendEmailFlag) {
           try {
             await sendEmail(values);
-            setToastMessage({
-              text: "Data Updated and Email Sent Successfully!",
-              type: "success",
-            });
           } catch (emailError) {
-            setToastMessage({
-              text: "Data Updated But Email Failed - Check Logs",
-              type: "error",
-            });
+            allEmailsSuccessful = false;
             console.error("Email Error:", emailError);
           }
-          setSendEmailFlag(false); // Reset flag after processing
-        } else {
-          setToastMessage({
-            text: "Data Updated Successfully!",
-            type: "success",
-          });
+          setSendEmailFlag(false);
         }
+
+        // Set success message based on email status
+        setToastMessage({
+          text: allEmailsSuccessful 
+            ? "Data Updated!" 
+            : "Database updated but email failed – check logs",
+          type: allEmailsSuccessful ? "success" : "error"
+        });
 
         formik.resetForm();
         setToggleToast(true);
         setToastOpacity(1);
-        setTimeout(() => (window.location.href = "/"), 2000);
+        
+        if (allEmailsSuccessful) {
+          setTimeout(() => (window.location.href = "/"), 2000);
+        }
       } catch (dbError) {
         setToastMessage({
-          text: `Update Failed - Error: ${dbError.message}`,
+          text: `Update failed – error: ${dbError.message}`,
           type: "error",
         });
         setToastOpacity(1);

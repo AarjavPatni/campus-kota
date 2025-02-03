@@ -411,8 +411,8 @@ const CollectionForm = ({
               )}
             </div>
 
-            {/* Year */}
-            <div>
+            {/* Year - Hidden */}
+            <div className="hidden">
               <label htmlFor="year" className="block text-sm font-medium mb-1">
                 Year:
               </label>
@@ -433,8 +433,8 @@ const CollectionForm = ({
               )}
             </div>
 
-            {/* Month */}
-            <div>
+            {/* Month - Hidden */}
+            <div className="hidden">
               <label htmlFor="month" className="block text-sm font-medium mb-1">
                 Month:
               </label>
@@ -453,6 +453,24 @@ const CollectionForm = ({
                   {formik.errors.month}
                 </div>
               )}
+            </div>
+
+            {/* Approved - Hidden */}
+            <div className="hidden">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="approved"
+                  name="approved"
+                  checked={formik.values.approved}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="mr-2"
+                />
+                <label htmlFor="approved" className="text-sm font-medium">
+                  Approved
+                </label>
+              </div>
             </div>
 
             {/* Payment Method */}
@@ -484,22 +502,6 @@ const CollectionForm = ({
                 )}
             </div>
 
-            {/* Approved */}
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="approved"
-                name="approved"
-                checked={formik.values.approved}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="mr-2"
-              />
-              <label htmlFor="approved" className="text-sm font-medium">
-                Approved
-              </label>
-            </div>
-
             {/* Buttons */}
             {invoice_key === undefined ? (
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
@@ -507,7 +509,7 @@ const CollectionForm = ({
                   type="submit"
                   className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
                 >
-                  Insert
+                  Submit
                 </button>
                 <button
                   type="button"

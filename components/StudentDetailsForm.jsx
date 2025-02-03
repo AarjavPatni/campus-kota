@@ -7,6 +7,10 @@ import { Toast } from "flowbite-react";
 import { HiCheck, HiX } from "react-icons/hi";
 
 const validationSchema = Yup.object({
+  original_room: Yup.number()
+    .required("Room Number is required")
+    .integer()
+    .positive(),
   room_number: Yup.number()
     .required("Room Number is required")
     .integer()
@@ -70,6 +74,7 @@ const StudentDetailsForm = ({ uid }) => {
   const formik = useFormik({
     initialValues: {
       ...studentDetails,
+      original_room: "110",
       room_number: "110",
       first_name: "John",
       last_name: "Doe",
@@ -98,6 +103,7 @@ const StudentDetailsForm = ({ uid }) => {
         const capitalize = (str) =>
           str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
         const capitalizedValues = {
+          original_room: values.original_room,
           room_number: values.room_number,
           first_name: capitalize(values.first_name),
           last_name: capitalize(values.last_name),
@@ -120,6 +126,11 @@ const StudentDetailsForm = ({ uid }) => {
           approved: values.approved,
         };
 
+        // For new entries, set both fields to the same value
+        if (!uid) {
+          capitalizedValues.original_room = values.room_number;
+        }
+
         if (capitalizedValues.end_date === "") {
           capitalizedValues.end_date = "9999-12-31";
         }
@@ -128,7 +139,7 @@ const StudentDetailsForm = ({ uid }) => {
         // For updates, exclude room_name; for inserts, include it
         const updateValues = uid
           ? Object.keys(capitalizedValues).reduce((acc, key) => {
-              if (key !== 'room_name') {
+              if (key !== 'room_name' && key !== 'original_room') {
                 acc[key] = capitalizedValues[key];
               }
               return acc;
@@ -218,29 +229,65 @@ const StudentDetailsForm = ({ uid }) => {
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <h2 className="text-2xl font-bold mb-4">Student Details Form</h2>
           <form onSubmit={uid ? formik.handleSubmit : handleSaveAndEmail} className="space-y-4">
-            <div>
-              <label
-                htmlFor="room_number"
-                className="block text-sm font-medium mb-1"
-              >
-                Room Number:
-              </label>
-              <input
-                type="number"
-                id="room_number"
-                name="room_number"
-                value={formik.values.room_number}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={uid ? true : false}
-              />
-              {formik.touched.room_number && formik.errors.room_number && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.room_number}
+            {!uid ? (
+              <div>
+                <label htmlFor="room_number" className="block text-sm font-medium mb-1">
+                  Room Number:
+                </label>
+                <input
+                  type="number"
+                  id="room_number"
+                  name="room_number"
+                  value={formik.values.room_number}
+                  onChange={(e) => {
+                    formik.setFieldValue('original_room', e.target.value);
+                    formik.setFieldValue('room_number', e.target.value);
+                  }}
+                  onBlur={formik.handleBlur}
+                  className="w-full p-2 bg-gray-800 text-white rounded"
+                />
+                {formik.touched.room_number && formik.errors.room_number && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.room_number}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <div>
+                  <label htmlFor="original_room" className="block text-sm font-medium mb-1">
+                    Original Room Number:
+                  </label>
+                  <input
+                    type="number"
+                    id="original_room"
+                    name="original_room"
+                    value={formik.values.original_room}
+                    readOnly
+                    className="w-full p-2 bg-gray-800 text-white rounded opacity-75 cursor-not-allowed"
+                  />
                 </div>
-              )}
-            </div>
+                <div>
+                  <label htmlFor="room_number" className="block text-sm font-medium mb-1">
+                    Current Room Number:
+                  </label>
+                  <input
+                    type="number"
+                    id="room_number"
+                    name="room_number"
+                    value={formik.values.room_number}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className="w-full p-2 bg-gray-800 text-white rounded"
+                  />
+                  {formik.touched.room_number && formik.errors.room_number && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.room_number}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
             <div>
               <label
                 htmlFor="first_name"

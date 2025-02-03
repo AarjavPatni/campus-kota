@@ -102,27 +102,27 @@ const StudentDetailsForm = ({ uid }) => {
   const formik = useFormik({
     initialValues: {
       ...studentDetails,
-      original_room: studentDetails?.original_room || "",
-      room_number: studentDetails?.room_number || "",
-      first_name: studentDetails?.first_name || "",
-      last_name: studentDetails?.last_name || "",
-      father_name: studentDetails?.father_name || "",
-      course: studentDetails?.course || "",
-      institute: studentDetails?.institute || "",
-      student_mobile: studentDetails?.student_mobile || "",
-      email: studentDetails?.email || "",
-      parent_mobile: studentDetails?.parent_mobile || "",
-      guardian_mobile: studentDetails?.guardian_mobile || "",
-      remarks: studentDetails?.remarks || "",
-      address: studentDetails?.address || "",
-      security_deposit: studentDetails?.security_deposit || 0,
-      monthly_rent: studentDetails?.monthly_rent || 0,
-      laundry_charge: studentDetails?.laundry_charge || 0,
-      other_charge: studentDetails?.other_charge || 0,
-      start_date: studentDetails?.start_date || "",
-      end_date: studentDetails?.end_date || "",
-      active: studentDetails?.active || false,
-      approved: studentDetails?.approved || false,
+      original_room: 70,
+      room_number: 70,
+      first_name: "Test First Name",
+      last_name: "Test Last Name",
+      father_name: "Test Father Name",
+      course: "Test Course",
+      institute: "Test Institute",
+      student_mobile: "1234567890",
+      email: "ap.aarjavpatni@gmail.com",
+      parent_mobile: "0987654321",
+      guardian_mobile: "1112223333",
+      remarks: "Test Remarks",
+      address: "Test Address",
+      security_deposit: 5000,
+      monthly_rent: 5000,
+      laundry_charge: 500,
+      other_charge: 1000,
+      start_date: "2022-01-01",
+      end_date: "2023-12-31",
+      active: true,
+      approved: true,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -260,6 +260,13 @@ const StudentDetailsForm = ({ uid }) => {
       throw new Error("Email failed with status: " + response.status);
     }
     return response;
+  };
+
+  const handleMonthlyRentChange = (e) => {
+    formik.handleChange(e);
+    if (!uid) {
+      formik.setFieldValue('security_deposit', e.target.value);
+    }
   };
 
   useEffect(() => {
@@ -591,7 +598,7 @@ const StudentDetailsForm = ({ uid }) => {
                 id="monthly_rent"
                 name="monthly_rent"
                 value={formik.values.monthly_rent}
-                onChange={formik.handleChange}
+                onChange={handleMonthlyRentChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
                   uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
@@ -615,13 +622,13 @@ const StudentDetailsForm = ({ uid }) => {
                 type="number"
                 id="security_deposit"
                 name="security_deposit"
-                value={formik.values.security_deposit}
-                onChange={formik.handleChange}
+                value={uid ? formik.values.security_deposit : formik.values.monthly_rent}
+                onChange={uid ? formik.handleChange : undefined}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                  !uid || (uid && formik.values.approved) ? "opacity-75 cursor-not-allowed" : ""
                 }`}
-                readOnly={uid && formik.values.approved}
+                readOnly={!uid || (uid && formik.values.approved)}
               />
               {formik.touched.security_deposit &&
                 formik.errors.security_deposit && (

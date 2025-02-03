@@ -121,6 +121,7 @@ export const EmailTemplate = ({ firstName, ...formDetails }) => (
         lineHeight: '1.5'
       }}>
         <strong>Please note:</strong> This is an auto-generated email. 
+        Accommodation is confirmed subject to required payment of security deposit. 
         For any inquiries, please use the contact information below. 
         Please do not reply directly to this message.
       </div>
@@ -142,10 +143,8 @@ export const EmailTemplate = ({ firstName, ...formDetails }) => (
       </p>
       <p style={{ margin: '0 0 12px 0' }}>
         +91 94133 44653<br/>
+        +91 86904 61983<br/>
         contact@campuskota.in
-      </p>
-      <p style={{ margin: 0, fontWeight: '500', color: '#3b82f6' }}>
-        <a href="https://campuskota.in" style={{ textDecoration: 'none', color: '#3b82f6' }}>campuskota.in</a>
       </p>
     </div>
   </div>

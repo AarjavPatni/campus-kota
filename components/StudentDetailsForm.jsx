@@ -176,7 +176,7 @@ const StudentDetailsForm = ({ uid }) => {
     }
   }, [studentDetails]);
 
-  const handleSubmitAndEmail = (e) => {
+  const handleSaveAndEmail = (e) => {
     e.preventDefault();
     setSendEmailFlag(true);
     formik.handleSubmit();
@@ -204,7 +204,7 @@ const StudentDetailsForm = ({ uid }) => {
       {toggleForm ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <h2 className="text-2xl font-bold mb-4">Student Details Form</h2>
-          <form onSubmit={handleSubmitAndEmail} className="space-y-4">
+          <form onSubmit={handleSaveAndEmail} className="space-y-4">
             <div>
               <label
                 htmlFor="room_number"
@@ -650,16 +650,16 @@ const StudentDetailsForm = ({ uid }) => {
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                 <button
                   type="button"
-                  onClick={handleSubmitAndEmail}
+                  onClick={handleSaveAndEmail}
                   className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
                 >
-                  Submit and Email
+                  Save and Email
                 </button>
                 <button
                   type="submit"
                   className="w-full bg-gray-800 text-white p-2 rounded hover:bg-gray-700 transition"
                 >
-                  Submit
+                  Save
                 </button>
               </div>
             )}

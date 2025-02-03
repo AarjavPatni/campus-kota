@@ -23,6 +23,7 @@ const validationSchema = Yup.object({
   payment_date: Yup.date().required("Payment Date is required"),
   payment_method: Yup.string().required("Payment Method is required"),
   approved: Yup.boolean(),
+  receipt_no: Yup.string().required("Receipt No is required"),
 });
 
 const CollectionForm = ({
@@ -93,6 +94,7 @@ const CollectionForm = ({
 
   const formik = useFormik({
     initialValues: {
+      receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
       invoice_key: nextInvoiceKey || "",
       room_name: studentDetails?.room_name || "",
       security_deposit: 0,
@@ -113,6 +115,7 @@ const CollectionForm = ({
     validationSchema,
     onSubmit: async (values) => {
       delete values.total_amount;
+      delete values.receipt_no;
       let resp, status;
       if (!invoice_key) {
         const response = await supabase
@@ -165,6 +168,7 @@ const CollectionForm = ({
         ...collectionDetails,
         ...studentDetails,
         invoice_key: nextInvoiceKey,
+        receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`
       });
     }
   }, [collectionDetails, studentDetails, nextInvoiceKey]);
@@ -184,54 +188,88 @@ const CollectionForm = ({
     <div>
       {toggleForm ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
-          <h2 className="text-2xl font-bold mb-4">Collection Form</h2>
+          <h2 className="text-2xl font-bold mb-4">Student Collection</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
-            {/* Invoice Key */}
+            {/* Receipt No */}
             <div>
               <label
-                htmlFor="invoice_key"
+                htmlFor="receipt_no"
                 className="block text-sm font-medium mb-1"
               >
-                Invoice Key:
+                Receipt No:
               </label>
               <input
                 type="text"
-                id="invoice_key"
-                name="invoice_key"
-                value={formik.values.invoice_key}
+                id="receipt_no"
+                name="receipt_no"
+                value={formik.values.receipt_no}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
                 readOnly
               />
-              {formik.touched.invoice_key && formik.errors.invoice_key && (
+              {formik.touched.receipt_no && formik.errors.receipt_no && (
                 <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.invoice_key}
+                  {formik.errors.receipt_no}
                 </div>
               )}
             </div>
 
-            {/* Room Name */}
+            {/* Payment Date */}
             <div>
               <label
-                htmlFor="room_name"
+                htmlFor="payment_date"
                 className="block text-sm font-medium mb-1"
               >
-                Room Name:
+                Payment Date:
               </label>
               <input
-                type="text"
-                id="room_name"
-                name="room_name"
-                value={formik.values.room_name}
-                onChange={formik.handleChange}
+                type="date"
+                id="payment_date"
+                name="payment_date"
+                value={formik.values.payment_date}
+                onChange={(e) => {
+                  const date = new Date(e.target.value);
+                  formik.setFieldValue("payment_date", e.target.value);
+                  formik.setFieldValue("month", date.getUTCMonth() + 1);
+                  formik.setFieldValue("year", date.getUTCFullYear());
+                }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly
+                defaultValue={() => {
+                  new Date().toISOString().replace("Z", "+5:30").split("T")[0];
+                }}
               />
-              {formik.touched.room_name && formik.errors.room_name && (
+              {formik.touched.payment_date && formik.errors.payment_date && (
                 <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.room_name}
+                  {formik.errors.payment_date}
+                </div>
+              )}
+            </div>
+
+            {/* Monthly Charge */}
+            <div>
+              <label
+                htmlFor="monthly_rent"
+                className="block text-sm font-medium mb-1"
+              >
+                Monthly Charge:
+              </label>
+              <input
+                type="number"
+                id="monthly_rent"
+                name="monthly_rent"
+                value={formik.values.monthly_rent}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 0;
+                  formik.setFieldValue("monthly_rent", value);
+                }}
+                onBlur={formik.handleBlur}
+                className="w-full p-2 bg-gray-800 text-white rounded"
+              />
+              {formik.touched.monthly_rent && formik.errors.monthly_rent && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.monthly_rent}
                 </div>
               )}
             </div>
@@ -262,33 +300,6 @@ const CollectionForm = ({
                     {formik.errors.security_deposit}
                   </div>
                 )}
-            </div>
-
-            {/* Monthly Rent */}
-            <div>
-              <label
-                htmlFor="monthly_rent"
-                className="block text-sm font-medium mb-1"
-              >
-                Monthly Rent:
-              </label>
-              <input
-                type="number"
-                id="monthly_rent"
-                name="monthly_rent"
-                value={formik.values.monthly_rent}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
-                  formik.setFieldValue("monthly_rent", value);
-                }}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.monthly_rent && formik.errors.monthly_rent && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.monthly_rent}
-                </div>
-              )}
             </div>
 
             {/* Electricity Charge */}
@@ -438,38 +449,6 @@ const CollectionForm = ({
               {formik.touched.month && formik.errors.month && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.month}
-                </div>
-              )}
-            </div>
-
-            {/* Payment Date */}
-            <div>
-              <label
-                htmlFor="payment_date"
-                className="block text-sm font-medium mb-1"
-              >
-                Payment Date:
-              </label>
-              <input
-                type="date"
-                id="payment_date"
-                name="payment_date"
-                value={formik.values.payment_date}
-                onChange={(e) => {
-                  const date = new Date(e.target.value);
-                  formik.setFieldValue("payment_date", e.target.value);
-                  formik.setFieldValue("month", date.getUTCMonth() + 1);
-                  formik.setFieldValue("year", date.getUTCFullYear());
-                }}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-                defaultValue={() => {
-                  new Date().toISOString().replace("Z", "+5:30").split("T")[0];
-                }}
-              />
-              {formik.touched.payment_date && formik.errors.payment_date && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.payment_date}
                 </div>
               )}
             </div>

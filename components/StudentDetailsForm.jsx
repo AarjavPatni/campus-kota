@@ -263,8 +263,8 @@ const StudentDetailsForm = ({ uid }) => {
                     id="original_room"
                     name="original_room"
                     value={formik.values.original_room}
-                    readOnly
                     className="w-full p-2 bg-gray-800 text-white rounded opacity-75 cursor-not-allowed"
+                    readOnly
                   />
                 </div>
                 <div>
@@ -302,8 +302,10 @@ const StudentDetailsForm = ({ uid }) => {
                 value={formik.values.first_name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={uid ? true : false}
+                className={`w-full p-2 bg-gray-800 text-white rounded ${
+                  uid ? "opacity-75 cursor-not-allowed" : ""
+                }`}
+                readOnly={!!uid}
               />
               {formik.touched.first_name && formik.errors.first_name && (
                 <div className="text-red-500 text-sm mt-1">
@@ -542,7 +544,9 @@ const StudentDetailsForm = ({ uid }) => {
                 value={formik.values.monthly_rent}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 bg-gray-800 text-white rounded ${
+                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                }`}
                 readOnly={uid && formik.values.approved}
               />
               {formik.touched.monthly_rent && formik.errors.monthly_rent && (
@@ -565,7 +569,9 @@ const StudentDetailsForm = ({ uid }) => {
                 value={formik.values.security_deposit}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 bg-gray-800 text-white rounded ${
+                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                }`}
                 readOnly={uid && formik.values.approved}
               />
               {formik.touched.security_deposit &&
@@ -589,7 +595,9 @@ const StudentDetailsForm = ({ uid }) => {
                 value={formik.values.laundry_charge}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 bg-gray-800 text-white rounded ${
+                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                }`}
                 readOnly={uid && formik.values.approved}
               />
               {formik.touched.laundry_charge &&
@@ -613,7 +621,9 @@ const StudentDetailsForm = ({ uid }) => {
                 value={formik.values.other_charge}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 bg-gray-800 text-white rounded ${
+                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                }`}
                 readOnly={uid && formik.values.approved}
               />
               {formik.touched.other_charge && formik.errors.other_charge && (
@@ -636,7 +646,9 @@ const StudentDetailsForm = ({ uid }) => {
                 value={formik.values.start_date}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 bg-gray-800 text-white rounded ${
+                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                }`}
                 readOnly={uid && formik.values.approved}
               />
               {formik.touched.start_date && formik.errors.start_date && (

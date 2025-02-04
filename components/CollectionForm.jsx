@@ -166,6 +166,7 @@ const CollectionForm = ({
             setToastOpacity(0);
             setTimeout(() => {
               setToggleToast(false);
+              window.location.href = "/admin";
             }, 300);
           }, 1500);
 

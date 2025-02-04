@@ -273,7 +273,7 @@ const StudentDetailsForm = ({ uid }) => {
     if (toastOpacity === 1 && toastMessage.type === "success") {
       const timer = setTimeout(() => {
         setToastOpacity(0);
-        setTimeout(() => (window.location.href = "/"), 300); // Wait for fade-out
+        setTimeout(() => (window.location.href = "/admin"), 300);
       }, 1000);
       return () => clearTimeout(timer);
     }

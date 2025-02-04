@@ -280,9 +280,7 @@ const CollectionForm = ({
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                defaultValue={() => {
-                  new Date().toISOString().replace("Z", "+5:30").split("T")[0];
-                }}
+                readOnly={!!invoice_key && formik.values.approved}
               />
               {formik.touched.payment_date && formik.errors.payment_date && (
                 <div className="text-red-500 text-sm mt-1">
@@ -310,6 +308,7 @@ const CollectionForm = ({
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={!!invoice_key || formik.values.approved}
               />
               {formik.touched.monthly_charge && formik.errors.monthly_charge && (
                 <div className="text-red-500 text-sm mt-1">
@@ -337,6 +336,7 @@ const CollectionForm = ({
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
+                readOnly={!!invoice_key || formik.values.approved}
               />
               {formik.touched.security_deposit &&
                 formik.errors.security_deposit && (
@@ -370,8 +370,8 @@ const CollectionForm = ({
               )}
             </div>
 
-            {/* Year - Hidden */}
-            <div className="hidden">
+            {/* Year - Visible when editing */}
+            <div className={invoice_key ? "" : "hidden"}>
               <label htmlFor="year" className="block text-sm font-medium mb-1">
                 Year:
               </label>
@@ -392,8 +392,8 @@ const CollectionForm = ({
               )}
             </div>
 
-            {/* Month - Hidden */}
-            <div className="hidden">
+            {/* Month - Visible when editing */}
+            <div className={invoice_key ? "" : "hidden"}>
               <label htmlFor="month" className="block text-sm font-medium mb-1">
                 Month:
               </label>
@@ -414,8 +414,8 @@ const CollectionForm = ({
               )}
             </div>
 
-            {/* Approved - Hidden */}
-            <div className="hidden">
+            {/* Approved - Visible when editing */}
+            <div className={invoice_key ? "" : "hidden"}>
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -425,6 +425,7 @@ const CollectionForm = ({
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className="mr-2"
+                  disabled={formik.values.approved}
                 />
                 <label htmlFor="approved" className="text-sm font-medium">
                   Approved
@@ -447,7 +448,7 @@ const CollectionForm = ({
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                defaultValue="Cash"
+                disabled={!!invoice_key && formik.values.approved}
               >
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>

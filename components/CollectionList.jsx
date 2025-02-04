@@ -20,6 +20,7 @@ export function CollectionList() {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [room_name, setRoomName] = useState("");
   const [rooms, setRooms] = useState([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const fetchCollectionDetails = async () => {
@@ -27,7 +28,7 @@ export function CollectionList() {
         ? await supabase
             .from("collection")
             .select(
-              "invoice_key,uid,room_name,monthly_rent,electricity_charge,laundry_charge,other_charge,year,month,payment_date,total_charges,total_amount,approved"
+              "invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved"
             )
             .eq("year", year)
             .eq("month", month)
@@ -35,7 +36,7 @@ export function CollectionList() {
         : await supabase
             .from("collection")
             .select(
-              "invoice_key,uid,room_name,monthly_rent,electricity_charge,laundry_charge,other_charge,year,month,payment_date,total_charges,total_amount,approved"
+              "invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved"
             )
             .eq("year", year)
             .eq("month", month);
@@ -52,7 +53,7 @@ export function CollectionList() {
     };
 
     fetchCollectionDetails();
-  }, [month, year, room_name]);
+  }, [month, year, room_name, refreshTrigger]);
 
   if (error) return <div>Error fetching data: {error.message}</div>;
 
@@ -63,6 +64,7 @@ export function CollectionList() {
           uid={selectedUID}
           invoice_key={selectedInvoiceKey}
           returnToBill={false}
+          onSuccess={() => setRefreshTrigger(prev => prev + 1)}
         />
       ) : selectedUID ? (
         <CollectionForm uid={selectedUID} invoice_key={selectedInvoiceKey} />

@@ -83,9 +83,9 @@ export const PaymentReceiptEmail = ({ paymentDetails, student }) => (
               <td style={{ padding: "12px 0" }}>{student.room_name}</td>
             </tr>
             <tr style={{ borderBottom: "1px solid #1f2937" }}>
-              <td style={{ padding: "12px 0", fontWeight: "600" }}>Monthly Rent Paid</td>
+              <td style={{ padding: "12px 0", fontWeight: "600" }}>Monthly Charge Paid</td>
               <td style={{ padding: "12px 0" }}>
-                ₹{paymentDetails.monthly_rent}
+                ₹{paymentDetails.monthly_charge}
               </td>
             </tr>
             <tr style={{ borderBottom: "1px solid #1f2937" }}>

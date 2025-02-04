@@ -11,13 +11,7 @@ const validationSchema = Yup.object({
   room_name: Yup.string().required("Room Name is required"),
   invoice_key: Yup.string().required("Invoice Key is required"),
   security_deposit: Yup.number().required("Security Deposit is required"),
-  monthly_rent: Yup.number().required("Monthly Rent is required"),
-  electricity_charge: Yup.number().integer().default(0),
-  laundry_charge: Yup.number().integer().default(0),
-  other_charge: Yup.number().integer().default(0),
-  total_amount: Yup.number()
-    .integer()
-    .positive("Total amount must be greater than 0"),
+  monthly_charge: Yup.number().required("Monthly Charge is required"),
   year: Yup.number().required(),
   month: Yup.number().required(),
   payment_date: Yup.date().required("Payment Date is required"),
@@ -58,7 +52,7 @@ const CollectionForm = ({
 
       let { data: student_details, error: student_error } = await supabase
         .from("student_details")
-        .select("uid,room_name,security_deposit,monthly_rent,email")
+        .select("uid,room_name,security_deposit,monthly_rent,email,laundry_charge,other_charge")
         .eq("uid", uid);
 
       if (student_error) {
@@ -71,7 +65,7 @@ const CollectionForm = ({
         console.error("Error fetching collection data:", collection_error);
       } else {
         if (collection_data.length > 0) {
-          console.log("exists")
+          console.log(collection_data);
           setCollectionDetails(collection_data[0]);
           // sort by invoice_key
           collection_data.sort((a, b) => {
@@ -100,12 +94,11 @@ const CollectionForm = ({
       receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
       invoice_key: nextInvoiceKey || "",
       room_name: studentDetails?.room_name || "",
-      monthly_rent: 0,
+      monthly_charge: studentDetails ? 
+        studentDetails.monthly_rent + 
+        (studentDetails.laundry_charge || 0) + 
+        (studentDetails.other_charge || 0) : 0,
       security_deposit: 0,
-      electricity_charge: 0,
-      laundry_charge: 0,
-      other_charge: 0,
-      total_amount: 0,
       year: new Date().getUTCFullYear(),
       month: new Date().getUTCMonth() + 1,
       payment_date: new Date()
@@ -117,22 +110,23 @@ const CollectionForm = ({
     },
     validationSchema,
     onSubmit: async (values) => {
-      delete values.total_amount;
-      delete values.receipt_no;
+      // Remove generated column from submission
+      const { total_amount, ...submissionValues } = values;
+      
       let resp, status;
       
       try {
         if (!invoice_key) {
           const response = await supabase
             .from("collection")
-            .insert([values])
+            .insert([submissionValues])
             .select();
           resp = response;
           status = resp.status;
         } else {
           const response = await supabase
             .from("collection")
-            .update(values)
+            .update(submissionValues)
             .eq("invoice_key", invoice_key)
             .select();
           resp = response;
@@ -158,7 +152,6 @@ const CollectionForm = ({
               paymentDetails: {
                 ...values,
                 receipt_no: formik.values.receipt_no,
-                total_amount: formik.values.total_amount
               },
               student: studentDetails
             }),
@@ -190,6 +183,7 @@ const CollectionForm = ({
         setToastOpacity(1);
         formik.resetForm();
       } catch (error) {
+        console.log(values)
         setToastMessage({
           text: `Error: ${error.message}`,
           type: "error"
@@ -204,11 +198,23 @@ const CollectionForm = ({
   useEffect(() => {
     if (collectionDetails || studentDetails) {
       const { security_deposit, ...restCollection } = collectionDetails || {};
-      const { security_deposit: studentSecurity, email, ...restStudent } = studentDetails || {};
+      const { 
+        security_deposit: studentSecurity, 
+        email,
+        laundry_charge,   // Destructure to exclude
+        other_charge,     // Destructure to exclude
+        monthly_rent,     // Destructure to exclude
+        ...restStudent 
+      } = studentDetails || {};
+
       formik.setValues({
         ...formik.values,
         ...restCollection,
         ...restStudent,
+        monthly_charge: studentDetails ? 
+          (studentDetails.monthly_rent || 0) + 
+          (studentDetails.laundry_charge || 0) + 
+          (studentDetails.other_charge || 0) : 0,
         invoice_key: nextInvoiceKey,
         receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
       });
@@ -218,13 +224,9 @@ const CollectionForm = ({
   useEffect(() => {
     formik.setFieldValue(
       "total_amount",
-      formik.values.laundry_charge +
-        formik.values.other_charge +
-        formik.values.monthly_rent +
-        formik.values.electricity_charge +
-        formik.values.security_deposit
+      formik.values.monthly_charge + formik.values.security_deposit
     );
-  }, [formik.values]);
+  }, [formik.values.monthly_charge, formik.values.security_deposit]);
 
   return (
     <div>
@@ -292,26 +294,26 @@ const CollectionForm = ({
             {/* Monthly Charge */}
             <div>
               <label
-                htmlFor="monthly_rent"
+                htmlFor="monthly_charge"
                 className="block text-sm font-medium mb-1"
               >
                 Monthly Charge:
               </label>
               <input
                 type="number"
-                id="monthly_rent"
-                name="monthly_rent"
-                value={formik.values.monthly_rent}
+                id="monthly_charge"
+                name="monthly_charge"
+                value={formik.values.monthly_charge}
                 onChange={(e) => {
                   const value = parseInt(e.target.value) || 0;
-                  formik.setFieldValue("monthly_rent", value);
+                  formik.setFieldValue("monthly_charge", value);
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
               />
-              {formik.touched.monthly_rent && formik.errors.monthly_rent && (
+              {formik.touched.monthly_charge && formik.errors.monthly_charge && (
                 <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.monthly_rent}
+                  {formik.errors.monthly_charge}
                 </div>
               )}
             </div>
@@ -342,89 +344,6 @@ const CollectionForm = ({
                     {formik.errors.security_deposit}
                   </div>
                 )}
-            </div>
-
-            {/* Electricity Charge */}
-            <div>
-              <label
-                htmlFor="electricity_charge"
-                className="block text-sm font-medium mb-1"
-              >
-                Electricity Charge:
-              </label>
-              <input
-                type="number"
-                id="electricity_charge"
-                name="electricity_charge"
-                value={formik.values.electricity_charge}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
-                  formik.setFieldValue("electricity_charge", value);
-                }}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.electricity_charge &&
-                formik.errors.electricity_charge && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.electricity_charge}
-                  </div>
-                )}
-            </div>
-
-            {/* Laundry Charge */}
-            <div>
-              <label
-                htmlFor="laundry_charge"
-                className="block text-sm font-medium mb-1"
-              >
-                Laundry Charge:
-              </label>
-              <input
-                type="number"
-                id="laundry_charge"
-                name="laundry_charge"
-                value={formik.values.laundry_charge}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
-                  formik.setFieldValue("laundry_charge", value);
-                }}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.laundry_charge &&
-                formik.errors.laundry_charge && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.laundry_charge}
-                  </div>
-                )}
-            </div>
-
-            {/* Other Charges */}
-            <div>
-              <label
-                htmlFor="other_charge"
-                className="block text-sm font-medium mb-1"
-              >
-                Other Charges:
-              </label>
-              <input
-                type="number"
-                id="other_charge"
-                name="other_charge"
-                value={formik.values.other_charge}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
-                  formik.setFieldValue("other_charge", value);
-                }}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.other_charge && formik.errors.other_charge && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.other_charge}
-                </div>
-              )}
             </div>
 
             <div>

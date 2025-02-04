@@ -120,7 +120,7 @@ const StudentDetailsForm = ({ uid }) => {
       laundry_charge: studentDetails?.laundry_charge || 0,
       other_charge: studentDetails?.other_charge || 0,
       start_date: studentDetails?.start_date || "",
-      end_date: studentDetails?.end_date || "",
+      end_date: studentDetails?.end_date || "9999-12-31",
       active: studentDetails?.active || false,
       approved: studentDetails?.approved || false,
     },

@@ -5,7 +5,7 @@ import { supabase } from "@/supabaseClient";
 import { StudentList } from "./StudentList";
 import { BillingList } from "./BillingList";
 import { Toast } from "flowbite-react";
-import { HiCheck } from "react-icons/hi";
+import { HiCheck, HiX } from "react-icons/hi";
 
 const validationSchema = Yup.object({
   room_name: Yup.string().required("Room Name is required"),
@@ -36,7 +36,8 @@ const CollectionForm = ({
   const [toggleForm, setToggleForm] = useState(true);
   const [nextInvoiceKey, setNextInvoiceKey] = useState(null);
   const [toggleToast, setToggleToast] = useState(false);
-  const [toastOpacity, setToastOpacity] = useState(0);
+  const [toastOpacity, setToastOpacity] = useState(1);
+  const [toastMessage, setToastMessage] = useState({ text: "", type: "" });
 
   useEffect(() => {
     const fetchPastCollections = async () => {
@@ -53,10 +54,11 @@ const CollectionForm = ({
           .select("invoice_key")
           .eq("invoice_key", invoice_key);
       }
+      collection_data = collection_data.data;
 
       let { data: student_details, error: student_error } = await supabase
         .from("student_details")
-        .select("uid,room_name,security_deposit,monthly_rent")
+        .select("uid,room_name,security_deposit,monthly_rent,email")
         .eq("uid", uid);
 
       if (student_error) {
@@ -69,6 +71,7 @@ const CollectionForm = ({
         console.error("Error fetching collection data:", collection_error);
       } else {
         if (collection_data.length > 0) {
+          console.log("exists")
           setCollectionDetails(collection_data[0]);
           // sort by invoice_key
           collection_data.sort((a, b) => {
@@ -117,46 +120,83 @@ const CollectionForm = ({
       delete values.total_amount;
       delete values.receipt_no;
       let resp, status;
-      if (!invoice_key) {
-        const response = await supabase
-          .from("collection")
-          .insert([values])
-          .select();
-        resp = response;
-        status = resp.status;
-      } else {
-        console.log("updating...");
-        const response = await supabase
-          .from("collection")
-          .update(values)
-          .eq("invoice_key", invoice_key)
-          .select();
-        resp = response;
-        status = resp.status;
-      }
+      
+      try {
+        if (!invoice_key) {
+          const response = await supabase
+            .from("collection")
+            .insert([values])
+            .select();
+          resp = response;
+          status = resp.status;
+        } else {
+          const response = await supabase
+            .from("collection")
+            .update(values)
+            .eq("invoice_key", invoice_key)
+            .select();
+          resp = response;
+          status = resp.status;
+        }
 
-      const showToast = () => {
+        if (resp.error) {
+          setToastMessage({
+            text: `Database Error: ${resp.error.message}`,
+            type: "error"
+          });
+          throw resp.error;
+        }
+
+        if (status === 201 || status === 200) {
+          // Send payment receipt email
+          await fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: studentDetails.email,
+              subject: `Payment Receipt - ${values.invoice_key}`,
+              paymentDetails: {
+                ...values,
+                receipt_no: formik.values.receipt_no,
+                total_amount: formik.values.total_amount
+              },
+              student: studentDetails
+            }),
+          });
+
+          setToastMessage({
+            text: "Payment recorded and receipt sent successfully",
+            type: "success"
+          });
+
+          setTimeout(() => {
+            setToastOpacity(0);
+            setTimeout(() => {
+              setToggleToast(false);
+            }, 300);
+          }, 1500);
+
+          setTimeout(() => {
+            setToggleForm(false);
+          }, 2000);
+        } else {
+          setToastMessage({
+            text: `Unexpected status code: ${status}`,
+            type: "error"
+          });
+        }
+
         setToggleToast(true);
-        setTimeout(() => setToastOpacity(1), 10);
-
-        setTimeout(() => {
-          setToastOpacity(0);
-          setTimeout(() => setToggleToast(false), 300);
-          window.location.href = "/";
-        }, 2000);
-      };
-
-      if (status === 201) {
+        setToastOpacity(1);
         formik.resetForm();
-        console.log("Data inserted successfully:", resp);
-        showToast();
-      } else if (status === 200) {
-        formik.resetForm();
-        console.log("Data updated successfully:", resp);
-        showToast();
-      } else {
-        console.error("Error inserting/updating data:", status);
-        console.log(resp.error);
+      } catch (error) {
+        setToastMessage({
+          text: `Error: ${error.message}`,
+          type: "error"
+        });
+        setToggleToast(true);
+        setToastOpacity(1);
+        console.error("Error:", error);
       }
     },
   });
@@ -164,7 +204,7 @@ const CollectionForm = ({
   useEffect(() => {
     if (collectionDetails || studentDetails) {
       const { security_deposit, ...restCollection } = collectionDetails || {};
-      const { security_deposit: studentSecurity, ...restStudent } = studentDetails || {};
+      const { security_deposit: studentSecurity, email, ...restStudent } = studentDetails || {};
       formik.setValues({
         ...formik.values,
         ...restCollection,
@@ -542,11 +582,19 @@ const CollectionForm = ({
           style={{ opacity: toastOpacity }}
         >
           <Toast className="flex items-center bg-white shadow-lg rounded-lg p-4">
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
-              <HiCheck className="h-5 w-5" />
+            <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+              toastMessage.type === "success" 
+                ? "bg-green-100 text-green-500" 
+                : "bg-red-100 text-red-500"
+            }`}>
+              {toastMessage.type === "success" ? (
+                <HiCheck className="h-5 w-5" />
+              ) : (
+                <HiX className="h-5 w-5" />
+              )}
             </div>
-            <div className="ml-3 text-sm font-normal">Data Updated</div>
-            <Toast.Toggle />
+            <div className="ml-3 text-sm font-normal">{toastMessage.text}</div>
+            <Toast.Toggle onDismiss={() => setToggleToast(false)} />
           </Toast>
         </div>
       )}

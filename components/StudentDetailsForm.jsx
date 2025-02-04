@@ -102,27 +102,27 @@ const StudentDetailsForm = ({ uid }) => {
   const formik = useFormik({
     initialValues: {
       ...studentDetails,
-      original_room: 70,
-      room_number: 70,
-      first_name: "Test First Name",
-      last_name: "Test Last Name",
-      father_name: "Test Father Name",
-      course: "Test Course",
-      institute: "Test Institute",
-      student_mobile: "1234567890",
-      email: "ap.aarjavpatni@gmail.com",
-      parent_mobile: "0987654321",
-      guardian_mobile: "1112223333",
-      remarks: "Test Remarks",
-      address: "Test Address",
-      security_deposit: 5000,
-      monthly_rent: 5000,
-      laundry_charge: 500,
-      other_charge: 1000,
-      start_date: "2022-01-01",
-      end_date: "2023-12-31",
-      active: true,
-      approved: true,
+      original_room: studentDetails?.original_room || 0,
+      room_number: studentDetails?.room_number || 0,
+      first_name: studentDetails?.first_name || "",
+      last_name: studentDetails?.last_name || "",
+      father_name: studentDetails?.father_name || "",
+      course: studentDetails?.course || "",
+      institute: studentDetails?.institute || "",
+      student_mobile: studentDetails?.student_mobile || "",
+      email: studentDetails?.email || "",
+      parent_mobile: studentDetails?.parent_mobile || "",
+      guardian_mobile: studentDetails?.guardian_mobile || "",
+      remarks: studentDetails?.remarks || "",
+      address: studentDetails?.address || "",
+      security_deposit: studentDetails?.security_deposit || 0,
+      monthly_rent: studentDetails?.monthly_rent || 0,
+      laundry_charge: studentDetails?.laundry_charge || 0,
+      other_charge: studentDetails?.other_charge || 0,
+      start_date: studentDetails?.start_date || "",
+      end_date: studentDetails?.end_date || "",
+      active: studentDetails?.active || false,
+      approved: studentDetails?.approved || false,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -274,7 +274,7 @@ const StudentDetailsForm = ({ uid }) => {
       const timer = setTimeout(() => {
         setToastOpacity(0);
         setTimeout(() => (window.location.href = "/"), 300); // Wait for fade-out
-      }, 2000);
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [toastOpacity, toastMessage.type]);

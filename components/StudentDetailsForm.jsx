@@ -119,9 +119,9 @@ const StudentDetailsForm = ({ uid }) => {
       monthly_rent: studentDetails?.monthly_rent || 0,
       laundry_charge: studentDetails?.laundry_charge || 0,
       other_charge: studentDetails?.other_charge || 0,
-      start_date: studentDetails?.start_date || "",
+      start_date: studentDetails?.start_date || new Date().toISOString().split('T')[0],
       end_date: studentDetails?.end_date || "9999-12-31",
-      active: studentDetails?.active || false,
+      active: studentDetails?.active || true,
       approved: studentDetails?.approved || false,
     },
     validationSchema: validationSchema,
@@ -736,20 +736,22 @@ const StudentDetailsForm = ({ uid }) => {
                 Active
               </label>
             </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="approved"
-                name="approved"
-                checked={formik.values.approved}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="mr-2"
-              />
-              <label htmlFor="approved" className="text-sm font-medium">
-                Approved
-              </label>
-            </div>
+            {uid && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="approved"
+                  name="approved"
+                  checked={formik.values.approved}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="mr-2"
+                />
+                <label htmlFor="approved" className="text-sm font-medium">
+                  Approved
+                </label>
+              </div>
+            )}
             {(uid && (
               <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                 <button

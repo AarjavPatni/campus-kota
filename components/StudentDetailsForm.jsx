@@ -311,19 +311,6 @@ const StudentDetailsForm = ({ uid }) => {
             ) : (
               <>
                 <div>
-                  <label htmlFor="original_room" className="block text-sm font-medium mb-1">
-                    Original Room Number:
-                  </label>
-                  <input
-                    type="number"
-                    id="original_room"
-                    name="original_room"
-                    value={formik.values.original_room}
-                    className="w-full p-2 bg-gray-800 text-white rounded opacity-75 cursor-not-allowed"
-                    readOnly
-                  />
-                </div>
-                <div>
                   <label htmlFor="room_number" className="block text-sm font-medium mb-1">
                     Current Room Number:
                   </label>

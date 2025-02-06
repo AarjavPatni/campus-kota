@@ -51,10 +51,9 @@ export const PaymentReceiptEmail = ({ paymentDetails, student }) => (
           }}
         >
           <tbody>
-            <tr>
-              <td colSpan="2" style={{ paddingBottom: "16px", fontWeight: "600", fontSize: "18px" }}>
-                Payment Details
-              </td>
+            <tr style={{ borderBottom: "1px solid #1f2937" }}>
+              <td style={{ padding: "12px 0", fontWeight: "600" }}>Receipt Number</td>
+              <td style={{ padding: "12px 0" }}>{paymentDetails.receipt_no}</td>
             </tr>
             <tr style={{ borderBottom: "1px solid #1f2937" }}>
               <td style={{ padding: "12px 0", fontWeight: "600" }}>Payment Date</td>
@@ -70,28 +69,10 @@ export const PaymentReceiptEmail = ({ paymentDetails, student }) => (
               <td style={{ padding: "12px 0", fontWeight: "600" }}>Payment Method</td>
               <td style={{ padding: "12px 0" }}>{paymentDetails.payment_method}</td>
             </tr>
-            <tr style={{ borderBottom: "1px solid #1f2937" }}>
-              <td style={{ padding: "12px 0", fontWeight: "600" }}>Receipt Number</td>
-              <td style={{ padding: "12px 0" }}>{paymentDetails.receipt_no}</td>
-            </tr>
-            <tr style={{ borderBottom: "1px solid #1f2937" }}>
-              <td style={{ padding: "12px 0", fontWeight: "600" }}>Invoice Key</td>
-              <td style={{ padding: "12px 0" }}>{paymentDetails.invoice_key}</td>
-            </tr>
-            <tr style={{ borderBottom: "1px solid #1f2937" }}>
-              <td style={{ padding: "12px 0", fontWeight: "600" }}>Room Name</td>
-              <td style={{ padding: "12px 0" }}>{student.room_name}</td>
-            </tr>
-            <tr style={{ borderBottom: "1px solid #1f2937" }}>
-              <td style={{ padding: "12px 0", fontWeight: "600" }}>Monthly Charge Paid</td>
-              <td style={{ padding: "12px 0" }}>
-                ₹{paymentDetails.monthly_charge}
-              </td>
-            </tr>
-            <tr style={{ borderBottom: "1px solid #1f2937" }}>
-              <td style={{ padding: "12px 0", fontWeight: "600" }}>Security Deposit Paid</td>
-              <td style={{ padding: "12px 0" }}>
-                ₹{paymentDetails.security_deposit}
+            <tr>
+              <td style={{ padding: "12px 0", fontWeight: "600", fontSize: "18px", color: "#1d4ed8" }}>Total Receipts</td>
+              <td style={{ padding: "12px 0", fontSize: "18px", color: "#1d4ed8", fontWeight: "600" }}>
+                ₹{paymentDetails.total_amount}
               </td>
             </tr>
           </tbody>
@@ -111,9 +92,7 @@ export const PaymentReceiptEmail = ({ paymentDetails, student }) => (
           lineHeight: "1.5",
         }}
       >
-        <strong>Note:</strong> This is an auto-generated payment receipt. Please
-        keep this for your records. For any inquiries, please use the contact
-        information below.
+        <strong>Note:</strong> UPI or Cheque payments are subject to clearance. This is an auto-generated email. Do not reply directly to this message.
       </div>
 
       {/* Footer */}
@@ -140,6 +119,11 @@ export const PaymentReceiptEmail = ({ paymentDetails, student }) => (
           +91 86904 61983
           <br />
           contact@campuskota.in
+        </p>
+        <p style={{ margin: "24px 0 0 0" }}>
+          <a href="https://campuskota.in" style={{ color: "#3b82f6", textDecoration: "none" }}>
+            campuskota.in
+          </a>
         </p>
       </div>
     </div>

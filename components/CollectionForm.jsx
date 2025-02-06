@@ -40,12 +40,12 @@ const CollectionForm = ({
       if (invoice_key === undefined) {
         collection_data = await supabase
           .from("collection")
-          .select("invoice_key")
+          .select("*")
           .eq("uid", uid);
       } else {
         collection_data = await supabase
           .from("collection")
-          .select("invoice_key")
+          .select("*")
           .eq("invoice_key", invoice_key);
       }
       collection_data = collection_data.data;
@@ -64,25 +64,23 @@ const CollectionForm = ({
       if (collection_error) {
         console.error("Error fetching collection data:", collection_error);
       } else {
-        if (collection_data.length > 0) {
-          console.log(collection_data);
-          setCollectionDetails(collection_data[0]);
-          // sort by invoice_key
-          collection_data.sort((a, b) => {
-            const invoiceKeyA = a.invoice_key.replace(/-/g, "");
-            const invoiceKeyB = b.invoice_key.replace(/-/g, "");
-            return parseInt(invoiceKeyB) - parseInt(invoiceKeyA);
-          });
-          const nextInvoiceIndex =
-            parseInt(collection_data[0].invoice_key.split("-").pop()) + 1;
-          console.log(collection_data[0]);
-          setNextInvoiceKey(
-            `${new Date().getUTCFullYear()}-${uid}-${nextInvoiceIndex}`
-          );
-        } else {
-          setCollectionDetails(null);
-          setNextInvoiceKey(`${new Date().getUTCFullYear()}-${uid}-1`);
+        if (invoice_key === undefined) {
+          if (collection_data.length > 0) {
+            collection_data.sort((a, b) => {
+              const invoiceKeyA = a.invoice_key.replace(/-/g, "");
+              const invoiceKeyB = b.invoice_key.replace(/-/g, "");
+              return parseInt(invoiceKeyB) - parseInt(invoiceKeyA);
+            });
+            const nextInvoiceIndex =
+              parseInt(collection_data[0].invoice_key.split("-").pop()) + 1;
+            setNextInvoiceKey(
+              `${new Date().getUTCFullYear()}-${uid}-${nextInvoiceIndex}`
+            );
+          } else {
+            setNextInvoiceKey(`${new Date().getUTCFullYear()}-${uid}-1`);
+          }
         }
+        setCollectionDetails(collection_data[0] || null);
       }
     };
 
@@ -91,22 +89,22 @@ const CollectionForm = ({
 
   const formik = useFormik({
     initialValues: {
-      receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
-      invoice_key: nextInvoiceKey || "",
-      room_name: studentDetails?.room_name || "",
-      monthly_charge: studentDetails ? 
-        studentDetails.monthly_rent + 
+      receipt_no: collectionDetails?.receipt_no ?? `${invoice_key || nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
+      invoice_key: invoice_key || nextInvoiceKey || "",
+      room_name: collectionDetails?.room_name ?? studentDetails?.room_name ?? "",
+      monthly_charge: collectionDetails?.monthly_charge ?? (studentDetails ? 
+        (studentDetails.monthly_rent || 0) + 
         (studentDetails.laundry_charge || 0) + 
-        (studentDetails.other_charge || 0) : 0,
-      security_deposit: 0,
-      year: new Date().getUTCFullYear(),
-      month: new Date().getUTCMonth() + 1,
-      payment_date: new Date()
+        (studentDetails.other_charge || 0) : 0),
+      security_deposit: collectionDetails?.security_deposit ?? 0,
+      year: collectionDetails?.year ?? new Date().getUTCFullYear(),
+      month: collectionDetails?.month ?? new Date().getUTCMonth() + 1,
+      payment_date: collectionDetails?.payment_date ?? new Date()
         .toISOString()
         .replace("Z", "+5:30")
         .split("T")[0],
-      payment_method: "Cash",
-      approved: false,
+      payment_method: collectionDetails?.payment_method ?? "Cash",
+      approved: collectionDetails?.approved ?? false,
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -212,15 +210,15 @@ const CollectionForm = ({
         ...formik.values,
         ...restCollection,
         ...restStudent,
-        monthly_charge: studentDetails ? 
+        monthly_charge: collectionDetails?.monthly_charge ?? (studentDetails ? 
           (studentDetails.monthly_rent || 0) + 
           (studentDetails.laundry_charge || 0) + 
-          (studentDetails.other_charge || 0) : 0,
-        invoice_key: nextInvoiceKey,
-        receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
+          (studentDetails.other_charge || 0) : 0),
+        invoice_key: invoice_key || nextInvoiceKey,
+        receipt_no: `${invoice_key || nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
       });
     }
-  }, [collectionDetails, studentDetails, nextInvoiceKey]);
+  }, [collectionDetails, studentDetails, invoice_key, nextInvoiceKey]);
 
   useEffect(() => {
     formik.setFieldValue(

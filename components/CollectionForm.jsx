@@ -281,7 +281,7 @@ const CollectionForm = ({
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={!!invoice_key && formik.values.approved}
+                readOnly={formik.values.approved}
               />
               {formik.touched.payment_date && formik.errors.payment_date && (
                 <div className="text-red-500 text-sm mt-1">
@@ -309,7 +309,7 @@ const CollectionForm = ({
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={!!invoice_key || formik.values.approved}
+                readOnly={!!invoice_key}
               />
               {formik.touched.monthly_charge && formik.errors.monthly_charge && (
                 <div className="text-red-500 text-sm mt-1">
@@ -337,7 +337,7 @@ const CollectionForm = ({
                 }}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly={!!invoice_key || formik.values.approved}
+                readOnly={!!invoice_key}
               />
               {formik.touched.security_deposit &&
                 formik.errors.security_deposit && (
@@ -449,7 +449,7 @@ const CollectionForm = ({
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full p-2 bg-gray-800 text-white rounded"
-                disabled={!!invoice_key && formik.values.approved}
+                disabled={formik.values.approved}
               >
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>

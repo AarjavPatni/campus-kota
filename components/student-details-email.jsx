@@ -168,10 +168,7 @@ export const EmailTemplate = ({ firstName, ...formDetails }) => (
           lineHeight: "1.5",
         }}
       >
-        <strong>Please note:</strong> This is an auto-generated email.
-        Accommodation is confirmed subject to required payment of security
-        deposit. For any inquiries, please use the contact information below.
-        Please do not reply directly to this message.
+        <strong>Please note:</strong> Accommodation is confirmed subject to required payment of security deposit. This is an auto-generated email. Do NOT reply directly to this message.
       </div>
     </div>
 
@@ -192,9 +189,14 @@ export const EmailTemplate = ({ firstName, ...formDetails }) => (
         Kota, Rajasthan 324005
       </p>
       <p style={{ margin: "0 0 12px 0" }}>
-        +91 94133 44653 <br />
         +91 86904 61983 <br />
+        +91 94133 44653 <br />
         contact@campuskota.in
+      </p>
+      <p style={{ margin: "24px 0 0 0" }}>
+        <a href="https://campuskota.in" style={{ color: "#3b82f6", textDecoration: "none" }}>
+          campuskota.in
+        </a>
       </p>
     </div>
   </div>

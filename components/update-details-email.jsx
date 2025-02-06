@@ -102,7 +102,7 @@ export const UpdateEmailTemplate = ({ changes, student }) => (
         color: '#9ca3af',
         lineHeight: '1.5'
       }}>
-        <strong>Note:</strong> This is an auto-generated update notification.
+        <strong>Note:</strong> This is an auto-generated update notification. Do NOT reply to this email.
       </div>
 
       {/* Footer */}
@@ -122,9 +122,14 @@ export const UpdateEmailTemplate = ({ changes, student }) => (
           Kota, Rajasthan 324005
         </p>
         <p style={{ margin: "0 0 12px 0" }}>
-          +91 94133 44653 <br />
           +91 86904 61983 <br />
+          +91 94133 44653 <br />
           contact@campuskota.in
+        </p>
+        <p style={{ margin: "24px 0 0 0" }}>
+          <a href="https://campuskota.in" style={{ color: "#3b82f6", textDecoration: "none" }}>
+            campuskota.in
+          </a>
         </p>
       </div>
     </div>

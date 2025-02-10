@@ -86,12 +86,12 @@ const StudentDetailsForm = ({ uid }) => {
     return changes;
   };
 
-  const sendInfoEmail = async (changes, values) => {
+  const sendUpdatedInfoEmail = async (changes, values) => {
     const response = await fetch("/api/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: "info@campuskota.in",
+        email: "records@campuskota.in",
         subject: "Student Record Update",
         changes: changes,
         student: values
@@ -192,7 +192,7 @@ const StudentDetailsForm = ({ uid }) => {
           const changes = getChanges(studentDetails, capitalizedValues);
           if (Object.keys(changes).length > 0) {
             try {
-              await sendInfoEmail(changes, capitalizedValues);
+              await sendUpdatedInfoEmail(changes, capitalizedValues);
             } catch (infoError) {
               allEmailsSuccessful = false;
               console.error("Info email error:", infoError);
@@ -203,7 +203,7 @@ const StudentDetailsForm = ({ uid }) => {
         // Student email if flag set
         if (sendEmailFlag) {
           try {
-            await sendEmail(values);
+            await sendNewEntryEmail(values);
           } catch (emailError) {
             allEmailsSuccessful = false;
             console.error("Email Error:", emailError);
@@ -247,21 +247,38 @@ const StudentDetailsForm = ({ uid }) => {
     formik.handleSubmit();
   };
 
-  const sendEmail = async (values) => {
-    const response = await fetch("/api/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: values.email,
-        firstName: values.first_name,
-        ...values,
-      }),
-    });
+  const sendNewEntryEmail = async (values) => {
+    try {
+      // Send to student
+      const studentResponse = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: values.email,
+          firstName: values.first_name,
+          ...values,
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error("Email failed with status: " + response.status);
+      // Send to records@campuskota.in
+      const recordsResponse = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "records@campuskota.in",
+          subject: `Student Details for ${values.first_name}`,
+          ...values,
+        }),
+      });
+
+      if (!studentResponse.ok || !recordsResponse.ok) {
+        throw new Error("One or more emails failed");
+      }
+
+      return { studentResponse, infoResponse: recordsResponse };
+    } catch (error) {
+      throw new Error("Email failed with status: " + error.message);
     }
-    return response;
   };
 
   const handleMonthlyRentChange = (e) => {

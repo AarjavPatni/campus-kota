@@ -10,11 +10,13 @@ const validationSchema = Yup.object({
   original_room: Yup.number()
     .required("Room Number is required")
     .integer()
-    .positive(),
+    .positive()
+    .max(299, "Room number must be less than or equal to 299"),
   room_number: Yup.number()
     .required("Room Number is required")
     .integer()
-    .positive(),
+    .positive()
+    .max(299, "Room number must be less than or equal to 299"),
   first_name: Yup.string().required("First Name is required"),
   last_name: Yup.string().required("Last Name is required"),
   father_name: Yup.string().required("Father's Name is required"),

@@ -75,11 +75,11 @@ const StudentDetailsForm = ({ uid }) => {
 
   const getChanges = (oldData, newData) => {
     const changes = {};
-    Object.keys(newData).forEach(key => {
+    Object.keys(newData).forEach((key) => {
       if (oldData[key] !== newData[key]) {
         changes[key] = {
           old: oldData[key],
-          new: newData[key]
+          new: newData[key],
         };
       }
     });
@@ -94,7 +94,7 @@ const StudentDetailsForm = ({ uid }) => {
         email: "records@campuskota.in",
         subject: "Student Record Update",
         changes: changes,
-        student: values
+        student: values,
       }),
     });
     if (!response.ok) throw new Error("Info email failed");
@@ -121,7 +121,8 @@ const StudentDetailsForm = ({ uid }) => {
       monthly_rent: studentDetails?.monthly_rent || 0,
       laundry_charge: studentDetails?.laundry_charge || 0,
       other_charge: studentDetails?.other_charge || 0,
-      start_date: studentDetails?.start_date || new Date().toISOString().split('T')[0],
+      start_date:
+        studentDetails?.start_date || new Date().toISOString().split("T")[0],
       end_date: studentDetails?.end_date || "9999-12-31",
       active: studentDetails?.active || true,
       approved: studentDetails?.approved || false,
@@ -169,7 +170,7 @@ const StudentDetailsForm = ({ uid }) => {
         // For updates, exclude room_name; for inserts, include it
         const updateValues = uid
           ? Object.keys(capitalizedValues).reduce((acc, key) => {
-              if (key !== 'room_name' && key !== 'original_room') {
+              if (key !== "room_name" && key !== "original_room") {
                 acc[key] = capitalizedValues[key];
               }
               return acc;
@@ -178,9 +179,12 @@ const StudentDetailsForm = ({ uid }) => {
 
         // Single database operation
         const { data, error, status } = uid
-          ? await supabase.from("student_details").update(updateValues).eq("uid", uid)
+          ? await supabase
+              .from("student_details")
+              .update(updateValues)
+              .eq("uid", uid)
           : await supabase.from("student_details").insert([updateValues]);
-        
+
         console.log(sendEmailFlag);
 
         if (error) throw error;
@@ -213,10 +217,10 @@ const StudentDetailsForm = ({ uid }) => {
 
         // Set success message based on email status
         setToastMessage({
-          text: allEmailsSuccessful 
-            ? "Data Updated!" 
+          text: allEmailsSuccessful
+            ? "Data Updated!"
             : "Database updated but email failed – check logs",
-          type: allEmailsSuccessful ? "success" : "error"
+          type: allEmailsSuccessful ? "success" : "error",
         });
 
         formik.resetForm();
@@ -284,7 +288,7 @@ const StudentDetailsForm = ({ uid }) => {
   const handleMonthlyRentChange = (e) => {
     formik.handleChange(e);
     if (!uid) {
-      formik.setFieldValue('security_deposit', e.target.value);
+      formik.setFieldValue("security_deposit", e.target.value);
     }
   };
 
@@ -303,10 +307,16 @@ const StudentDetailsForm = ({ uid }) => {
       {toggleForm ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <h2 className="text-2xl font-bold mb-4">Student Details Form</h2>
-          <form onSubmit={uid ? formik.handleSubmit : handleSaveAndEmail} className="space-y-4">
+          <form
+            onSubmit={uid ? formik.handleSubmit : handleSaveAndEmail}
+            className="space-y-4"
+          >
             {!uid ? (
               <div>
-                <label htmlFor="room_number" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="room_number"
+                  className="block text-sm font-medium mb-1"
+                >
                   Room Number:
                 </label>
                 <input
@@ -315,8 +325,8 @@ const StudentDetailsForm = ({ uid }) => {
                   name="room_number"
                   value={formik.values.room_number}
                   onChange={(e) => {
-                    formik.setFieldValue('original_room', e.target.value);
-                    formik.setFieldValue('room_number', e.target.value);
+                    formik.setFieldValue("original_room", e.target.value);
+                    formik.setFieldValue("room_number", e.target.value);
                   }}
                   onBlur={formik.handleBlur}
                   className="w-full p-2 bg-gray-800 text-white rounded"
@@ -330,7 +340,10 @@ const StudentDetailsForm = ({ uid }) => {
             ) : (
               <>
                 <div>
-                  <label htmlFor="room_number" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="room_number"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Current Room Number:
                   </label>
                   <input
@@ -607,7 +620,9 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={handleMonthlyRentChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                  uid && formik.values.approved
+                    ? "opacity-75 cursor-not-allowed"
+                    : ""
                 }`}
                 readOnly={uid && formik.values.approved}
               />
@@ -628,11 +643,17 @@ const StudentDetailsForm = ({ uid }) => {
                 type="number"
                 id="security_deposit"
                 name="security_deposit"
-                value={uid ? formik.values.security_deposit : formik.values.monthly_rent}
+                value={
+                  uid
+                    ? formik.values.security_deposit
+                    : formik.values.monthly_rent
+                }
                 onChange={uid ? formik.handleChange : undefined}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  !uid || (uid && formik.values.approved) ? "opacity-75 cursor-not-allowed" : ""
+                  !uid || (uid && formik.values.approved)
+                    ? "opacity-75 cursor-not-allowed"
+                    : ""
                 }`}
                 readOnly={!uid || (uid && formik.values.approved)}
               />
@@ -658,7 +679,9 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                  uid && formik.values.approved
+                    ? "opacity-75 cursor-not-allowed"
+                    : ""
                 }`}
                 readOnly={uid && formik.values.approved}
               />
@@ -684,7 +707,9 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                  uid && formik.values.approved
+                    ? "opacity-75 cursor-not-allowed"
+                    : ""
                 }`}
                 readOnly={uid && formik.values.approved}
               />
@@ -709,7 +734,9 @@ const StudentDetailsForm = ({ uid }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved ? "opacity-75 cursor-not-allowed" : ""
+                  uid && formik.values.approved
+                    ? "opacity-75 cursor-not-allowed"
+                    : ""
                 }`}
                 readOnly={uid && formik.values.approved}
               />
@@ -772,7 +799,7 @@ const StudentDetailsForm = ({ uid }) => {
               </div>
             )}
             {(uid && (
-              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+              <div className="flex flex-row space-x-2">
                 <button
                   type="submit"
                   className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"
@@ -788,7 +815,7 @@ const StudentDetailsForm = ({ uid }) => {
                 </button>
               </div>
             )) || (
-              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+              <div className="flex flex-row space-x-2">
                 <button
                   type="submit"
                   className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"

@@ -448,7 +448,7 @@ const CollectionForm = ({
 
             {/* Buttons */}
             {invoice_key === undefined ? (
-              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+              <div className="flex flex-row space-x-2">
                 <button
                   type="submit"
                   className="w-full bg-white text-black p-2 rounded hover:bg-gray-200 transition"

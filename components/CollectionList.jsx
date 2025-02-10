@@ -28,7 +28,7 @@ export function CollectionList() {
         ? await supabase
             .from("collection")
             .select(
-              "invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved"
+              "invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved,payment_method"
             )
             .eq("year", year)
             .eq("month", month)
@@ -36,7 +36,7 @@ export function CollectionList() {
         : await supabase
             .from("collection")
             .select(
-              "invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved"
+              "invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved,payment_method"
             )
             .eq("year", year)
             .eq("month", month);
@@ -145,6 +145,7 @@ export function CollectionList() {
               <TableHeadCell>Room Name</TableHeadCell>
               <TableHeadCell>Payment Date</TableHeadCell>
               <TableHeadCell>Total Amount</TableHeadCell>
+              <TableHeadCell>Payment Method</TableHeadCell>
               <TableHeadCell>
                 <span className="sr-only">Edit</span>
               </TableHeadCell>
@@ -162,6 +163,7 @@ export function CollectionList() {
                   <TableCell>
                     {invoice.total_amount}
                   </TableCell>
+                  <TableCell>{invoice.payment_method}</TableCell>
                   <TableCell>
                     <Link
                       href="#"

@@ -248,8 +248,9 @@ const CollectionForm = ({
                 value={formik.values.receipt_no}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className="w-full p-2 bg-gray-700 text-gray-400 rounded"
                 readOnly
+                tabIndex={-1}
               />
               {formik.touched.receipt_no && formik.errors.receipt_no && (
                 <div className="text-red-500 text-sm mt-1">
@@ -278,8 +279,11 @@ const CollectionForm = ({
                   formik.setFieldValue("year", date.getUTCFullYear());
                 }}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 rounded ${
+                  formik.values.approved ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white'
+                }`}
                 readOnly={formik.values.approved}
+                tabIndex={formik.values.approved ? -1 : 0}
               />
               {formik.touched.payment_date && formik.errors.payment_date && (
                 <div className="text-red-500 text-sm mt-1">
@@ -306,8 +310,11 @@ const CollectionForm = ({
                   formik.setFieldValue("monthly_charge", value);
                 }}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 rounded ${
+                  !!invoice_key ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white'
+                }`}
                 readOnly={!!invoice_key}
+                tabIndex={!!invoice_key ? -1 : 0}
               />
               {formik.touched.monthly_charge && formik.errors.monthly_charge && (
                 <div className="text-red-500 text-sm mt-1">
@@ -334,8 +341,11 @@ const CollectionForm = ({
                   formik.setFieldValue("security_deposit", value);
                 }}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 rounded ${
+                  !!invoice_key ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white'
+                }`}
                 readOnly={!!invoice_key}
+                tabIndex={!!invoice_key ? -1 : 0}
               />
               {formik.touched.security_deposit &&
                 formik.errors.security_deposit && (
@@ -359,56 +369,13 @@ const CollectionForm = ({
                 value={formik.values.total_amount}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className="w-full p-2 bg-gray-700 text-gray-400 rounded"
                 readOnly
+                tabIndex={-1}
               />
               {formik.touched.total_amount && formik.errors.total_amount && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.total_amount}
-                </div>
-              )}
-            </div>
-
-            {/* Year - Visible when editing */}
-            <div className={invoice_key ? "" : "hidden"}>
-              <label htmlFor="year" className="block text-sm font-medium mb-1">
-                Year:
-              </label>
-              <input
-                type="number"
-                id="year"
-                name="year"
-                value={formik.values.year}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly
-              />
-              {formik.touched.year && formik.errors.year && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.year}
-                </div>
-              )}
-            </div>
-
-            {/* Month - Visible when editing */}
-            <div className={invoice_key ? "" : "hidden"}>
-              <label htmlFor="month" className="block text-sm font-medium mb-1">
-                Month:
-              </label>
-              <input
-                type="number"
-                id="month"
-                name="month"
-                value={formik.values.month}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-                readOnly
-              />
-              {formik.touched.month && formik.errors.month && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.month}
                 </div>
               )}
             </div>
@@ -423,8 +390,11 @@ const CollectionForm = ({
                   checked={formik.values.approved}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="mr-2"
+                  className={`mr-2 ${
+                    formik.values.approved ? 'opacity-50' : 'opacity-100'
+                  }`}
                   disabled={formik.values.approved}
+                  tabIndex={formik.values.approved ? -1 : 0}
                 />
                 <label htmlFor="approved" className="text-sm font-medium">
                   Approved
@@ -446,8 +416,11 @@ const CollectionForm = ({
                 value={formik.values.payment_method}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
+                className={`w-full p-2 rounded ${
+                  formik.values.approved ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white'
+                }`}
                 disabled={formik.values.approved}
+                tabIndex={formik.values.approved ? -1 : 0}
               >
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>

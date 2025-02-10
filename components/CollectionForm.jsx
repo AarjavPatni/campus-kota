@@ -200,13 +200,14 @@ const CollectionForm = ({
       const { 
         security_deposit: studentSecurity, 
         email,
-        laundry_charge,   // Destructure to exclude
-        other_charge,     // Destructure to exclude
-        monthly_rent,     // Destructure to exclude
+        laundry_charge,   
+        other_charge,     
+        monthly_rent,     
         ...restStudent 
       } = studentDetails || {};
 
-      formik.setValues({
+      // Only use collectionDetails if we're editing (invoice_key exists)
+      const valuesToSet = invoice_key ? {
         ...formik.values,
         ...restCollection,
         ...restStudent,
@@ -216,7 +217,18 @@ const CollectionForm = ({
           (studentDetails.other_charge || 0) : 0),
         invoice_key: invoice_key || nextInvoiceKey,
         receipt_no: `${invoice_key || nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
-      });
+      } : {
+        ...formik.values,
+        ...restStudent,
+        monthly_charge: studentDetails ? 
+          (studentDetails.monthly_rent || 0) + 
+          (studentDetails.laundry_charge || 0) + 
+          (studentDetails.other_charge || 0) : 0,
+        invoice_key: nextInvoiceKey,
+        receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
+      };
+
+      formik.setValues(valuesToSet);
     }
   }, [collectionDetails, studentDetails, invoice_key, nextInvoiceKey]);
 

@@ -103,7 +103,7 @@ const CollectionForm = ({
         .toISOString()
         .replace("Z", "+5:30")
         .split("T")[0],
-      payment_method: collectionDetails?.payment_method ?? "Cash",
+      payment_method: collectionDetails?.payment_method ?? "",
       approved: collectionDetails?.approved ?? false,
     },
     validationSchema,

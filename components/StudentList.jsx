@@ -25,12 +25,14 @@ export function StudentList() {
       let { data, error } = await supabase
         .from("student_details")
         .select("uid,room_number,first_name,student_mobile")
-        .eq("active", true);
+        .eq("active", true)
+        .order('room_number', { ascending: true });
 
       if (showAllRecords) {
         ({ data, error } = await supabase
           .from("student_details")
-          .select("uid,room_number,first_name,student_mobile"));
+          .select("uid,room_number,first_name,student_mobile")
+          .order('room_number', { ascending: true }));
       }
 
       if (error) {

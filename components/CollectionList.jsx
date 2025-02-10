@@ -48,7 +48,13 @@ export function CollectionList() {
       if (error) {
         setError(error);
       } else {
-        setCollectionList(data);
+        const sortedData = data.sort((a, b) => {
+          const dateA = new Date(a.payment_date);
+          const dateB = new Date(b.payment_date);
+          if (dateB - dateA !== 0) return dateB - dateA;
+          return a.room_name.localeCompare(b.room_name);
+        });
+        setCollectionList(sortedData);
       }
     };
 

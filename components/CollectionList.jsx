@@ -21,6 +21,7 @@ export function CollectionList() {
   const [room_name, setRoomName] = useState("");
   const [rooms, setRooms] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [paymentTotals, setPaymentTotals] = useState({});
 
   useEffect(() => {
     const fetchCollectionDetails = async () => {
@@ -55,6 +56,13 @@ export function CollectionList() {
           return a.room_name.localeCompare(b.room_name);
         });
         setCollectionList(sortedData);
+        setPaymentTotals(
+          data.reduce((totals, invoice) => {
+            totals[invoice.payment_method] =
+              (totals[invoice.payment_method] || 0) + invoice.total_amount;
+            return totals;
+          }, {})
+        );
       }
     };
 
@@ -70,7 +78,7 @@ export function CollectionList() {
           uid={selectedUID}
           invoice_key={selectedInvoiceKey}
           returnToBill={false}
-          onSuccess={() => setRefreshTrigger(prev => prev + 1)}
+          onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
         />
       ) : selectedUID ? (
         <CollectionForm uid={selectedUID} invoice_key={selectedInvoiceKey} />
@@ -160,9 +168,7 @@ export function CollectionList() {
                     {invoice.room_name}
                   </TableCell>
                   <TableCell>{invoice.payment_date}</TableCell>
-                  <TableCell>
-                    {invoice.total_amount}
-                  </TableCell>
+                  <TableCell>{invoice.total_amount}</TableCell>
                   <TableCell>{invoice.payment_method}</TableCell>
                   <TableCell>
                     <Link
@@ -181,9 +187,51 @@ export function CollectionList() {
               ))}
             </TableBody>
           </Table>
+
+          {/* Totals by Payment Method */}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-0 text-center bg-white dark:bg-gray-800 p-2">
+              Totals by Payment Method
+            </h3>
+            <Table striped>
+              <TableHead>
+                <TableHeadCell className="text-center">
+                  Payment Method
+                </TableHeadCell>
+                <TableHeadCell className="text-center">
+                  Total Amount
+                </TableHeadCell>
+              </TableHead>
+              <TableBody className="divide-y">
+                {Object.entries(paymentTotals).map(([method, total], index) => (
+                  <TableRow
+                    key={index}
+                    className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  >
+                    <TableCell className="text-center font-medium text-gray-900 dark:text-white">
+                      {method}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      ₹{total.toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableRow className="bg-gray-100 dark:bg-gray-900 font-bold">
+                  <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                    GRAND TOTAL
+                  </TableCell>
+                  <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                    ₹
+                    {Object.values(paymentTotals)
+                      .reduce((sum, total) => sum + total, 0)
+                      .toFixed(2)}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
         </div>
       )}
-      ;
     </div>
   );
 }

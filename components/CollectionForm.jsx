@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { supabase } from "@/supabaseClient";
+import supabase from "@/supabaseClient";
 import { StudentList } from "./StudentList";
 import { BillingList } from "./BillingList";
 import { Toast } from "flowbite-react";

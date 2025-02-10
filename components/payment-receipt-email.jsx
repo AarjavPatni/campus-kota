@@ -94,38 +94,6 @@ export const PaymentReceiptEmail = ({ paymentDetails, student }) => (
       >
         <strong>Note:</strong> UPI or Cheque payments are subject to clearance. This is an auto-generated email. Do NOT reply directly to this message.
       </div>
-
-      {/* Footer */}
-      <div
-        style={{
-          backgroundColor: "#111827",
-          padding: "32px 24px",
-          textAlign: "center",
-          fontSize: "14px",
-          color: "#9ca3af",
-          borderTop: "1px solid #1f2937",
-        }}
-      >
-        <p style={{ margin: "0 0 12px 0" }}>
-          Campus Kota
-          <br />
-          123 Academic Road, Nayapura
-          <br />
-          Kota, Rajasthan 324005
-        </p>
-        <p style={{ margin: "0 0 12px 0" }}>
-          +91 94133 44653
-          <br />
-          +91 86904 61983
-          <br />
-          contact@campuskota.in
-        </p>
-        <p style={{ margin: "24px 0 0 0" }}>
-          <a href="https://campuskota.in" style={{ color: "#3b82f6", textDecoration: "none" }}>
-            campuskota.in
-          </a>
-        </p>
-      </div>
     </div>
   </div>
 );

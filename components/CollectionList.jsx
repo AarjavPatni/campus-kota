@@ -139,7 +139,7 @@ export function CollectionList() {
                 }}
               >
                 <option value={""}>All</option>
-                {[...new Set(rooms)].map((room_name, index) => (
+                {[...new Set(rooms)].sort((a, b) => a.localeCompare(b)).map((room_name, index) => (
                   <option key={index} value={room_name}>
                     {room_name}
                   </option>

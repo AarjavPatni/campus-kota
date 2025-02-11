@@ -472,6 +472,13 @@ const CollectionForm = ({
                 >
                   Update
                 </button>
+                <button
+                  type="button"
+                  className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
+                  onClick={() => setToggleForm(false)}
+                >
+                  Cancel
+                </button>
               </div>
             )}
           </form>

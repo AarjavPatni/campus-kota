@@ -140,23 +140,25 @@ const CollectionForm = ({
         }
 
         if (status === 201 || status === 200) {
-          // Send payment receipt email
-          await fetch("/api/send", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: studentDetails.email,
-              subject: `Payment Receipt - ${values.invoice_key}`,
-              paymentDetails: {
-                ...values,
-                receipt_no: formik.values.receipt_no,
-              },
-              student: studentDetails
-            }),
-          });
+          // Only send email if not approved
+          if (!values.approved) {
+            await fetch("/api/send", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: studentDetails.email,
+                subject: `Payment Receipt - ${values.invoice_key}`,
+                paymentDetails: {
+                  ...values,
+                  receipt_no: formik.values.receipt_no,
+                },
+                student: studentDetails
+              }),
+            });
+          }
 
           setToastMessage({
-            text: "Payment recorded and receipt sent successfully",
+            text: values.approved ? "Payment record updated successfully" : "Payment recorded and receipt sent successfully",
             type: "success"
           });
 

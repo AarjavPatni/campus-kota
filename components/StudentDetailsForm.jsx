@@ -258,8 +258,8 @@ const StudentDetailsForm = ({ uid }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: values.email,
-          firstName: values.first_name,
+          receipient: values.email,
+          first_name: values.first_name,
           ...values,
         }),
       });
@@ -269,7 +269,7 @@ const StudentDetailsForm = ({ uid }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: "records@campuskota.in",
+          receipient: "records@campuskota.in",
           subject: `Student Details for ${values.first_name}`,
           ...values,
         }),

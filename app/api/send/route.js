@@ -34,14 +34,14 @@ const emailFooter = (
 
 export async function POST(request) {
   try {
-    const { email, firstName, changes, student, paymentDetails, ...formDetails } = await request.json();
+    const { receipient, first_name, changes, student, paymentDetails, ...formDetails } = await request.json();
     
     const { data, error } = await resend.emails.send({
       from: 'Campus Kota <no-reply@campuskota.in>',
-      to: [email],
+      to: [receipient],
       subject: changes ? `Record Update for ${student.first_name}` : 
               paymentDetails ? `Payment Receipt - ${paymentDetails.invoice_key}` :
-              `Welcome to Campus Kota, ${firstName}!`,
+              `Welcome to Campus Kota, ${first_name}!`,
       react: changes ? 
         <>
           {UpdateEmailTemplate({ changes, student })}
@@ -53,7 +53,7 @@ export async function POST(request) {
           {emailFooter}
         </> :
         <>
-          {EmailTemplate({ firstName, ...formDetails })}
+          {EmailTemplate({ firstName: first_name, ...formDetails })}
           {emailFooter}
         </>
     });

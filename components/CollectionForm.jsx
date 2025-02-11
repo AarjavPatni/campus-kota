@@ -213,6 +213,7 @@ const CollectionForm = ({
         ...formik.values,
         ...restCollection,
         ...restStudent,
+        security_deposit: collectionDetails?.security_deposit ?? studentDetails?.security_deposit ?? 0,
         monthly_charge: collectionDetails?.monthly_charge ?? (studentDetails ? 
           (studentDetails.monthly_rent || 0) + 
           (studentDetails.laundry_charge || 0) + 
@@ -222,6 +223,7 @@ const CollectionForm = ({
       } : {
         ...formik.values,
         ...restStudent,
+        security_deposit: studentDetails?.security_deposit ?? 0,
         monthly_charge: studentDetails ? 
           (studentDetails.monthly_rent || 0) + 
           (studentDetails.laundry_charge || 0) + 

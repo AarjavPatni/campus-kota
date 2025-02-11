@@ -65,10 +65,8 @@ export function StudentList() {
               <TableHeadCell>Room Number</TableHeadCell>
               <TableHeadCell>Student Name</TableHeadCell>
               <TableHeadCell>Student Contact No.</TableHeadCell>
-              <TableHeadCell>
-                <span className="sr-only">Edit</span>
-                <span className="sr-only">Collect</span>
-              </TableHeadCell>
+              <TableHeadCell></TableHeadCell>
+              <TableHeadCell></TableHeadCell>
             </TableHead>
             <TableBody className="divide-y">
               {studentDetails.map((student, index) => (

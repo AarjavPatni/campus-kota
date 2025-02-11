@@ -434,9 +434,10 @@ const CollectionForm = ({
                 disabled={formik.values.approved}
                 tabIndex={formik.values.approved ? -1 : 0}
               >
+                <option value="">Select Payment Method</option>
                 <option value="Cash">Cash</option>
-                <option value="UPI">UPI</option>
-                <option value="Cheque">Cheque</option>
+                <option value="UPI">PhonePay Campus</option>
+                <option value="Cheque">PhonePay MH</option>
               </select>
               {formik.touched.payment_method &&
                 formik.errors.payment_method && (

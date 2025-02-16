@@ -146,8 +146,8 @@ const CollectionForm = ({
         if (status === 201 || status === 200) {
           let emailSent = true;
           
-          // Only send email if not approved
-          if (!values.approved) {
+          // Skip email if updating an approved entry
+          if (!values.approved && !(invoice_key && collectionDetails?.approved)) {
             try {
               const emailResponse = await fetch("/api/send", {
                 method: "POST",

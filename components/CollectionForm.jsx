@@ -103,7 +103,7 @@ const CollectionForm = ({
         .toISOString()
         .replace("Z", "+5:30")
         .split("T")[0],
-      payment_method: collectionDetails?.payment_method ?? "",
+      payment_method: collectionDetails?.payment_method ?? "Cash",
       approved: collectionDetails?.approved ?? false,
     },
     validationSchema,
@@ -438,10 +438,9 @@ const CollectionForm = ({
                 disabled={formik.values.approved}
                 tabIndex={formik.values.approved ? -1 : 0}
               >
-                <option value="">Select Payment Method</option>
                 <option value="Cash">Cash</option>
-                <option value="UPI">PhonePay Campus</option>
-                <option value="Cheque">PhonePay MH</option>
+                <option value="PhPay-C">PhPay-C</option>
+                <option value="PhPay-M">PhPay-M</option>
               </select>
               {formik.touched.payment_method &&
                 formik.errors.payment_method && (

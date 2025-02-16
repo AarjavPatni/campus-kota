@@ -93,10 +93,10 @@ const CollectionForm = ({
       invoice_key: invoice_key || nextInvoiceKey || "",
       room_name: collectionDetails?.room_name ?? studentDetails?.room_name ?? "",
       monthly_charge: collectionDetails?.monthly_charge ?? (studentDetails ? 
-        (studentDetails.monthly_rent || 0) + 
-        (studentDetails.laundry_charge || 0) + 
-        (studentDetails.other_charge || 0) : 0),
-      security_deposit: 0,
+        (studentDetails.monthly_rent || '') + 
+        (studentDetails.laundry_charge || '') + 
+        (studentDetails.other_charge || '') : ''),
+      security_deposit: '',
       year: collectionDetails?.year ?? new Date().getUTCFullYear(),
       month: collectionDetails?.month ?? new Date().getUTCMonth() + 1,
       payment_date: collectionDetails?.payment_date ?? new Date()
@@ -108,6 +108,10 @@ const CollectionForm = ({
     },
     validationSchema,
     onSubmit: async (values) => {
+      // Transform empty strings to 0 directly in the values object
+      values.monthly_charge = values.monthly_charge === '' ? 0 : values.monthly_charge;
+      values.security_deposit = values.security_deposit === '' ? 0 : values.security_deposit;
+      
       // Remove generated column from submission
       const { total_amount, ...submissionValues } = values;
       
@@ -151,7 +155,7 @@ const CollectionForm = ({
                 body: JSON.stringify({
                   email: studentDetails?.email,
                   subject: `Payment Receipt - ${values.invoice_key}`,
-                  receipient: studentDetails?.email,
+                  recipient: studentDetails?.email,
                   paymentDetails: {
                     ...values,
                     receipt_no: formik.values.receipt_no,
@@ -209,6 +213,8 @@ const CollectionForm = ({
             text: `Unexpected status code: ${status}`,
             type: "error"
           });
+          setToggleToast(true);
+          setToastOpacity(1);
         }
       } catch (error) {
         console.log(values)
@@ -347,9 +353,9 @@ const CollectionForm = ({
                 type="number"
                 id="monthly_charge"
                 name="monthly_charge"
-                value={formik.values.monthly_charge}
+                value={formik.values.monthly_charge || ''}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
+                  const value = e.target.value === '' ? '' : parseInt(e.target.value);
                   formik.setFieldValue("monthly_charge", value);
                 }}
                 onBlur={formik.handleBlur}
@@ -378,9 +384,9 @@ const CollectionForm = ({
                 type="number"
                 id="security_deposit"
                 name="security_deposit"
-                value={formik.values.security_deposit}
+                value={formik.values.security_deposit || ''}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || 0;
+                  const value = e.target.value === '' ? '' : parseInt(e.target.value);
                   formik.setFieldValue("security_deposit", value);
                 }}
                 onBlur={formik.handleBlur}

@@ -34,11 +34,11 @@ const emailFooter = (
 
 export async function POST(request) {
   try {
-    const { receipient, first_name, changes, student, paymentDetails, ...formDetails } = await request.json();
+    const { recipient, first_name, changes, student, paymentDetails, ...formDetails } = await request.json();
     
     const { data, error } = await resend.emails.send({
       from: 'Campus Kota <no-reply@campuskota.in>',
-      to: [receipient],
+      to: [recipient],
       subject: changes ? `Record Update for ${student.first_name}` : 
               paymentDetails ? `Payment Receipt - ${paymentDetails.invoice_key}` :
               `Welcome to Campus Kota, ${first_name}!`,

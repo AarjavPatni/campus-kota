@@ -91,7 +91,7 @@ const StudentDetailsForm = ({ uid }) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        receipient: "records@campuskota.in",
+        recipient: "records@campuskota.in",
         subject: "Student Record Update",
         changes: changes,
         student: values,
@@ -104,8 +104,8 @@ const StudentDetailsForm = ({ uid }) => {
   const formik = useFormik({
     initialValues: {
       ...studentDetails,
-      original_room: studentDetails?.original_room || 0,
-      room_number: studentDetails?.room_number || 0,
+      original_room: studentDetails?.original_room || "",
+      room_number: studentDetails?.room_number || "",
       first_name: studentDetails?.first_name || "",
       last_name: studentDetails?.last_name || "",
       father_name: studentDetails?.father_name || "",
@@ -117,10 +117,10 @@ const StudentDetailsForm = ({ uid }) => {
       guardian_mobile: studentDetails?.guardian_mobile || "",
       remarks: studentDetails?.remarks || "",
       address: studentDetails?.address || "",
-      security_deposit: studentDetails?.security_deposit || 0,
-      monthly_rent: studentDetails?.monthly_rent || 0,
-      laundry_charge: studentDetails?.laundry_charge || 0,
-      other_charge: studentDetails?.other_charge || 0,
+      security_deposit: studentDetails?.security_deposit || "",
+      monthly_rent: studentDetails?.monthly_rent || "",
+      laundry_charge: studentDetails?.laundry_charge || "",
+      other_charge: studentDetails?.other_charge || "",
       start_date:
         studentDetails?.start_date || new Date().toISOString().split("T")[0],
       end_date: studentDetails?.end_date || "9999-12-31",
@@ -130,6 +130,14 @@ const StudentDetailsForm = ({ uid }) => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
+        // Directly transform empty strings to 0
+        values.original_room = values.original_room === '' ? 0 : values.original_room;
+        values.room_number = values.room_number === '' ? 0 : values.room_number;
+        values.security_deposit = values.security_deposit === '' ? 0 : values.security_deposit;
+        values.monthly_rent = values.monthly_rent === '' ? 0 : values.monthly_rent;
+        values.laundry_charge = values.laundry_charge === '' ? 0 : values.laundry_charge;
+        values.other_charge = values.other_charge === '' ? 0 : values.other_charge;
+
         // Capitalize all fields except remarks
         const capitalize = (str) =>
           str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -207,7 +215,7 @@ const StudentDetailsForm = ({ uid }) => {
         // Student email if flag set
         if (sendEmailFlag) {
           try {
-            await sendNewEntryEmail(values);
+            await sendNewEntryEmail(capitalizedValues);
           } catch (emailError) {
             allEmailsSuccessful = false;
             console.error("Email Error:", emailError);
@@ -258,7 +266,7 @@ const StudentDetailsForm = ({ uid }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          receipient: values.email,
+          recipient: values.email,
           first_name: values.first_name,
           ...values,
         }),
@@ -607,7 +615,7 @@ const StudentDetailsForm = ({ uid }) => {
                 type="number"
                 id="monthly_rent"
                 name="monthly_rent"
-                value={formik.values.monthly_rent}
+                value={formik.values.monthly_rent || ""}
                 onChange={handleMonthlyRentChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
@@ -666,7 +674,7 @@ const StudentDetailsForm = ({ uid }) => {
                 type="number"
                 id="laundry_charge"
                 name="laundry_charge"
-                value={formik.values.laundry_charge}
+                value={formik.values.laundry_charge || ""}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${
@@ -694,7 +702,7 @@ const StudentDetailsForm = ({ uid }) => {
                 type="number"
                 id="other_charge"
                 name="other_charge"
-                value={formik.values.other_charge}
+                value={formik.values.other_charge || ""}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 bg-gray-800 text-white rounded ${

@@ -203,6 +203,7 @@ const CollectionForm = ({
                   email: studentDetails?.email,
                   subject: `Payment Receipt - ${values.invoice_key}`,
                   recipient: studentDetails?.email,
+                  bcc: "niteshpatni@hotmail.com",
                   paymentDetails: {
                     ...values,
                     receipt_no: formik.values.receipt_no,

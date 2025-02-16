@@ -140,35 +140,66 @@ const CollectionForm = ({
         }
 
         if (status === 201 || status === 200) {
+          let emailSent = true;
+          
           // Only send email if not approved
           if (!values.approved) {
-            await fetch("/api/send", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: studentDetails.email,
-                subject: `Payment Receipt - ${values.invoice_key}`,
-                paymentDetails: {
-                  ...values,
-                  receipt_no: formik.values.receipt_no,
-                },
-                student: studentDetails
-              }),
-            });
+            try {
+              const emailResponse = await fetch("/api/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  email: studentDetails?.email,
+                  subject: `Payment Receipt - ${values.invoice_key}`,
+                  receipient: studentDetails?.email,
+                  paymentDetails: {
+                    ...values,
+                    receipt_no: formik.values.receipt_no,
+                  },
+                  student: studentDetails
+                }),
+              });
+
+              if (!emailResponse.ok) {
+                emailSent = false;
+                throw new Error(`Email failed with status: ${emailResponse.status}`);
+              }
+
+              console.log("Email sent!");
+            } catch (emailError) {
+              emailSent = false;
+              console.error("Email Error:", emailError);
+              setToastMessage({
+                text: `Payment recorded but email failed: ${emailError.message}`,
+                type: "error"
+              });
+              setToggleToast(true);
+              setToastOpacity(1);
+              return; // Exit early since email failed
+            }
           }
 
           setToastMessage({
-            text: values.approved ? "Payment record updated successfully" : "Payment recorded and receipt sent successfully",
-            type: "success"
+            text: values.approved ? 
+              "Payment record updated successfully" : 
+              emailSent ? 
+                "Payment recorded and receipt sent successfully" :
+                "Payment recorded but email failed to send",
+            type: emailSent ? "success" : "error"
           });
+          setToggleToast(true);
+          setToastOpacity(1);
 
-          setTimeout(() => {
-            setToastOpacity(0);
+          // Only redirect if email was successful or not required
+          if (emailSent || values.approved) {
             setTimeout(() => {
-              setToggleToast(false);
-              window.location.href = "/admin";
-            }, 300);
-          }, 1500);
+              setToastOpacity(0);
+              setTimeout(() => {
+                setToggleToast(false);
+                // window.location.href = "/admin";
+              }, 300);
+            }, 1500);
+          }
 
           setTimeout(() => {
             setToggleForm(false);
@@ -179,10 +210,6 @@ const CollectionForm = ({
             type: "error"
           });
         }
-
-        setToggleToast(true);
-        setToastOpacity(1);
-        formik.resetForm();
       } catch (error) {
         console.log(values)
         setToastMessage({

@@ -96,7 +96,7 @@ const CollectionForm = ({
         (studentDetails.monthly_rent || 0) + 
         (studentDetails.laundry_charge || 0) + 
         (studentDetails.other_charge || 0) : 0),
-      security_deposit: collectionDetails?.security_deposit ?? 0,
+      security_deposit: 0,
       year: collectionDetails?.year ?? new Date().getUTCFullYear(),
       month: collectionDetails?.month ?? new Date().getUTCMonth() + 1,
       payment_date: collectionDetails?.payment_date ?? new Date()
@@ -223,7 +223,7 @@ const CollectionForm = ({
       } : {
         ...formik.values,
         ...restStudent,
-        security_deposit: studentDetails?.security_deposit ?? 0,
+        security_deposit: 0,
         monthly_charge: studentDetails ? 
           (studentDetails.monthly_rent || 0) + 
           (studentDetails.laundry_charge || 0) + 

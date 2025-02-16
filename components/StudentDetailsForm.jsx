@@ -91,7 +91,7 @@ const StudentDetailsForm = ({ uid }) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: "records@campuskota.in",
+        receipient: "records@campuskota.in",
         subject: "Student Record Update",
         changes: changes,
         student: values,

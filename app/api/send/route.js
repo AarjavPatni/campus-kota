@@ -2,6 +2,7 @@ import { Resend } from 'resend';
 import { EmailTemplate } from '@/components/student-details-email';
 import { UpdateEmailTemplate } from '@/components/update-details-email';
 import { PaymentReceiptEmail } from '@/components/payment-receipt-email';
+import { UpdateCollectionTemplate } from '@/components/update-collection-email';
 
 const resend = new Resend(process.env.RESEND_KEY);
 
@@ -34,17 +35,23 @@ const emailFooter = (
 
 export async function POST(request) {
   try {
-    const { recipient, first_name, changes, student, paymentDetails, ...formDetails } = await request.json();
+    const { recipient, first_name, collectionChanges, detailsChanges, student, paymentDetails, ...formDetails } = await request.json();
     
     const { data, error } = await resend.emails.send({
       from: 'Campus Kota <no-reply@campuskota.in>',
       to: [recipient],
-      subject: changes ? `Record Update for ${student.first_name}` : 
+      subject: detailsChanges ? `Record Update for ${student.first_name}` : 
+              collectionChanges ? `Payment Update for ${paymentDetails.invoice_key}` :
               paymentDetails ? `Payment Receipt - ${paymentDetails.invoice_key}` :
               `Welcome to Campus Kota, ${first_name}!`,
-      react: changes ? 
+      react: detailsChanges ? 
         <>
-          {UpdateEmailTemplate({ changes, student })}
+          {UpdateEmailTemplate({ changes: detailsChanges, student })}
+          {emailFooter}
+        </> :
+        collectionChanges ?
+        <>
+          {UpdateCollectionTemplate({ changes: collectionChanges, collection: paymentDetails })}
           {emailFooter}
         </> :
         paymentDetails ? 

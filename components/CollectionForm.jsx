@@ -32,6 +32,7 @@ const CollectionForm = ({
   const [toggleToast, setToggleToast] = useState(false);
   const [toastOpacity, setToastOpacity] = useState(1);
   const [toastMessage, setToastMessage] = useState({ text: "", type: "" });
+  const [changes, setChanges] = useState({});
 
   useEffect(() => {
     const fetchPastCollections = async () => {
@@ -52,7 +53,9 @@ const CollectionForm = ({
 
       let { data: student_details, error: student_error } = await supabase
         .from("student_details")
-        .select("uid,room_name,security_deposit,monthly_rent,email,laundry_charge,other_charge")
+        .select(
+          "uid,room_name,security_deposit,monthly_rent,email,laundry_charge,other_charge"
+        )
         .eq("uid", uid);
 
       if (student_error) {
@@ -87,36 +90,58 @@ const CollectionForm = ({
     fetchPastCollections();
   }, [uid]);
 
+  const getChanges = (oldData, newData) => {
+    const changes = {};
+    Object.keys(newData).forEach((key) => {
+      if (oldData[key] !== newData[key]) {
+        changes[key] = {
+          old: oldData[key],
+          new: newData[key],
+        };
+      }
+    });
+    return changes;
+  };
+
   const formik = useFormik({
     initialValues: {
-      receipt_no: collectionDetails?.receipt_no ?? `${invoice_key || nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
+      receipt_no:
+        collectionDetails?.receipt_no ??
+        `${invoice_key || nextInvoiceKey || ""} (${
+          studentDetails?.room_name || ""
+        })`,
       invoice_key: invoice_key || nextInvoiceKey || "",
-      room_name: collectionDetails?.room_name ?? studentDetails?.room_name ?? "",
-      monthly_charge: collectionDetails?.monthly_charge ?? (studentDetails ? 
-        (studentDetails.monthly_rent || '') + 
-        (studentDetails.laundry_charge || '') + 
-        (studentDetails.other_charge || '') : ''),
-      security_deposit: '',
+      room_name:
+        collectionDetails?.room_name ?? studentDetails?.room_name ?? "",
+      monthly_charge:
+        collectionDetails?.monthly_charge ??
+        (studentDetails
+          ? (studentDetails.monthly_rent || "") +
+            (studentDetails.laundry_charge || "") +
+            (studentDetails.other_charge || "")
+          : ""),
+      security_deposit: "",
       year: collectionDetails?.year ?? new Date().getUTCFullYear(),
       month: collectionDetails?.month ?? new Date().getUTCMonth() + 1,
-      payment_date: collectionDetails?.payment_date ?? new Date()
-        .toISOString()
-        .replace("Z", "+5:30")
-        .split("T")[0],
+      payment_date:
+        collectionDetails?.payment_date ??
+        new Date().toISOString().replace("Z", "+5:30").split("T")[0],
       payment_method: collectionDetails?.payment_method ?? "Cash",
       approved: collectionDetails?.approved ?? false,
     },
     validationSchema,
     onSubmit: async (values) => {
       // Transform empty strings to 0 directly in the values object
-      values.monthly_charge = values.monthly_charge === '' ? 0 : values.monthly_charge;
-      values.security_deposit = values.security_deposit === '' ? 0 : values.security_deposit;
-      
+      values.monthly_charge =
+        values.monthly_charge === "" ? 0 : values.monthly_charge;
+      values.security_deposit =
+        values.security_deposit === "" ? 0 : values.security_deposit;
+
       // Remove generated column from submission
       const { total_amount, ...submissionValues } = values;
-      
+
       let resp, status;
-      
+
       try {
         if (!invoice_key) {
           const response = await supabase
@@ -138,16 +163,38 @@ const CollectionForm = ({
         if (resp.error) {
           setToastMessage({
             text: `Database Error: ${resp.error.message}`,
-            type: "error"
+            type: "error",
           });
           throw resp.error;
         }
 
         if (status === 201 || status === 200) {
           let emailSent = true;
-          
-          // Skip email if updating an approved entry
-          if (!values.approved && !(invoice_key && collectionDetails?.approved)) {
+
+          // Track changes if editing
+          if (invoice_key && !collectionDetails?.approved) {
+            const changes = getChanges(collectionDetails, values);
+            setChanges(changes);
+
+            // Send update email if there are changes
+            if (Object.keys(changes).length > 0) {
+              try {
+                await fetch("/api/send", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    recipient: studentDetails?.email,
+                    collectionChanges: changes,
+                    paymentDetails: values,
+                    student: studentDetails,
+                  }),
+                });
+                console.log("Sent changes via email");
+              } catch (emailError) {
+                console.error("Update email error:", emailError);
+              }
+            }
+          } else if (!invoice_key) {
             try {
               const emailResponse = await fetch("/api/send", {
                 method: "POST",
@@ -160,13 +207,15 @@ const CollectionForm = ({
                     ...values,
                     receipt_no: formik.values.receipt_no,
                   },
-                  student: studentDetails
+                  student: studentDetails,
                 }),
               });
 
               if (!emailResponse.ok) {
                 emailSent = false;
-                throw new Error(`Email failed with status: ${emailResponse.status}`);
+                throw new Error(
+                  `Email failed with status: ${emailResponse.status}`
+                );
               }
 
               console.log("Email sent!");
@@ -175,7 +224,7 @@ const CollectionForm = ({
               console.error("Email Error:", emailError);
               setToastMessage({
                 text: `Payment recorded but email failed: ${emailError.message}`,
-                type: "error"
+                type: "error",
               });
               setToggleToast(true);
               setToastOpacity(1);
@@ -183,14 +232,24 @@ const CollectionForm = ({
             }
           }
 
-          setToastMessage({
-            text: values.approved ? 
-              "Payment record updated successfully" : 
-              emailSent ? 
-                "Payment recorded and receipt sent successfully" :
-                "Payment recorded but email failed to send",
-            type: emailSent ? "success" : "error"
-          });
+          // Show changes in toast message if editing
+          if (invoice_key && Object.keys(changes).length > 0) {
+            setToastMessage({
+              text: `Payment record updated. Changes: ${JSON.stringify(
+                changes
+              )}`,
+              type: "success",
+            });
+          } else {
+            setToastMessage({
+              text: values.approved
+                ? "Payment record updated successfully"
+                : emailSent
+                ? "Payment recorded and receipt sent successfully"
+                : "Payment recorded but email failed to send",
+              type: emailSent ? "success" : "error",
+            });
+          }
           setToggleToast(true);
           setToastOpacity(1);
 
@@ -200,7 +259,7 @@ const CollectionForm = ({
               setToastOpacity(0);
               setTimeout(() => {
                 setToggleToast(false);
-                // window.location.href = "/admin";
+                window.location.href = "/collectionList";
               }, 300);
             }, 1500);
           }
@@ -211,16 +270,16 @@ const CollectionForm = ({
         } else {
           setToastMessage({
             text: `Unexpected status code: ${status}`,
-            type: "error"
+            type: "error",
           });
           setToggleToast(true);
           setToastOpacity(1);
         }
       } catch (error) {
-        console.log(values)
+        console.log(values);
         setToastMessage({
           text: `Error: ${error.message}`,
-          type: "error"
+          type: "error",
         });
         setToggleToast(true);
         setToastOpacity(1);
@@ -232,38 +291,51 @@ const CollectionForm = ({
   useEffect(() => {
     if (collectionDetails || studentDetails) {
       const { security_deposit, ...restCollection } = collectionDetails || {};
-      const { 
-        security_deposit: studentSecurity, 
+      const {
+        security_deposit: studentSecurity,
         email,
-        laundry_charge,   
-        other_charge,     
-        monthly_rent,     
-        ...restStudent 
+        laundry_charge,
+        other_charge,
+        monthly_rent,
+        ...restStudent
       } = studentDetails || {};
 
       // Only use collectionDetails if we're editing (invoice_key exists)
-      const valuesToSet = invoice_key ? {
-        ...formik.values,
-        ...restCollection,
-        ...restStudent,
-        security_deposit: collectionDetails?.security_deposit ?? studentDetails?.security_deposit ?? 0,
-        monthly_charge: collectionDetails?.monthly_charge ?? (studentDetails ? 
-          (studentDetails.monthly_rent || 0) + 
-          (studentDetails.laundry_charge || 0) + 
-          (studentDetails.other_charge || 0) : 0),
-        invoice_key: invoice_key || nextInvoiceKey,
-        receipt_no: `${invoice_key || nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
-      } : {
-        ...formik.values,
-        ...restStudent,
-        security_deposit: 0,
-        monthly_charge: studentDetails ? 
-          (studentDetails.monthly_rent || 0) + 
-          (studentDetails.laundry_charge || 0) + 
-          (studentDetails.other_charge || 0) : 0,
-        invoice_key: nextInvoiceKey,
-        receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""})`,
-      };
+      const valuesToSet = invoice_key
+        ? {
+            ...formik.values,
+            ...restCollection,
+            ...restStudent,
+            security_deposit:
+              collectionDetails?.security_deposit ??
+              studentDetails?.security_deposit ??
+              0,
+            monthly_charge:
+              collectionDetails?.monthly_charge ??
+              (studentDetails
+                ? (studentDetails.monthly_rent || 0) +
+                  (studentDetails.laundry_charge || 0) +
+                  (studentDetails.other_charge || 0)
+                : 0),
+            invoice_key: invoice_key || nextInvoiceKey,
+            receipt_no: `${invoice_key || nextInvoiceKey || ""} (${
+              studentDetails?.room_name || ""
+            })`,
+          }
+        : {
+            ...formik.values,
+            ...restStudent,
+            security_deposit: 0,
+            monthly_charge: studentDetails
+              ? (studentDetails.monthly_rent || 0) +
+                (studentDetails.laundry_charge || 0) +
+                (studentDetails.other_charge || 0)
+              : 0,
+            invoice_key: nextInvoiceKey,
+            receipt_no: `${nextInvoiceKey || ""} (${
+              studentDetails?.room_name || ""
+            })`,
+          };
 
       formik.setValues(valuesToSet);
     }
@@ -329,7 +401,9 @@ const CollectionForm = ({
                 }}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 rounded ${
-                  formik.values.approved ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white'
+                  formik.values.approved
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
                 }`}
                 readOnly={formik.values.approved}
                 tabIndex={formik.values.approved ? -1 : 0}
@@ -353,23 +427,27 @@ const CollectionForm = ({
                 type="number"
                 id="monthly_charge"
                 name="monthly_charge"
-                value={formik.values.monthly_charge || ''}
+                value={formik.values.monthly_charge || ""}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                  const value =
+                    e.target.value === "" ? "" : parseInt(e.target.value);
                   formik.setFieldValue("monthly_charge", value);
                 }}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 rounded ${
-                  !!invoice_key ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white'
+                  !!invoice_key
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
                 }`}
                 readOnly={!!invoice_key}
                 tabIndex={!!invoice_key ? -1 : 0}
               />
-              {formik.touched.monthly_charge && formik.errors.monthly_charge && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.monthly_charge}
-                </div>
-              )}
+              {formik.touched.monthly_charge &&
+                formik.errors.monthly_charge && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.monthly_charge}
+                  </div>
+                )}
             </div>
 
             {/* Security Deposit */}
@@ -384,14 +462,17 @@ const CollectionForm = ({
                 type="number"
                 id="security_deposit"
                 name="security_deposit"
-                value={formik.values.security_deposit || ''}
+                value={formik.values.security_deposit || ""}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                  const value =
+                    e.target.value === "" ? "" : parseInt(e.target.value);
                   formik.setFieldValue("security_deposit", value);
                 }}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 rounded ${
-                  !!invoice_key ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white'
+                  !!invoice_key
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
                 }`}
                 readOnly={!!invoice_key}
                 tabIndex={!!invoice_key ? -1 : 0}
@@ -440,7 +521,7 @@ const CollectionForm = ({
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className={`mr-2 ${
-                    formik.values.approved ? 'opacity-50' : 'opacity-100'
+                    formik.values.approved ? "opacity-50" : "opacity-100"
                   }`}
                   disabled={formik.values.approved}
                   tabIndex={formik.values.approved ? -1 : 0}
@@ -466,7 +547,9 @@ const CollectionForm = ({
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`w-full p-2 rounded ${
-                  formik.values.approved ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white'
+                  formik.values.approved
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
                 }`}
                 disabled={formik.values.approved}
                 tabIndex={formik.values.approved ? -1 : 0}
@@ -511,7 +594,7 @@ const CollectionForm = ({
                 <button
                   type="button"
                   className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
-                  onClick={() => window.location.href = "/collectionList"}
+                  onClick={() => (window.location.href = "/collectionList")}
                 >
                   Cancel
                 </button>
@@ -530,11 +613,13 @@ const CollectionForm = ({
           style={{ opacity: toastOpacity }}
         >
           <Toast className="flex items-center bg-white shadow-lg rounded-lg p-4">
-            <div className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-              toastMessage.type === "success" 
-                ? "bg-green-100 text-green-500" 
-                : "bg-red-100 text-red-500"
-            }`}>
+            <div
+              className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                toastMessage.type === "success"
+                  ? "bg-green-100 text-green-500"
+                  : "bg-red-100 text-red-500"
+              }`}
+            >
               {toastMessage.type === "success" ? (
                 <HiCheck className="h-5 w-5" />
               ) : (

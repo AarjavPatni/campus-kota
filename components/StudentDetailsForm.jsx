@@ -93,7 +93,7 @@ const StudentDetailsForm = ({ uid }) => {
       body: JSON.stringify({
         recipient: "records@campuskota.in",
         subject: "Student Record Update",
-        changes: changes,
+        detailsChanges: changes,
         student: values,
       }),
     });

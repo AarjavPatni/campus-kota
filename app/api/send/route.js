@@ -53,7 +53,7 @@ export async function POST(request) {
           {emailFooter}
         </> :
         <>
-          {EmailTemplate({ firstName: first_name, ...formDetails })}
+          {EmailTemplate({ first_name, ...formDetails })}
           {emailFooter}
         </>
     });

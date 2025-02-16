@@ -264,22 +264,11 @@ const StudentDetailsForm = ({ uid }) => {
         }),
       });
 
-      // Send to records@campuskota.in
-      const recordsResponse = await fetch("/api/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          receipient: "records@campuskota.in",
-          subject: `Student Details for ${values.first_name}`,
-          ...values,
-        }),
-      });
-
-      if (!studentResponse.ok || !recordsResponse.ok) {
-        throw new Error("One or more emails failed");
+      if (!studentResponse.ok) {
+        throw new Error("Emails failed");
       }
 
-      return { studentResponse, infoResponse: recordsResponse };
+      return { studentResponse };
     } catch (error) {
       throw new Error("Email failed with status: " + error.message);
     }
@@ -296,7 +285,9 @@ const StudentDetailsForm = ({ uid }) => {
     if (toastOpacity === 1 && toastMessage.type === "success") {
       const timer = setTimeout(() => {
         setToastOpacity(0);
-        setTimeout(() => (window.location.href = "/admin"), 300);
+        setTimeout(() => {
+          window.location.href = "/admin";
+        }, 300);
       }, 1000);
       return () => clearTimeout(timer);
     }

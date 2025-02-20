@@ -44,7 +44,7 @@ export async function POST(request) {
               collectionChanges ? `Payment Update for ${paymentDetails.invoice_key}` :
               paymentDetails ? `Payment Receipt - ${paymentDetails.invoice_key}` :
               `Welcome to Campus Kota, ${first_name}!`,
-      bcc: (collectionChanges || paymentDetails) ? ['campuskota@outlook.com'] : [],
+      bcc: (collectionChanges || paymentDetails) ? ['records@campuskota.in'] : [],
       react: detailsChanges ? 
         <>
           {UpdateEmailTemplate({ changes: detailsChanges, student })}

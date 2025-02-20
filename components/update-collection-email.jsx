@@ -85,7 +85,7 @@ export const UpdateCollectionTemplate = ({ changes, collection }) => {
             marginBottom: '12px',
             fontWeight: '600'
           }}>
-            Current Payment Details
+            Payment Details
           </h3>
           <div style={{ color: '#9ca3af', lineHeight: '1.5' }}>
             <div>Invoice #: {collection.invoice_key}</div>
@@ -93,7 +93,6 @@ export const UpdateCollectionTemplate = ({ changes, collection }) => {
             <div>Security Deposit: ₹{Number(collection.security_deposit).toLocaleString('en-IN')}</div>
             <div>Payment Date: {new Date(collection.payment_date).toLocaleDateString('en-IN')}</div>
             <div>Payment Mode: {collection.payment_method}</div>
-            <div>Approved: {collection.approved ? "Yes" : "No"}</div>
           </div>
         </div>
 

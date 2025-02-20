@@ -172,7 +172,7 @@ const CollectionForm = ({
           let emailSent = true;
 
           // Track changes if editing
-          if (invoice_key && !collectionDetails?.approved) {
+          if (invoice_key && !values.approved) {
             const changes = getChanges(collectionDetails, values);
             setChanges(changes);
 

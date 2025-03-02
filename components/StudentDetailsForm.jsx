@@ -569,14 +569,16 @@ const StudentDetailsForm = ({ uid }) => {
               >
                 Remarks:
               </label>
-              <textarea
-                id="remarks"
-                name="remarks"
-                value={formik.values.remarks}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
+              {uid && (
+                <textarea
+                  id="remarks"
+                  name="remarks"
+                  value={formik.values.remarks}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full p-2 bg-gray-800 text-white rounded"
+                />
+              )}
               {formik.touched.remarks && formik.errors.remarks && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.remarks}
@@ -670,20 +672,22 @@ const StudentDetailsForm = ({ uid }) => {
               >
                 Laundry Charge:
               </label>
-              <input
-                type="number"
-                id="laundry_charge"
-                name="laundry_charge"
-                value={formik.values.laundry_charge || ""}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved
-                    ? "opacity-75 cursor-not-allowed"
-                    : ""
-                }`}
-                readOnly={uid && formik.values.approved}
-              />
+              {uid && (
+                <input
+                  type="number"
+                  id="laundry_charge"
+                  name="laundry_charge"
+                  value={formik.values.laundry_charge || ""}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full p-2 bg-gray-800 text-white rounded ${
+                    uid && formik.values.approved
+                      ? "opacity-75 cursor-not-allowed"
+                      : ""
+                  }`}
+                  readOnly={uid && formik.values.approved}
+                />
+              )}
               {formik.touched.laundry_charge &&
                 formik.errors.laundry_charge && (
                   <div className="text-red-500 text-sm mt-1">
@@ -698,20 +702,22 @@ const StudentDetailsForm = ({ uid }) => {
               >
                 Other Charges:
               </label>
-              <input
-                type="number"
-                id="other_charge"
-                name="other_charge"
-                value={formik.values.other_charge || ""}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved
-                    ? "opacity-75 cursor-not-allowed"
-                    : ""
-                }`}
-                readOnly={uid && formik.values.approved}
-              />
+              {uid && (
+                <input
+                  type="number"
+                  id="other_charge"
+                  name="other_charge"
+                  value={formik.values.other_charge || ""}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full p-2 bg-gray-800 text-white rounded ${
+                    uid && formik.values.approved
+                      ? "opacity-75 cursor-not-allowed"
+                      : ""
+                  }`}
+                  readOnly={uid && formik.values.approved}
+                />
+              )}
               {formik.touched.other_charge && formik.errors.other_charge && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.other_charge}
@@ -752,35 +758,39 @@ const StudentDetailsForm = ({ uid }) => {
               >
                 End Date:
               </label>
-              <input
-                type="date"
-                id="end_date"
-                name="end_date"
-                value={formik.values.end_date}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
+              {uid && (
+                <input
+                  type="date"
+                  id="end_date"
+                  name="end_date"
+                  value={formik.values.end_date}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full p-2 bg-gray-800 text-white rounded"
+                />
+              )}
               {formik.touched.end_date && formik.errors.end_date && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.end_date}
                 </div>
               )}
             </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="active"
-                name="active"
-                checked={formik.values.active}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="mr-2"
-              />
-              <label htmlFor="active" className="text-sm font-medium">
-                Active
-              </label>
-            </div>
+            {uid && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="active"
+                  name="active"
+                  checked={formik.values.active}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="mr-2"
+                />
+                <label htmlFor="active" className="text-sm font-medium">
+                  Active
+                </label>
+              </div>
+            )}
             {uid && (
               <div className="flex items-center">
                 <input

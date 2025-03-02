@@ -131,12 +131,17 @@ const StudentDetailsForm = ({ uid }) => {
     onSubmit: async (values) => {
       try {
         // Directly transform empty strings to 0
-        values.original_room = values.original_room === '' ? 0 : values.original_room;
-        values.room_number = values.room_number === '' ? 0 : values.room_number;
-        values.security_deposit = values.security_deposit === '' ? 0 : values.security_deposit;
-        values.monthly_rent = values.monthly_rent === '' ? 0 : values.monthly_rent;
-        values.laundry_charge = values.laundry_charge === '' ? 0 : values.laundry_charge;
-        values.other_charge = values.other_charge === '' ? 0 : values.other_charge;
+        values.original_room =
+          values.original_room === "" ? 0 : values.original_room;
+        values.room_number = values.room_number === "" ? 0 : values.room_number;
+        values.security_deposit =
+          values.security_deposit === "" ? 0 : values.security_deposit;
+        values.monthly_rent =
+          values.monthly_rent === "" ? 0 : values.monthly_rent;
+        values.laundry_charge =
+          values.laundry_charge === "" ? 0 : values.laundry_charge;
+        values.other_charge =
+          values.other_charge === "" ? 0 : values.other_charge;
 
         // Capitalize all fields except remarks
         const capitalize = (str) =>
@@ -269,6 +274,7 @@ const StudentDetailsForm = ({ uid }) => {
           recipient: values.email,
           first_name: values.first_name,
           ...values,
+          bcc: "campuskota@outlook.com",
         }),
       });
 

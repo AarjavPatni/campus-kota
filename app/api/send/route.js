@@ -35,16 +35,16 @@ const emailFooter = (
 
 export async function POST(request) {
   try {
-    const { recipient, first_name, collectionChanges, detailsChanges, student, paymentDetails, ...formDetails } = await request.json();
+    const { recipient, first_name, collectionChanges, detailsChanges, student, paymentDetails, bcc, ...formDetails } = await request.json();
     
     const { data, error } = await resend.emails.send({
       from: 'Campus Kota <no-reply@campuskota.in>',
       to: [recipient],
+      bcc: [bcc] || [],
       subject: detailsChanges ? `Record Update for ${student.first_name}` : 
               collectionChanges ? `Payment Update for ${paymentDetails.invoice_key}` :
               paymentDetails ? `Payment Receipt - ${paymentDetails.invoice_key}` :
               `Welcome to Campus Kota, ${first_name}!`,
-      bcc: (collectionChanges || paymentDetails) ? ['records@campuskota.in'] : [],
       react: detailsChanges ? 
         <>
           {UpdateEmailTemplate({ changes: detailsChanges, student })}

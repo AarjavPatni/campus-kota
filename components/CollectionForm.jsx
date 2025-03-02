@@ -107,7 +107,8 @@ const CollectionForm = ({
     initialValues: {
       receipt_no:
         collectionDetails?.receipt_no ??
-        `${invoice_key || nextInvoiceKey || ""} (${studentDetails?.room_name || ""
+        `${invoice_key || nextInvoiceKey || ""} (${
+          studentDetails?.room_name || ""
         })`,
       invoice_key: invoice_key || nextInvoiceKey || "",
       room_name:
@@ -116,8 +117,8 @@ const CollectionForm = ({
         collectionDetails?.monthly_charge ??
         (studentDetails
           ? (studentDetails.monthly_rent || "") +
-          (studentDetails.laundry_charge || "") +
-          (studentDetails.other_charge || "")
+            (studentDetails.laundry_charge || "") +
+            (studentDetails.other_charge || "")
           : ""),
       security_deposit: "",
       year: collectionDetails?.year ?? new Date().getUTCFullYear(),
@@ -183,6 +184,7 @@ const CollectionForm = ({
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
                     recipient: studentDetails?.email,
+                    bcc: "records@campuskota.in",
                     collectionChanges: changes,
                     paymentDetails: values,
                     student: studentDetails,
@@ -200,6 +202,7 @@ const CollectionForm = ({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   email: studentDetails?.email,
+                  bcc: "records@campuskota.in",
                   subject: `Payment Receipt - ${values.invoice_key}`,
                   recipient: studentDetails?.email,
                   paymentDetails: {
@@ -244,8 +247,8 @@ const CollectionForm = ({
               text: values.approved
                 ? "Payment record updated successfully"
                 : emailSent
-                  ? "Payment recorded and receipt sent successfully"
-                  : "Payment recorded but email failed to send",
+                ? "Payment recorded and receipt sent successfully"
+                : "Payment recorded but email failed to send",
               type: emailSent ? "success" : "error",
             });
           }
@@ -302,37 +305,39 @@ const CollectionForm = ({
       // Only use collectionDetails if we're editing (invoice_key exists)
       const valuesToSet = invoice_key
         ? {
-          ...formik.values,
-          ...restCollection,
-          ...restStudent,
-          security_deposit:
-            collectionDetails?.security_deposit ??
-            studentDetails?.security_deposit ??
-            0,
-          monthly_charge:
-            collectionDetails?.monthly_charge ??
-            (studentDetails
-              ? (studentDetails.monthly_rent || 0) +
-              (studentDetails.laundry_charge || 0) +
-              (studentDetails.other_charge || 0)
-              : 0),
-          invoice_key: invoice_key || nextInvoiceKey,
-          receipt_no: `${invoice_key || nextInvoiceKey || ""} (${studentDetails?.room_name || ""
+            ...formik.values,
+            ...restCollection,
+            ...restStudent,
+            security_deposit:
+              collectionDetails?.security_deposit ??
+              studentDetails?.security_deposit ??
+              0,
+            monthly_charge:
+              collectionDetails?.monthly_charge ??
+              (studentDetails
+                ? (studentDetails.monthly_rent || 0) +
+                  (studentDetails.laundry_charge || 0) +
+                  (studentDetails.other_charge || 0)
+                : 0),
+            invoice_key: invoice_key || nextInvoiceKey,
+            receipt_no: `${invoice_key || nextInvoiceKey || ""} (${
+              studentDetails?.room_name || ""
             })`,
-        }
+          }
         : {
-          ...formik.values,
-          ...restStudent,
-          security_deposit: 0,
-          monthly_charge: studentDetails
-            ? (studentDetails.monthly_rent || 0) +
-            (studentDetails.laundry_charge || 0) +
-            (studentDetails.other_charge || 0)
-            : 0,
-          invoice_key: nextInvoiceKey,
-          receipt_no: `${nextInvoiceKey || ""} (${studentDetails?.room_name || ""
+            ...formik.values,
+            ...restStudent,
+            security_deposit: 0,
+            monthly_charge: studentDetails
+              ? (studentDetails.monthly_rent || 0) +
+                (studentDetails.laundry_charge || 0) +
+                (studentDetails.other_charge || 0)
+              : 0,
+            invoice_key: nextInvoiceKey,
+            receipt_no: `${nextInvoiceKey || ""} (${
+              studentDetails?.room_name || ""
             })`,
-        };
+          };
 
       formik.setValues(valuesToSet);
     }
@@ -397,10 +402,11 @@ const CollectionForm = ({
                   formik.setFieldValue("year", date.getUTCFullYear());
                 }}
                 onBlur={formik.handleBlur}
-                className={`w-full p-2 rounded ${formik.values.approved
-                  ? "bg-gray-700 text-gray-400"
-                  : "bg-gray-800 text-white"
-                  }`}
+                className={`w-full p-2 rounded ${
+                  formik.values.approved
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
+                }`}
                 readOnly={formik.values.approved}
                 tabIndex={formik.values.approved ? -1 : 0}
               />
@@ -425,10 +431,11 @@ const CollectionForm = ({
                 value={formik.values.payment_method}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`w-full p-2 rounded ${formik.values.approved
-                  ? "bg-gray-700 text-gray-400"
-                  : "bg-gray-800 text-white"
-                  }`}
+                className={`w-full p-2 rounded ${
+                  formik.values.approved
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
+                }`}
                 disabled={formik.values.approved}
                 tabIndex={formik.values.approved ? -1 : 0}
               >
@@ -463,10 +470,11 @@ const CollectionForm = ({
                   formik.setFieldValue("monthly_charge", value);
                 }}
                 onBlur={formik.handleBlur}
-                className={`w-full p-2 rounded ${!!invoice_key
-                  ? "bg-gray-700 text-gray-400"
-                  : "bg-gray-800 text-white"
-                  }`}
+                className={`w-full p-2 rounded ${
+                  !!invoice_key
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
+                }`}
                 readOnly={!!invoice_key}
                 tabIndex={!!invoice_key ? -1 : 0}
               />
@@ -497,10 +505,11 @@ const CollectionForm = ({
                   formik.setFieldValue("security_deposit", value);
                 }}
                 onBlur={formik.handleBlur}
-                className={`w-full p-2 rounded ${!!invoice_key
-                  ? "bg-gray-700 text-gray-400"
-                  : "bg-gray-800 text-white"
-                  }`}
+                className={`w-full p-2 rounded ${
+                  !!invoice_key
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
+                }`}
                 readOnly={!!invoice_key}
                 tabIndex={!!invoice_key ? -1 : 0}
               />
@@ -547,8 +556,9 @@ const CollectionForm = ({
                   checked={formik.values.approved}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className={`mr-2 ${formik.values.approved ? "opacity-50" : "opacity-100"
-                    }`}
+                  className={`mr-2 ${
+                    formik.values.approved ? "opacity-50" : "opacity-100"
+                  }`}
                   disabled={formik.values.approved}
                   tabIndex={formik.values.approved ? -1 : 0}
                 />
@@ -606,10 +616,11 @@ const CollectionForm = ({
         >
           <Toast className="flex items-center bg-white shadow-lg rounded-lg p-4">
             <div
-              className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${toastMessage.type === "success"
-                ? "bg-green-100 text-green-500"
-                : "bg-red-100 text-red-500"
-                }`}
+              className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                toastMessage.type === "success"
+                  ? "bg-green-100 text-green-500"
+                  : "bg-red-100 text-red-500"
+              }`}
             >
               {toastMessage.type === "success" ? (
                 <HiCheck className="h-5 w-5" />

@@ -123,7 +123,7 @@ const StudentDetailsForm = ({ uid }) => {
       other_charge: studentDetails?.other_charge || "",
       start_date:
         studentDetails?.start_date || new Date().toISOString().split("T")[0],
-      end_date: studentDetails?.end_date || "9999-12-31",
+      end_date: studentDetails?.end_date || "2026-12-31",
       active: studentDetails?.active || true,
       approved: studentDetails?.approved || false,
     },
@@ -176,7 +176,7 @@ const StudentDetailsForm = ({ uid }) => {
         }
 
         if (capitalizedValues.end_date === "") {
-          capitalizedValues.end_date = "9999-12-31";
+          capitalizedValues.end_date = "2026-12-31";
         }
         console.log(capitalizedValues);
 

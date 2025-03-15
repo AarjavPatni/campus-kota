@@ -40,7 +40,7 @@ export async function POST(request) {
     const { data, error } = await resend.emails.send({
       from: 'Campus Kota <no-reply@campuskota.in>',
       to: [recipient],
-      bcc: [bcc] || [],
+      bcc: bcc ? [bcc] : null,
       subject: detailsChanges ? `Record Update for ${student.first_name}` : 
               collectionChanges ? `Payment Update for ${paymentDetails.invoice_key}` :
               paymentDetails ? `Payment Receipt - ${paymentDetails.invoice_key}` :

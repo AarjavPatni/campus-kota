@@ -568,14 +568,14 @@ const StudentDetailsForm = ({ uid }) => {
                   </div>
                 )}
             </div>
-            <div>
-              <label
-                htmlFor="remarks"
-                className="block text-sm font-medium mb-1"
-              >
-                Remarks:
-              </label>
-              {uid && (
+            {uid && (
+              <div>
+                <label
+                  htmlFor="remarks"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Remarks:
+                </label>
                 <textarea
                   id="remarks"
                   name="remarks"
@@ -584,13 +584,13 @@ const StudentDetailsForm = ({ uid }) => {
                   onBlur={formik.handleBlur}
                   className="w-full p-2 bg-gray-800 text-white rounded"
                 />
-              )}
-              {formik.touched.remarks && formik.errors.remarks && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.remarks}
-                </div>
-              )}
-            </div>
+                {formik.touched.remarks && formik.errors.remarks && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.remarks}
+                  </div>
+                )}
+              </div>
+            )}
             <div>
               <label
                 htmlFor="address"
@@ -639,46 +639,44 @@ const StudentDetailsForm = ({ uid }) => {
                 </div>
               )}
             </div>
-            <div>
-              <label
-                htmlFor="security_deposit"
-                className="block text-sm font-medium mb-1"
-              >
-                Security Deposit:
-              </label>
-              <input
-                type="number"
-                id="security_deposit"
-                name="security_deposit"
-                value={
-                  uid
-                    ? formik.values.security_deposit
-                    : formik.values.monthly_rent
-                }
-                onChange={uid ? formik.handleChange : undefined}
-                onBlur={formik.handleBlur}
-                className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  !uid || (uid && formik.values.approved)
-                    ? "opacity-75 cursor-not-allowed"
-                    : ""
-                }`}
-                readOnly={!uid || (uid && formik.values.approved)}
-              />
-              {formik.touched.security_deposit &&
-                formik.errors.security_deposit && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.security_deposit}
-                  </div>
-                )}
-            </div>
-            <div>
-              <label
-                htmlFor="laundry_charge"
-                className="block text-sm font-medium mb-1"
-              >
-                Laundry Charge:
-              </label>
-              {uid && (
+            {uid && (
+              <div>
+                <label
+                  htmlFor="security_deposit"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Security Deposit:
+                </label>
+                <input
+                  type="number"
+                  id="security_deposit"
+                  name="security_deposit"
+                  value={formik.values.security_deposit}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full p-2 bg-gray-800 text-white rounded ${
+                    formik.values.approved
+                      ? "opacity-75 cursor-not-allowed"
+                      : ""
+                  }`}
+                  readOnly={formik.values.approved}
+                />
+                {formik.touched.security_deposit &&
+                  formik.errors.security_deposit && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.security_deposit}
+                    </div>
+                  )}
+              </div>
+            )}
+            {uid && (
+              <div>
+                <label
+                  htmlFor="laundry_charge"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Laundry Charge:
+                </label>
                 <input
                   type="number"
                   id="laundry_charge"
@@ -687,28 +685,28 @@ const StudentDetailsForm = ({ uid }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className={`w-full p-2 bg-gray-800 text-white rounded ${
-                    uid && formik.values.approved
+                    formik.values.approved
                       ? "opacity-75 cursor-not-allowed"
                       : ""
                   }`}
-                  readOnly={uid && formik.values.approved}
+                  readOnly={formik.values.approved}
                 />
-              )}
-              {formik.touched.laundry_charge &&
-                formik.errors.laundry_charge && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.laundry_charge}
-                  </div>
-                )}
-            </div>
-            <div>
-              <label
-                htmlFor="other_charge"
-                className="block text-sm font-medium mb-1"
-              >
-                Other Charges:
-              </label>
-              {uid && (
+                {formik.touched.laundry_charge &&
+                  formik.errors.laundry_charge && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.laundry_charge}
+                    </div>
+                  )}
+              </div>
+            )}
+            {uid && (
+              <div>
+                <label
+                  htmlFor="other_charge"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Other Charges:
+                </label>
                 <input
                   type="number"
                   id="other_charge"
@@ -717,19 +715,19 @@ const StudentDetailsForm = ({ uid }) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className={`w-full p-2 bg-gray-800 text-white rounded ${
-                    uid && formik.values.approved
+                    formik.values.approved
                       ? "opacity-75 cursor-not-allowed"
                       : ""
                   }`}
-                  readOnly={uid && formik.values.approved}
+                  readOnly={formik.values.approved}
                 />
-              )}
-              {formik.touched.other_charge && formik.errors.other_charge && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.other_charge}
-                </div>
-              )}
-            </div>
+                {formik.touched.other_charge && formik.errors.other_charge && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.other_charge}
+                  </div>
+                )}
+              </div>
+            )}
             <div>
               <label
                 htmlFor="start_date"
@@ -757,14 +755,14 @@ const StudentDetailsForm = ({ uid }) => {
                 </div>
               )}
             </div>
-            <div>
-              <label
-                htmlFor="end_date"
-                className="block text-sm font-medium mb-1"
-              >
-                End Date:
-              </label>
-              {uid && (
+            {uid && (
+              <div>
+                <label
+                  htmlFor="end_date"
+                  className="block text-sm font-medium mb-1"
+                >
+                  End Date:
+                </label>
                 <input
                   type="date"
                   id="end_date"
@@ -774,13 +772,13 @@ const StudentDetailsForm = ({ uid }) => {
                   onBlur={formik.handleBlur}
                   className="w-full p-2 bg-gray-800 text-white rounded"
                 />
-              )}
-              {formik.touched.end_date && formik.errors.end_date && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.end_date}
-                </div>
-              )}
-            </div>
+                {formik.touched.end_date && formik.errors.end_date && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.end_date}
+                  </div>
+                )}
+              </div>
+            )}
             {uid && (
               <div className="flex items-center">
                 <input

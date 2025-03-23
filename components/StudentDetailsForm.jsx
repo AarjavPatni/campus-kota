@@ -123,7 +123,7 @@ const StudentDetailsForm = ({ uid }) => {
       other_charge: studentDetails?.other_charge || "",
       start_date:
         studentDetails?.start_date || new Date().toISOString().split("T")[0],
-      end_date: studentDetails?.end_date || "9999-12-31",
+      end_date: studentDetails?.end_date || "2026-12-31",
       active: studentDetails?.active || true,
       approved: studentDetails?.approved || false,
     },
@@ -131,12 +131,17 @@ const StudentDetailsForm = ({ uid }) => {
     onSubmit: async (values) => {
       try {
         // Directly transform empty strings to 0
-        values.original_room = values.original_room === '' ? 0 : values.original_room;
-        values.room_number = values.room_number === '' ? 0 : values.room_number;
-        values.security_deposit = values.security_deposit === '' ? 0 : values.security_deposit;
-        values.monthly_rent = values.monthly_rent === '' ? 0 : values.monthly_rent;
-        values.laundry_charge = values.laundry_charge === '' ? 0 : values.laundry_charge;
-        values.other_charge = values.other_charge === '' ? 0 : values.other_charge;
+        values.original_room =
+          values.original_room === "" ? 0 : values.original_room;
+        values.room_number = values.room_number === "" ? 0 : values.room_number;
+        values.security_deposit =
+          values.security_deposit === "" ? 0 : values.security_deposit;
+        values.monthly_rent =
+          values.monthly_rent === "" ? 0 : values.monthly_rent;
+        values.laundry_charge =
+          values.laundry_charge === "" ? 0 : values.laundry_charge;
+        values.other_charge =
+          values.other_charge === "" ? 0 : values.other_charge;
 
         // Capitalize all fields except remarks
         const capitalize = (str) =>
@@ -171,7 +176,7 @@ const StudentDetailsForm = ({ uid }) => {
         }
 
         if (capitalizedValues.end_date === "") {
-          capitalizedValues.end_date = "9999-12-31";
+          capitalizedValues.end_date = "2026-12-31";
         }
         console.log(capitalizedValues);
 
@@ -269,6 +274,7 @@ const StudentDetailsForm = ({ uid }) => {
           recipient: values.email,
           first_name: values.first_name,
           ...values,
+          bcc: "campuskota@outlook.com",
         }),
       });
 
@@ -562,27 +568,29 @@ const StudentDetailsForm = ({ uid }) => {
                   </div>
                 )}
             </div>
-            <div>
-              <label
-                htmlFor="remarks"
-                className="block text-sm font-medium mb-1"
-              >
-                Remarks:
-              </label>
-              <textarea
-                id="remarks"
-                name="remarks"
-                value={formik.values.remarks}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.remarks && formik.errors.remarks && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.remarks}
-                </div>
-              )}
-            </div>
+            {uid && (
+              <div>
+                <label
+                  htmlFor="remarks"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Remarks:
+                </label>
+                <textarea
+                  id="remarks"
+                  name="remarks"
+                  value={formik.values.remarks}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full p-2 bg-gray-800 text-white rounded"
+                />
+                {formik.touched.remarks && formik.errors.remarks && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.remarks}
+                  </div>
+                )}
+              </div>
+            )}
             <div>
               <label
                 htmlFor="address"
@@ -631,93 +639,95 @@ const StudentDetailsForm = ({ uid }) => {
                 </div>
               )}
             </div>
-            <div>
-              <label
-                htmlFor="security_deposit"
-                className="block text-sm font-medium mb-1"
-              >
-                Security Deposit:
-              </label>
-              <input
-                type="number"
-                id="security_deposit"
-                name="security_deposit"
-                value={
-                  uid
-                    ? formik.values.security_deposit
-                    : formik.values.monthly_rent
-                }
-                onChange={uid ? formik.handleChange : undefined}
-                onBlur={formik.handleBlur}
-                className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  !uid || (uid && formik.values.approved)
-                    ? "opacity-75 cursor-not-allowed"
-                    : ""
-                }`}
-                readOnly={!uid || (uid && formik.values.approved)}
-              />
-              {formik.touched.security_deposit &&
-                formik.errors.security_deposit && (
+            {uid && (
+              <div>
+                <label
+                  htmlFor="security_deposit"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Security Deposit:
+                </label>
+                <input
+                  type="number"
+                  id="security_deposit"
+                  name="security_deposit"
+                  value={formik.values.security_deposit}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full p-2 bg-gray-800 text-white rounded ${
+                    formik.values.approved
+                      ? "opacity-75 cursor-not-allowed"
+                      : ""
+                  }`}
+                  readOnly={formik.values.approved}
+                />
+                {formik.touched.security_deposit &&
+                  formik.errors.security_deposit && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.security_deposit}
+                    </div>
+                  )}
+              </div>
+            )}
+            {uid && (
+              <div>
+                <label
+                  htmlFor="laundry_charge"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Laundry Charge:
+                </label>
+                <input
+                  type="number"
+                  id="laundry_charge"
+                  name="laundry_charge"
+                  value={formik.values.laundry_charge || ""}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full p-2 bg-gray-800 text-white rounded ${
+                    formik.values.approved
+                      ? "opacity-75 cursor-not-allowed"
+                      : ""
+                  }`}
+                  readOnly={formik.values.approved}
+                />
+                {formik.touched.laundry_charge &&
+                  formik.errors.laundry_charge && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.laundry_charge}
+                    </div>
+                  )}
+              </div>
+            )}
+            {uid && (
+              <div>
+                <label
+                  htmlFor="other_charge"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Other Charges:
+                </label>
+                <input
+                  type="number"
+                  id="other_charge"
+                  name="other_charge"
+                  value={formik.values.other_charge || ""}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full p-2 bg-gray-800 text-white rounded ${
+                    formik.values.approved
+                      ? "opacity-75 cursor-not-allowed"
+                      : ""
+                  }`}
+                  readOnly={formik.values.approved}
+                />
+                {formik.touched.other_charge && formik.errors.other_charge && (
                   <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.security_deposit}
+                    {formik.errors.other_charge}
                   </div>
                 )}
-            </div>
-            <div>
-              <label
-                htmlFor="laundry_charge"
-                className="block text-sm font-medium mb-1"
-              >
-                Laundry Charge:
-              </label>
-              <input
-                type="number"
-                id="laundry_charge"
-                name="laundry_charge"
-                value={formik.values.laundry_charge || ""}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved
-                    ? "opacity-75 cursor-not-allowed"
-                    : ""
-                }`}
-                readOnly={uid && formik.values.approved}
-              />
-              {formik.touched.laundry_charge &&
-                formik.errors.laundry_charge && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.laundry_charge}
-                  </div>
-                )}
-            </div>
-            <div>
-              <label
-                htmlFor="other_charge"
-                className="block text-sm font-medium mb-1"
-              >
-                Other Charges:
-              </label>
-              <input
-                type="number"
-                id="other_charge"
-                name="other_charge"
-                value={formik.values.other_charge || ""}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`w-full p-2 bg-gray-800 text-white rounded ${
-                  uid && formik.values.approved
-                    ? "opacity-75 cursor-not-allowed"
-                    : ""
-                }`}
-                readOnly={uid && formik.values.approved}
-              />
-              {formik.touched.other_charge && formik.errors.other_charge && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.other_charge}
-                </div>
-              )}
-            </div>
+              </div>
+            )}
             <div>
               <label
                 htmlFor="start_date"
@@ -745,42 +755,46 @@ const StudentDetailsForm = ({ uid }) => {
                 </div>
               )}
             </div>
-            <div>
-              <label
-                htmlFor="end_date"
-                className="block text-sm font-medium mb-1"
-              >
-                End Date:
-              </label>
-              <input
-                type="date"
-                id="end_date"
-                name="end_date"
-                value={formik.values.end_date}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 bg-gray-800 text-white rounded"
-              />
-              {formik.touched.end_date && formik.errors.end_date && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.end_date}
-                </div>
-              )}
-            </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="active"
-                name="active"
-                checked={formik.values.active}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="mr-2"
-              />
-              <label htmlFor="active" className="text-sm font-medium">
-                Active
-              </label>
-            </div>
+            {uid && (
+              <div>
+                <label
+                  htmlFor="end_date"
+                  className="block text-sm font-medium mb-1"
+                >
+                  End Date:
+                </label>
+                <input
+                  type="date"
+                  id="end_date"
+                  name="end_date"
+                  value={formik.values.end_date}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full p-2 bg-gray-800 text-white rounded"
+                />
+                {formik.touched.end_date && formik.errors.end_date && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.end_date}
+                  </div>
+                )}
+              </div>
+            )}
+            {uid && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="active"
+                  name="active"
+                  checked={formik.values.active}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="mr-2"
+                />
+                <label htmlFor="active" className="text-sm font-medium">
+                  Active
+                </label>
+              </div>
+            )}
             {uid && (
               <div className="flex items-center">
                 <input

@@ -184,6 +184,7 @@ const CollectionForm = ({
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
                     recipient: studentDetails?.email,
+                    bcc: "records@campuskota.in",
                     collectionChanges: changes,
                     paymentDetails: values,
                     student: studentDetails,
@@ -201,6 +202,7 @@ const CollectionForm = ({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   email: studentDetails?.email,
+                  bcc: "records@campuskota.in",
                   subject: `Payment Receipt - ${values.invoice_key}`,
                   recipient: studentDetails?.email,
                   paymentDetails: {
@@ -259,7 +261,7 @@ const CollectionForm = ({
               setToastOpacity(0);
               setTimeout(() => {
                 setToggleToast(false);
-                window.location.href = "/collectionList";
+                window.location.href = "/studentList";
               }, 300);
             }, 1500);
           }
@@ -415,6 +417,40 @@ const CollectionForm = ({
               )}
             </div>
 
+            {/* Payment Method */}
+            <div>
+              <label
+                htmlFor="payment_method"
+                className="block text-sm font-medium mb-1"
+              >
+                Payment Method:
+              </label>
+              <select
+                id="payment_method"
+                name="payment_method"
+                value={formik.values.payment_method}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`w-full p-2 rounded ${
+                  formik.values.approved
+                    ? "bg-gray-700 text-gray-400"
+                    : "bg-gray-800 text-white"
+                }`}
+                disabled={formik.values.approved}
+                tabIndex={formik.values.approved ? -1 : 0}
+              >
+                <option value="Cash">Cash</option>
+                <option value="PhPay-C">PhPay-C</option>
+                <option value="PhPay-M">PhPay-M</option>
+              </select>
+              {formik.touched.payment_method &&
+                formik.errors.payment_method && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.payment_method}
+                  </div>
+                )}
+            </div>
+
             {/* Monthly Charge */}
             <div>
               <label
@@ -530,40 +566,6 @@ const CollectionForm = ({
                   Approved
                 </label>
               </div>
-            </div>
-
-            {/* Payment Method */}
-            <div>
-              <label
-                htmlFor="payment_method"
-                className="block text-sm font-medium mb-1"
-              >
-                Payment Method:
-              </label>
-              <select
-                id="payment_method"
-                name="payment_method"
-                value={formik.values.payment_method}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`w-full p-2 rounded ${
-                  formik.values.approved
-                    ? "bg-gray-700 text-gray-400"
-                    : "bg-gray-800 text-white"
-                }`}
-                disabled={formik.values.approved}
-                tabIndex={formik.values.approved ? -1 : 0}
-              >
-                <option value="Cash">Cash</option>
-                <option value="PhPay-C">PhPay-C</option>
-                <option value="PhPay-M">PhPay-M</option>
-              </select>
-              {formik.touched.payment_method &&
-                formik.errors.payment_method && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.payment_method}
-                  </div>
-                )}
             </div>
 
             {/* Buttons */}

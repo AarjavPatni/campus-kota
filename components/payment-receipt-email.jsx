@@ -92,7 +92,7 @@ export const PaymentReceiptEmail = ({ paymentDetails, student }) => (
           lineHeight: "1.5",
         }}
       >
-        <strong>Note:</strong> UPI or Cheque payments are subject to clearance. This is an auto-generated email. Do NOT reply directly to this message.
+        <strong>Note:</strong> PhonePe payments are subject to clearance. This is an auto-generated email. Do NOT reply directly to this message.
       </div>
     </div>
   </div>

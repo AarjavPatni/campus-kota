@@ -5,7 +5,9 @@ const AdminButtons = () => {
   return (
     <div className="max-w-2xl mx-auto px-4">
       <h1 className="text-3xl font-bold text-white text-center mb-8">
-        Admin Portal
+        {process.env.NEXT_PUBLIC_SUPABASE_DB_NAME === 'dev' 
+          ? 'Admin Portal - TEST' 
+          : 'Admin Portal'}
       </h1>
       <div className="flex flex-col items-center justify-center gap-y-6 mt-6 md:flex-row md:gap-y-0 md:gap-x-6">
         <Button href="/insert" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">

@@ -5,7 +5,7 @@ const AdminButtons = () => {
   return (
     <div className="max-w-2xl mx-auto px-4">
       <h1 className="text-3xl font-bold text-white text-center mb-8">
-        {process.env.NEXT_PUBLIC_SUPABASE_DB_NAME === 'dev' 
+        {process.env.NODE_ENV === 'development' 
           ? 'Admin Portal - TEST' 
           : 'Admin Portal'}
       </h1>

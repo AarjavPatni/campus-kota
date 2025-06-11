@@ -165,18 +165,30 @@ export const BillGenerator = () => {
   );
 
   return (
-    <Button
-      role="button"
-      className="mx-auto mb-5 font-medium text-sm text-center duration-150"
-      color={"gray"}
-      onClick={() => {
-        generateBill();
-        // !! Handle December dates
-        updateBill(new Date().getMonth() + 1, new Date().getFullYear());
-        updateBill(new Date().getMonth() - 1, new Date().getFullYear());
-      }}
-    >
-      Generate Bill
-    </Button>
+    <span>
+      <div className="flex gap-4 justify-center mb-4">
+        <Button
+          role="button"
+          className="w-30 font-medium text-sm text-center duration-150"
+          color={"gray"}
+          onClick={() => {
+            generateBill();
+            // !! Handle December dates
+            updateBill(new Date().getMonth() + 1, new Date().getFullYear());
+            updateBill(new Date().getMonth() - 1, new Date().getFullYear());
+          }}
+        >
+          Generate Bill
+        </Button>
+
+        <Button
+          href="/admin"
+          className="w-20 font-medium text-sm text-center duration-150"
+          color={"gray"}
+        >
+          Admin
+        </Button>
+      </div>
+    </span>
   );
 };

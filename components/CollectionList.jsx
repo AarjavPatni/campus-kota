@@ -13,6 +13,7 @@ import CollectionForm from "./CollectionForm";
 
 export function CollectionList() {
   const [collectionList, setCollectionList] = useState([]);
+  const [studentDetailsMap, setStudentDetailsMap] = useState({});
   const [error, setError] = useState(null);
   const [selectedInvoiceKey, setSelectedInvoiceKey] = useState(null);
   const [selectedUID, setSelectedUID] = useState(null);
@@ -50,9 +51,6 @@ export function CollectionList() {
         setError(error);
       } else {
         const sortedData = data.sort((a, b) => {
-          const dateA = new Date(a.payment_date);
-          const dateB = new Date(b.payment_date);
-          if (dateB - dateA !== 0) return dateB - dateA;
           return a.room_name.localeCompare(b.room_name);
         });
         setCollectionList(sortedData);
@@ -63,6 +61,24 @@ export function CollectionList() {
             return totals;
           }, {})
         );
+
+        // Fetch student details for all collections
+        const uniqueUids = [...new Set(data.map(invoice => invoice.uid))];
+        const studentDetails = {};
+        
+        for (const uid of uniqueUids) {
+          const { data: studentData, error: studentError } = await supabase
+            .from('student_details')
+            .select('room_number, first_name')
+            .eq('uid', uid)
+            .single();
+            
+          if (!studentError && studentData) {
+            studentDetails[uid] = studentData;
+          }
+        }
+        
+        setStudentDetailsMap(studentDetails);
       }
     };
 
@@ -150,7 +166,7 @@ export function CollectionList() {
 
           <Table striped>
             <TableHead>
-              <TableHeadCell>Room Name</TableHeadCell>
+              <TableHeadCell>Room-Student</TableHeadCell>
               <TableHeadCell>Payment Date</TableHeadCell>
               <TableHeadCell>Total Amount</TableHeadCell>
               <TableHeadCell>Payment Method</TableHeadCell>
@@ -165,7 +181,9 @@ export function CollectionList() {
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    {invoice.room_name}
+                    {studentDetailsMap[invoice.uid] 
+                      ? `${studentDetailsMap[invoice.uid].room_number}-${studentDetailsMap[invoice.uid].first_name}`
+                      : 'Loading...'}
                   </TableCell>
                   <TableCell>{invoice.payment_date}</TableCell>
                   <TableCell>{invoice.total_amount}</TableCell>

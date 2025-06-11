@@ -16,11 +16,9 @@ const AdminButtons = () => {
         <Button href="/studentList" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">
           Student List
         </Button>
-        {/* !! Not for v1.0
         <Button href="/billingList" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">
           Billing List
         </Button> 
-        */}
         <Button href="/collectionList" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">
           Collection List
         </Button>

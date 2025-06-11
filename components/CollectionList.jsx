@@ -69,7 +69,7 @@ export function CollectionList() {
         for (const uid of uniqueUids) {
           const { data: studentData, error: studentError } = await supabase
             .from('student_details')
-            .select('room_number, first_name')
+            .select('original_room, first_name')
             .eq('uid', uid)
             .single();
             
@@ -182,7 +182,7 @@ export function CollectionList() {
                 >
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                     {studentDetailsMap[invoice.uid] 
-                      ? `${studentDetailsMap[invoice.uid].room_number}-${studentDetailsMap[invoice.uid].first_name}`
+                      ? `${studentDetailsMap[invoice.uid].original_room}-${studentDetailsMap[invoice.uid].first_name}`
                       : 'Loading...'}
                   </TableCell>
                   <TableCell>{invoice.payment_date}</TableCell>

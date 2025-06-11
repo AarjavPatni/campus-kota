@@ -108,7 +108,7 @@ const CollectionForm = ({
       receipt_no:
         collectionDetails?.receipt_no ??
         `${invoice_key || nextInvoiceKey || ""} (${
-          (studentDetails?.room_number + "-" + studentDetails?.first_name) || ""
+          (studentDetails?.original_room + "-" + studentDetails?.first_name) || ""
         })`,
       invoice_key: invoice_key || nextInvoiceKey || "",
       room_name:

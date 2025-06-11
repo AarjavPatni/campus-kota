@@ -74,7 +74,7 @@ export const EmailTemplate = ({ first_name, ...formDetails }) => {
                 >
                   Room Number
                 </td>
-                <td style={{ padding: "12px 0" }}>{formDetails.room_number}</td>
+                <td style={{ padding: "12px 0" }}>{formDetails.original_room}</td>
               </tr>
               <tr style={{ borderBottom: "1px solid #1f2937" }}>
                 <td style={{ padding: "12px 0", fontWeight: "600" }}>

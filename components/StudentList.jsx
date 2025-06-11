@@ -24,15 +24,15 @@ export function StudentList() {
     const fetchStudentDetails = async () => {
       let { data, error } = await supabase
         .from("student_details")
-        .select("uid,room_number,first_name,student_mobile")
+        .select("uid,original_room,first_name,student_mobile")
         .eq("active", true)
-        .order('room_number', { ascending: true });
+        .order('original_room', { ascending: true });
 
       if (showAllRecords) {
         ({ data, error } = await supabase
           .from("student_details")
-          .select("uid,room_number,first_name,student_mobile")
-          .order('room_number', { ascending: true }));
+          .select("uid,original_room,first_name,student_mobile")
+          .order('original_room', { ascending: true }));
       }
 
       if (error) {
@@ -62,8 +62,7 @@ export function StudentList() {
           />
           <Table striped>
             <TableHead>
-              <TableHeadCell>Room Number</TableHeadCell>
-              <TableHeadCell>Student Name</TableHeadCell>
+              <TableHeadCell>Room-Student</TableHeadCell>
               <TableHeadCell>Student Contact No.</TableHeadCell>
               <TableHeadCell></TableHeadCell>
               <TableHeadCell></TableHeadCell>
@@ -75,9 +74,8 @@ export function StudentList() {
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    {student.room_number}
+                    {`${student.original_room}-${student.first_name}`}
                   </TableCell>
-                  <TableCell>{student.first_name}</TableCell>
                   <TableCell>{student.student_mobile}</TableCell>
                   <TableCell>
                     <Link

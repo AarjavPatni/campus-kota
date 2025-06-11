@@ -48,7 +48,7 @@ export function BillingList() {
         for (const uid of uniqueUids) {
           const { data: studentData, error: studentError } = await supabase
             .from('student_details')
-            .select('room_number, first_name')
+            .select('original_room, first_name')
             .eq('uid', uid)
             .single();
             
@@ -195,7 +195,7 @@ export function BillingList() {
                 >
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                     {studentDetailsMap[bill.uid] 
-                      ? `${studentDetailsMap[bill.uid].room_number}-${studentDetailsMap[bill.uid].first_name}`
+                      ? `${studentDetailsMap[bill.uid].original_room}-${studentDetailsMap[bill.uid].first_name}`
                       : 'Loading...'}
                   </TableCell>
                   <TableCell>{bill.monthly_rent}</TableCell>

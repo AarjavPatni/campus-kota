@@ -36,28 +36,58 @@ export const BillGenerator = () => {
       const currYear = firstDateOfMonth.split("-")[0];
       const currMonth = firstDateOfMonth.split("-")[1];
 
-      console.log(startYear === currYear && startMonth === currMonth);
-      console.log(startYear, startMonth, currYear, currMonth);
-
       if (error) {
         console.error("Error fetching student details:", error);
       } else {
         student_details.forEach(async (student) => {
+          // Calculate prorated rent if needed
+          let monthly_rent = student.monthly_rent;
+          
+          // For new records, we need to check against the billing month (end)
+          const billingYear = Number(end.split("-")[0]);
+          const billingMonth = Number(end.split("-")[1]);
+          
+          // Check if student is leaving mid-month
+          if (
+            Number(student.end_date.split("-")[1]) === billingMonth &&
+            Number(student.end_date.split("-")[0]) === billingYear
+          ) {
+            const firstDayOfMonth = new Date(Date.UTC(billingYear, billingMonth - 1, 1));
+            const days_diff =
+              (Date.parse(student.end_date) - Date.parse(firstDayOfMonth)) /
+                (1000 * 60 * 60 * 24) +
+              1;
+            monthly_rent = Math.ceil(student.monthly_rent * (days_diff / 30));
+          }
+          
+          // Check if student is joining mid-month
+          if (
+            Number(student.start_date.split("-")[1]) === billingMonth &&
+            Number(student.start_date.split("-")[0]) === billingYear
+          ) {
+            const lastDateOfMonth = new Date(Date.UTC(billingYear, billingMonth, 0));
+            const days_diff =
+              (Date.parse(lastDateOfMonth) - Date.parse(student.start_date)) /
+                (1000 * 60 * 60 * 24) +
+              1;
+            monthly_rent = Math.ceil(student.monthly_rent * (days_diff / 30));
+          }
+
           const response = await supabase
             .from("billing")
             .insert([
               {
                 uid: student.uid,
                 room_name: student.room_name,
-                monthly_rent: student.monthly_rent,
+                monthly_rent: monthly_rent,
                 security_deposit:
                   startYear === currYear && startMonth === currMonth
                     ? student.security_deposit
                     : 0,
                 laundry_charge: student.laundry_charge,
                 other_charge: student.other_charge,
-                year: end.split("-")[0], // ! is this correct?
-                month: end.split("-")[1], // ! is this correct?
+                year: end.split("-")[0],
+                month: end.split("-")[1],
                 bill_date: new Date().toISOString().split("T")[0],
                 approved: student.approved,
               },
@@ -79,91 +109,6 @@ export const BillGenerator = () => {
     fetchStudentDetails(firstDateOfMonth, firstDateOfPrevMonth);
   }, [firstDateOfPrevMonth, firstDateOfMonth, firstDateOfNextMonth]);
 
-  const updateBill = useCallback(
-    async (record_month, record_year) => {
-      let { data: monthly_bill, error } = await supabase
-        .from("billing")
-        .select("*")
-        .eq("year", record_year)
-        .eq("month", record_month);
-
-      if (error) {
-        console.error("Error fetching monthly bill:", error);
-        return;
-      }
-
-      monthly_bill.forEach(async (bill) => {
-        const response = await supabase
-          .from("student_details")
-          .select("start_date,end_date,monthly_rent")
-          .eq("uid", bill.uid)
-          .single();
-
-        const monthly_rent = response.data.monthly_rent;
-        const start_date = response.data.start_date;
-        const end_date = response.data.end_date;
-        const lastDateOfMonth = new Date(
-          Date.UTC(record_year, record_month, 0)
-        );
-
-        if (
-          Number(end_date.split("-")[1]) === record_month &&
-          Number(end_date.split("-")[0]) === record_year
-        ) {
-          const days_diff =
-            (Date.parse(end_date) - Date.parse(firstDateOfMonth)) /
-              (1000 * 60 * 60 * 24) +
-            1;
-
-          console.log("days: ", days_diff);
-
-          const new_rent = Math.ceil(monthly_rent * (days_diff / 30));
-          console.log("new_rent end_date", new_rent);
-
-          const response = await supabase
-            .from("billing")
-            .update({ monthly_rent: new_rent })
-            .eq("uid", bill.uid)
-            .eq("year", record_year)
-            .eq("month", record_month);
-
-          if (response.status === 204) {
-            console.log("new_rent end_date updated", new_rent);
-          } else {
-            console.error("Error updating end_date:", response.body);
-          }
-        }
-
-        if (
-          Number(start_date.split("-")[1]) === record_month &&
-          Number(start_date.split("-")[0]) === record_year
-        ) {
-          const days_diff =
-            (Date.parse(lastDateOfMonth) - Date.parse(start_date)) /
-              (1000 * 60 * 60 * 24) +
-            1;
-
-          const new_rent = Math.ceil(monthly_rent * (days_diff / 30));
-          console.log("new_rent start_date", new_rent);
-
-          const response = await supabase
-            .from("billing")
-            .update({ monthly_rent: new_rent })
-            .eq("uid", bill.uid)
-            .eq("year", record_year)
-            .eq("month", record_month);
-
-          if (response.status === 204) {
-            console.log("new_rent end_date updated", new_rent);
-          } else {
-            console.error("Error updating end_data:", response.body);
-          }
-        }
-      });
-    },
-    [firstDateOfMonth]
-  );
-
   return (
     <span>
       <div className="flex gap-4 justify-center mb-4">
@@ -173,9 +118,6 @@ export const BillGenerator = () => {
           color={"gray"}
           onClick={() => {
             generateBill();
-            // !! Handle December dates
-            updateBill(new Date().getMonth() + 1, new Date().getFullYear());
-            updateBill(new Date().getMonth() - 1, new Date().getFullYear());
           }}
         >
           Generate Bill

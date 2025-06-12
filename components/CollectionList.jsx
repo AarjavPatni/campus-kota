@@ -185,7 +185,7 @@ export function CollectionList() {
                       ? `${studentDetailsMap[invoice.uid].original_room}-${studentDetailsMap[invoice.uid].first_name}`
                       : 'Loading...'}
                   </TableCell>
-                  <TableCell>{invoice.payment_date}</TableCell>
+                  <TableCell>{new Date(invoice.payment_date).toLocaleDateString('en-GB')}</TableCell>
                   <TableCell>{invoice.total_amount}</TableCell>
                   <TableCell>{invoice.payment_method}</TableCell>
                   <TableCell>

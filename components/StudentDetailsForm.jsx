@@ -310,6 +310,9 @@ const StudentDetailsForm = ({ uid }) => {
         });
         setToggleToast(true);
         setToastOpacity(1);
+        setTimeout(() => {
+          setToastOpacity(0);
+        }, 2000);
         return;
       }
 

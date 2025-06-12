@@ -169,10 +169,7 @@ const StudentDetailsForm = ({ uid }) => {
         }
         console.log(capitalizedValues);
 
-        // For updates, only include original_room
-        const updateValues = uid
-          ? { original_room: capitalizedValues.original_room }
-          : capitalizedValues;
+        const updateValues = capitalizedValues;
 
         // Single database operation
         const { data, error, status } = uid
@@ -182,6 +179,7 @@ const StudentDetailsForm = ({ uid }) => {
               .eq("uid", uid)
           : await supabase.from("student_details").insert([updateValues]);
 
+        console.log(status);
         console.log(sendEmailFlag);
 
         if (error) throw error;
@@ -212,12 +210,14 @@ const StudentDetailsForm = ({ uid }) => {
           setSendEmailFlag(false);
         }
 
-        // Set success message based on email status
+        // Set success message based on email status and database status
         setToastMessage({
-          text: allEmailsSuccessful
+          text: status === 200 && allEmailsSuccessful
             ? "Data Updated!"
-            : "Database updated but email failed – check logs",
-          type: allEmailsSuccessful ? "success" : "error",
+            : status === 200 
+              ? "Database updated but email failed – check logs"
+              : "Update failed – check logs",
+          type: status === 200 ? (allEmailsSuccessful ? "success" : "error") : "error",
         });
 
         formik.resetForm();

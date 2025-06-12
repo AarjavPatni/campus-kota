@@ -182,13 +182,16 @@ export function BillingList() {
               <TableHeadCell>Monthly Rent</TableHeadCell>
               <TableHeadCell>Electricity</TableHeadCell>
               <TableHeadCell>Laundry</TableHeadCell>
-              {/* <TableHeadCell>Total Charges</TableHeadCell>
-              <TableHeadCell>
-                <span className="sr-only">Edit</span>
-              </TableHeadCell> */}
             </TableHead>
             <TableBody className="divide-y">
-              {billingDetails.map((bill, index) => (
+              {billingDetails
+                .filter(bill => studentDetailsMap[bill.uid]) // Only show bills where we have student details
+                .sort((a, b) => {
+                  const roomA = parseInt(studentDetailsMap[a.uid].original_room) || 0;
+                  const roomB = parseInt(studentDetailsMap[b.uid].original_room) || 0;
+                  return roomA - roomB;
+                })
+                .map((bill, index) => (
                 <TableRow
                   key={index}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -249,21 +252,6 @@ export function BillingList() {
                       </div>
                     )}
                   </TableCell>
-                  {/* <TableCell>
-                    {parseInt(bill.electricity_charge) + parseInt(bill.laundry_charge) + parseInt(bill.other_charge)}
-                  </TableCell>
-                  <TableCell>
-                    <Link
-                      href="#"
-                      onClick={() => {
-                        console.log(bill.bill_key);
-                        setSelectedBillKey(bill.bill_key);
-                      }}
-                      className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                    >
-                      Edit
-                    </Link>
-                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

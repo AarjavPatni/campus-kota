@@ -201,7 +201,34 @@ export function BillingList() {
                       ? `${studentDetailsMap[bill.uid].original_room}-${studentDetailsMap[bill.uid].first_name}`
                       : 'Loading...'}
                   </TableCell>
-                  <TableCell>{bill.monthly_rent}</TableCell>
+                  <TableCell>
+                    {editingCell === `${bill.bill_key}-monthly_rent` ? (
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="number"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSave(bill.bill_key, 'monthly_rent');
+                            }
+                          }}
+                          className="w-20 px-2 py-1 border rounded select-all"
+                          autoFocus
+                        />
+                        <Button size="xs" color="success" onClick={() => handleSave(bill.bill_key, 'monthly_rent')}>
+                          {loading ? <Spinner size="sm" /> : '✓'}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => handleEdit(bill.bill_key, 'monthly_rent', bill.monthly_rent)}
+                        className="cursor-pointer hover:bg-gray-100 p-1 rounded"
+                      >
+                        {bill.monthly_rent}
+                      </div>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {editingCell === `${bill.bill_key}-electricity_charge` ? (
                       <div className="flex items-center space-x-2">
@@ -209,13 +236,16 @@ export function BillingList() {
                           type="number"
                           value={editValue}
                           onChange={(e) => setEditValue(e.target.value)}
-                          className="w-20 px-2 py-1 border rounded"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSave(bill.bill_key, 'electricity_charge');
+                            }
+                          }}
+                          className="w-20 px-2 py-1 border rounded select-all"
+                          autoFocus
                         />
-                        <Button size="xs" onClick={() => handleSave(bill.bill_key, 'electricity_charge')}>
-                          {loading ? <Spinner size="sm" /> : 'Save'}
-                        </Button>
-                        <Button size="xs" color="gray" onClick={handleCancel}>
-                          Cancel
+                        <Button size="xs" color="success" onClick={() => handleSave(bill.bill_key, 'electricity_charge')}>
+                          {loading ? <Spinner size="sm" /> : '✓'}
                         </Button>
                       </div>
                     ) : (
@@ -234,13 +264,16 @@ export function BillingList() {
                           type="number"
                           value={editValue}
                           onChange={(e) => setEditValue(e.target.value)}
-                          className="w-20 px-2 py-1 border rounded"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSave(bill.bill_key, 'laundry_charge');
+                            }
+                          }}
+                          className="w-20 px-2 py-1 border rounded select-all"
+                          autoFocus
                         />
-                        <Button size="xs" onClick={() => handleSave(bill.bill_key, 'laundry_charge')}>
-                          {loading ? <Spinner size="sm" /> : 'Save'}
-                        </Button>
-                        <Button size="xs" color="gray" onClick={handleCancel}>
-                          Cancel
+                        <Button size="xs" color="success" onClick={() => handleSave(bill.bill_key, 'laundry_charge')}>
+                          {loading ? <Spinner size="sm" /> : '✓'}
                         </Button>
                       </div>
                     ) : (

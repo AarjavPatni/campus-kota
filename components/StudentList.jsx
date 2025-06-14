@@ -8,44 +8,40 @@ import {
   TableHead,
   TableHeadCell,
   TableRow,
+  Button,
 } from "flowbite-react";
 import StudentDetailsForm from "./StudentDetailsForm";
-import { ToggleSwitch } from "flowbite-react";
 import CollectionForm from "./CollectionForm";
 
 export function StudentList() {
-  const [studentDetails, setStudentDetails] = useState([]);
+  const [allStudents, setAllStudents] = useState([]);
   const [error, setError] = useState(null);
   const [selectedStudentUID, setSelectedStudentUID] = useState(null);
   const [collectionUID, setCollectionUID] = useState(null);
-  const [showAllRecords, setShowAllRecords] = useState(false);
+  const [showActiveRecords, setShowActiveRecords] = useState(true);
 
   useEffect(() => {
-    const fetchStudentDetails = async () => {
-      let { data, error } = await supabase
+    const fetchStudents = async () => {
+      const { data, error } = await supabase
         .from("student_details")
-        .select("uid,original_room,first_name,student_mobile")
-        .eq("active", true)
+        .select("uid,original_room,first_name,student_mobile,active")
         .order('original_room', { ascending: true });
-
-      if (showAllRecords) {
-        ({ data, error } = await supabase
-          .from("student_details")
-          .select("uid,original_room,first_name,student_mobile")
-          .order('original_room', { ascending: true }));
-      }
 
       if (error) {
         setError(error);
       } else {
-        setStudentDetails(data);
+        setAllStudents(data);
       }
     };
 
-    fetchStudentDetails();
-  }, [showAllRecords]);
+    fetchStudents();
+  }, []);
 
   if (error) return <div>Error fetching data: {error.message}</div>;
+
+  const studentDetails = showActiveRecords 
+    ? allStudents.filter(student => student.active)
+    : allStudents;
 
   return (
     <div>
@@ -55,11 +51,15 @@ export function StudentList() {
         <CollectionForm uid={collectionUID} returnToBill={false} />
       ) : (
         <div className="mx-auto max-w-screen-md flex flex-col gap-4">
-          <ToggleSwitch
-            checked={showAllRecords}
-            label="Show Inactive Records"
-            onChange={setShowAllRecords}
-          />
+          <div className="mb-4">
+            <Button
+              color={showActiveRecords ? "success" : "gray"}
+              onClick={() => setShowActiveRecords(!showActiveRecords)}
+              size="sm"
+            >
+              {showActiveRecords ? "Active Only" : "All Records"}
+            </Button>
+          </div>
           <Table striped>
             <TableHead>
               <TableHeadCell>Room-Student</TableHeadCell>
@@ -105,7 +105,6 @@ export function StudentList() {
           </Table>
         </div>
       )}
-      ;
     </div>
   );
 }

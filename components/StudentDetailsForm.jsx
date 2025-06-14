@@ -212,13 +212,23 @@ const StudentDetailsForm = ({ uid }) => {
 
         // Set success message based on email status and database status
         setToastMessage({
-          text: status === 200 && allEmailsSuccessful
+          text: (status === 200 || status === 204) && allEmailsSuccessful
             ? "Data Updated!"
-            : status === 200 
+            : (status === 200 || status === 204)
               ? "Database updated but email failed – check logs"
               : "Update failed – check logs",
-          type: status === 200 ? (allEmailsSuccessful ? "success" : "error") : "error",
+          type: (status === 200 || status === 204) ? (allEmailsSuccessful ? "success" : "error") : "error",
         });
+
+        console.log("Database operation status:", status);
+        console.log("All emails successful:", allEmailsSuccessful);
+        console.log("Updated values:", updateValues);
+        if (uid) {
+          console.log("Changes detected:", getChanges(studentDetails, capitalizedValues));
+        }
+        if (sendEmailFlag) {
+          console.log("Email flag was set, sent new entry email");
+        }
 
         formik.resetForm();
         setToggleToast(true);

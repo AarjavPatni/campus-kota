@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "flowbite-react";
 import CollectionForm from "./CollectionForm";
+import { Button } from "flowbite-react";
 
 export function CollectionList() {
   const [collectionList, setCollectionList] = useState([]);
@@ -100,68 +101,78 @@ export function CollectionList() {
         <CollectionForm uid={selectedUID} invoice_key={selectedInvoiceKey} />
       ) : (
         <div className="mx-auto max-w-screen-md">
-          <div className="flex space-x-4">
-            <div className="w-1/5 mb-5">
-              <select
-                id="month"
-                name="month"
-                className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-                defaultValue={new Date().getMonth() + 1}
-              >
-                <option value="1">January</option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
-            </div>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-4">
+              <div className="w-1/5">
+                <select
+                  id="month"
+                  name="month"
+                  className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                  defaultValue={new Date().getMonth() + 1}
+                >
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+              </div>
 
-            <div className="mb-5">
-              <select
-                id="year"
-                name="year"
-                className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-              >
-                {[...Array(new Date().getFullYear() - 2010 + 1).keys()].map(
-                  (i) => (
-                    <option key={i} value={2010 + i}>
-                      {2010 + i}
+              <div>
+                <select
+                  id="year"
+                  name="year"
+                  className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                >
+                  {[...Array(new Date().getFullYear() - 2010 + 1).keys()].map(
+                    (i) => (
+                      <option key={i} value={2010 + i}>
+                        {2010 + i}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+
+              <div>
+                <select
+                  id="room_name"
+                  name="room_name"
+                  className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  value={room_name}
+                  onChange={(e) => {
+                    setRoomName(e.target.value);
+                    console.log(e.target.value);
+                  }}
+                >
+                  <option value={""}>All</option>
+                  {[...new Set(rooms)].sort((a, b) => a.localeCompare(b)).map((room_name, index) => (
+                    <option key={index} value={room_name}>
+                      {room_name}
                     </option>
-                  )
-                )}
-              </select>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            <div className="mb-5">
-              <select
-                id="room_name"
-                name="room_name"
-                className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                value={room_name}
-                onChange={(e) => {
-                  setRoomName(e.target.value);
-                  console.log(e.target.value);
-                }}
-              >
-                <option value={""}>All</option>
-                {[...new Set(rooms)].sort((a, b) => a.localeCompare(b)).map((room_name, index) => (
-                  <option key={index} value={room_name}>
-                    {room_name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Button
+              href="/admin"
+              color="purple"
+              size="sm"
+            >
+              Admin
+            </Button>
           </div>
 
           <Table striped>

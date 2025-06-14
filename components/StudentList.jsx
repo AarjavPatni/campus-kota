@@ -52,13 +52,20 @@ export function StudentList() {
         <CollectionForm uid={collectionUID} returnToBill={false} />
       ) : (
         <div className="mx-auto max-w-screen-md flex flex-col gap-4">
-          <div className="mb-4">
+          <div className="mb-2 flex items-center justify-between">
             <Button
               color={showActiveRecords ? "success" : "gray"}
               onClick={() => setShowActiveRecords(!showActiveRecords)}
               size="sm"
             >
               {showActiveRecords ? "Active Only" : "All Records"}
+            </Button>
+            <Button
+              href="/admin"
+              color="purple"
+              size="sm"
+            >
+              Admin
             </Button>
           </div>
           <Table striped>

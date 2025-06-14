@@ -110,27 +110,17 @@ export const BillGenerator = () => {
   }, [firstDateOfPrevMonth, firstDateOfMonth, firstDateOfNextMonth]);
 
   return (
-    <span>
-      <div className="flex gap-4 justify-center mb-4">
-        <Button
-          role="button"
-          className="w-30 font-medium text-sm text-center duration-150"
-          color={"gray"}
-          onClick={() => {
-            generateBill();
-          }}
-        >
-          Generate Bill
-        </Button>
-
-        <Button
-          href="/admin"
-          className="w-20 font-medium text-sm text-center duration-150"
-          color={"gray"}
-        >
-          Admin
-        </Button>
-      </div>
-    </span>
+    <div className="flex items-center justify-between">
+      <Button
+        role="button"
+        className="w-30 font-medium text-sm text-center duration-150"
+        color="gray"
+        onClick={() => {
+          generateBill();
+        }}
+      >
+        Generate Bill
+      </Button>
+    </div>
   );
 };

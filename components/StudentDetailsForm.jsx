@@ -3,9 +3,10 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import supabase from "@/supabaseClient";
 import { StudentList } from "./StudentList";
-import { Toast } from "flowbite-react";
+import { Toast, Button } from "flowbite-react";
 import { HiCheck, HiX } from "react-icons/hi";
 import { useStudent } from "@/context/StudentContext";
+import { useRouter } from "next/router";
 
 const validationSchema = Yup.object({
   original_room: Yup.number()
@@ -50,6 +51,8 @@ const StudentDetailsForm = () => {
   const [validationData, setValidationData] = useState({ first_name: "", phone: "" });
   const { selectedStudent, setSelectedStudent } = useStudent();
   const [showValidationStep, setShowValidationStep] = useState(!selectedStudent);
+  const router = useRouter();
+  const fromInsert = router.pathname === '/insert';
 
   console.log("selectedStudent", selectedStudent);
 
@@ -338,10 +341,19 @@ const StudentDetailsForm = () => {
 
   return (
     <div>
-      {selectedStudent ? (
+      {selectedStudent || fromInsert ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
-          {showValidationStep ? (
-            <div>
+          <div className="flex justify-end mb-4">
+            <Button
+              href="/admin"
+              color="purple"
+              size="sm"
+            >
+              Admin
+            </Button>
+          </div>
+          {showValidationStep && !fromInsert ? (
+            <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
               <h2 className="text-2xl font-bold mb-4">Student Validation</h2>
               <form onSubmit={handleValidationSubmit} className="space-y-4">
                 <div>

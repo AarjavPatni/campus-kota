@@ -4,7 +4,6 @@ import { BillGenerator } from "@/components/BillGenerator";
 export default function BillingListPage() {
     return (
         <div>
-            <BillGenerator />
             <BillingList />
         </div>
     );

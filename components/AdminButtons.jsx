@@ -2,8 +2,22 @@ import { Button } from "flowbite-react";
 import LogoutButton from "./LogoutButton";
 import Link from 'next/link';
 import { HiPlus, HiUsers, HiCurrencyDollar, HiClipboardList, HiBookOpen } from "react-icons/hi";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const AdminButtons = () => {
+  const router = useRouter();
+
+  // Prefetch all admin routes when component mounts
+  useEffect(() => {
+    // Prefetch all admin routes
+    router.prefetch('/admin');
+    router.prefetch('/studentList');
+    router.prefetch('/billingList');
+    router.prefetch('/collectionList');
+    router.prefetch('/ledger');
+  }, [router]);
+
   return (
     <div className="max-w-2xl mx-auto px-4">
       <h1 className="text-3xl font-bold text-white text-center mb-8">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import supabase from "@/supabaseClient";
 import Link from "next/link";
 import BillingForm from "./BillingForm";
@@ -29,6 +29,7 @@ export function BillingList() {
   const [editValue, setEditValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [updateError, setUpdateError] = useState(null);
+  const editInputRef = useRef(null);
 
   useEffect(() => {
     const fetchBillDetails = async () => {
@@ -64,6 +65,30 @@ export function BillingList() {
 
     fetchBillDetails();
   }, [month, year]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (editingCell && editInputRef.current && !editInputRef.current.contains(event.target)) {
+        setEditingCell(null);
+        setEditValue("");
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setEditingCell(null);
+        setEditValue("");
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [editingCell]);
 
   const handleEdit = (billKey, field, value) => {
     setEditingCell(`${billKey}-${field}`);
@@ -214,9 +239,9 @@ export function BillingList() {
                       ? `${studentDetailsMap[bill.uid].original_room}-${studentDetailsMap[bill.uid].first_name}`
                       : 'Loading...'}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="relative">
                     {editingCell === `${bill.bill_key}-monthly_rent` ? (
-                      <div className="flex items-center space-x-2">
+                      <div ref={editInputRef} className="absolute inset-0 flex items-center space-x-2 bg-white z-10">
                         <input
                           type="number"
                           value={editValue}
@@ -242,9 +267,9 @@ export function BillingList() {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="relative">
                     {editingCell === `${bill.bill_key}-electricity_charge` ? (
-                      <div className="flex items-center space-x-2">
+                      <div ref={editInputRef} className="absolute inset-0 flex items-center space-x-2 bg-white z-10">
                         <input
                           type="number"
                           value={editValue}
@@ -270,9 +295,9 @@ export function BillingList() {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="relative">
                     {editingCell === `${bill.bill_key}-laundry_charge` ? (
-                      <div className="flex items-center space-x-2">
+                      <div ref={editInputRef} className="absolute inset-0 flex items-center space-x-2 bg-white z-10">
                         <input
                           type="number"
                           value={editValue}

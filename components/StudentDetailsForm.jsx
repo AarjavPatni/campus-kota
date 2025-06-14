@@ -352,7 +352,7 @@ const StudentDetailsForm = () => {
               Admin
             </Button>
           </div>
-          {showValidationStep && !fromInsert ? (
+          {showValidationStep ? (
             <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
               <h2 className="text-2xl font-bold mb-4">Student Validation</h2>
               <form onSubmit={handleValidationSubmit} className="space-y-4">

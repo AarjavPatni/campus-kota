@@ -172,13 +172,14 @@ export function BillingList() {
             </div>
 
             <div className="flex-1 flex justify-end">
-              <Button
-                href="/admin"
-                color="purple"
-                size="sm"
-              >
-                Admin
-              </Button>
+              <Link href="/admin" prefetch>
+                <Button
+                  color="purple"
+                  size="sm"
+                >
+                  Admin
+                </Button>
+              </Link>
             </div>
           </div>
 

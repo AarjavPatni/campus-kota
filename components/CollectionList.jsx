@@ -166,13 +166,14 @@ export function CollectionList() {
               </div>
             </div>
 
-            <Button
-              href="/admin"
-              color="purple"
-              size="sm"
-            >
-              Admin
-            </Button>
+            <Link href="/admin" prefetch>
+              <Button
+                color="purple"
+                size="sm"
+              >
+                Admin
+              </Button>
+            </Link>
           </div>
 
           <Table striped>

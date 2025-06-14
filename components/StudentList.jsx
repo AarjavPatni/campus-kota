@@ -60,13 +60,14 @@ export function StudentList() {
             >
               {showActiveRecords ? "Active Only" : "All Records"}
             </Button>
-            <Button
-              href="/admin"
-              color="purple"
-              size="sm"
-            >
-              Admin
-            </Button>
+            <Link href="/admin" prefetch>
+              <Button
+                color="purple"
+                size="sm"
+              >
+                Admin
+              </Button>
+            </Link>
           </div>
           <Table striped>
             <TableHead>

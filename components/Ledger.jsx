@@ -10,6 +10,7 @@ import {
   Popover,
   Button,
 } from "flowbite-react";
+import Link from "next/link";
 
 export function Ledger () {
   const [ledgerData, setLedgerData] = useState([]);
@@ -88,13 +89,14 @@ export function Ledger () {
         >
           {showOnlyPositive ? "Pending Only" : "All"}
         </Button>
-        <Button
-          href="/admin"
-          color="purple"
-          size="sm"
-        >
-          Admin
-        </Button>
+        <Link href="/admin" prefetch>
+          <Button
+            color="purple"
+            size="sm"
+          >
+            Admin
+          </Button>
+        </Link>
       </div>
       <Table striped>
         <TableHead>

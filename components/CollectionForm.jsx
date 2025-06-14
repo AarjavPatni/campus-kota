@@ -6,6 +6,7 @@ import { StudentList } from "./StudentList";
 import { BillingList } from "./BillingList";
 import { Toast, Button } from "flowbite-react";
 import { HiCheck, HiX } from "react-icons/hi";
+import Link from "next/link";
 
 const validationSchema = Yup.object({
   room_name: Yup.string().required("Room Name is required"),
@@ -355,13 +356,14 @@ const CollectionForm = ({
       {toggleForm ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           <div className="flex justify-end mb-4">
-            <Button
-              href="/admin"
-              color="purple"
-              size="sm"
-            >
-              Admin
-            </Button>
+            <Link href="/admin" prefetch>
+              <Button
+                color="purple"
+                size="sm"
+              >
+                Admin
+              </Button>
+            </Link>
           </div>
           <h2 className="text-2xl font-bold mb-4">Student Collection</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">

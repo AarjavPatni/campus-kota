@@ -8,6 +8,7 @@ import { Toast, Button } from "flowbite-react";
 import { HiChevronLeft, HiChevronRight, HiCheck, HiX, HiBeaker } from "react-icons/hi";
 import { useStudent } from "@/context/StudentContext";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 // validation schema
 const validationSchema = Yup.object().shape({
@@ -330,7 +331,9 @@ export default function StudentDetailsForm() {
             </Button>
           )}
         </div>
-        <Button href="/admin" color="purple" size="sm">Admin</Button>
+        <Link href="/admin" prefetch>
+          <Button color="purple" size="sm">Admin</Button>
+        </Link>
       </div>
       <form onSubmit={selectedStudent ? handleSubmit(onSubmit) : handleSaveAndEmail} className="space-y-4">
         <div ref={stepRef} style={{ minHeight: maxHeight ? `${maxHeight}px` : 'auto' }}>

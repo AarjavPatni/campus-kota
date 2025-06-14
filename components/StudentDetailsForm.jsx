@@ -343,7 +343,14 @@ const StudentDetailsForm = () => {
     <div>
       {selectedStudent || fromInsert ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-between mb-4">
+            <Button
+              onClick={() => setSelectedStudent(null)}
+              color="gray"
+              size="sm"
+            >
+              Back
+            </Button>
             <Button
               href="/admin"
               color="purple"

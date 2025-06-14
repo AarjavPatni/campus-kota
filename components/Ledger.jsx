@@ -112,14 +112,13 @@ export function Ledger () {
               key={index}
               className="bg-white dark:border-gray-700 dark:bg-gray-800"
             >
-              <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+              <TableCell className="whitespace-nowrap font-medium text-gray-900 hover:text-blue-500 transition-colors dark:text-white">
                 <Popover
                   content={
-                    <div>
+                    <div className="border border-gray-200 dark:border-gray-700">
                       <Table striped>
                         <TableHead>
-                          <TableHeadCell className="text-xs py-1">Year</TableHeadCell>
-                          <TableHeadCell className="text-xs py-1">Month</TableHeadCell>
+                          <TableHeadCell className="text-xs py-1">Date</TableHeadCell>
                           <TableHeadCell className="text-xs py-1">Type</TableHeadCell>
                           <TableHeadCell className="text-xs py-1">Total</TableHeadCell>
                           <TableHeadCell className="text-xs py-1">Deposit</TableHeadCell>
@@ -129,8 +128,7 @@ export function Ledger () {
                             .filter(e => e.uid === entry.uid)
                             .map((detailEntry, idx) => (
                               <TableRow key={idx}>
-                                <TableCell className="text-xs py-1">{detailEntry.year}</TableCell>
-                                <TableCell className="text-xs py-1">{detailEntry.month}</TableCell>
+                                <TableCell className="text-xs py-1">{detailEntry.year + "-" + detailEntry.month}</TableCell>
                                 <TableCell className="text-xs py-1">{detailEntry.type}</TableCell>
                                 <TableCell className="text-xs py-1">{detailEntry.total}</TableCell>
                                 <TableCell className="text-xs py-1">{detailEntry.deposit}</TableCell>
@@ -141,6 +139,7 @@ export function Ledger () {
                     </div>
                   }
                   trigger="click"
+                  className=""
                 >
                   <button className="text-left w-full">
                     {entry.room_student}

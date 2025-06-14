@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import supabase from "@/supabaseClient";
 import { StudentList } from "./StudentList";
 import { Toast } from "flowbite-react";
 import { HiCheck, HiX } from "react-icons/hi";
+import { useStudent } from "@/context/StudentContext";
 
 const validationSchema = Yup.object({
   original_room: Yup.number()
@@ -39,36 +40,24 @@ const validationSchema = Yup.object({
   approved: Yup.boolean(),
 });
 
-const StudentDetailsForm = ({ uid }) => {
+const StudentDetailsForm = () => {
   const [studentDetails, setStudentDetails] = useState(null);
   const [toggleForm, setToggleForm] = useState(true);
   const [toggleToast, setToggleToast] = useState(false);
   const [toastOpacity, setToastOpacity] = useState(1);
   const [sendEmailFlag, setSendEmailFlag] = useState(false);
   const [toastMessage, setToastMessage] = useState({ text: "", type: "" });
-  const [showValidationStep, setShowValidationStep] = useState(!uid);
   const [validationData, setValidationData] = useState({ first_name: "", phone: "" });
+  const { selectedStudent, setSelectedStudent } = useStudent();
+  const [showValidationStep, setShowValidationStep] = useState(!selectedStudent);
 
-  console.log("uid", uid);
+  console.log("selectedStudent", selectedStudent);
 
   useEffect(() => {
-    if (uid) {
-      const fetchStudentDetails = async () => {
-        let { data: student_details, error } = await supabase
-          .from("student_details")
-          .select("*")
-          .eq("uid", uid);
-
-        if (error) {
-          console.error("Error fetching student details:", error);
-        } else {
-          setStudentDetails(student_details[0]);
-        }
-      };
-
-      fetchStudentDetails();
+    if (selectedStudent) {
+      setStudentDetails(selectedStudent);
     }
-  }, [uid]);
+  }, [selectedStudent]);
 
   const getChanges = (oldData, newData) => {
     const changes = {};
@@ -172,11 +161,11 @@ const StudentDetailsForm = ({ uid }) => {
         const updateValues = capitalizedValues;
 
         // Single database operation
-        const { data, error, status } = uid
+        const { data, error, status } = selectedStudent
           ? await supabase
               .from("student_details")
               .update(updateValues)
-              .eq("uid", uid)
+              .eq("uid", selectedStudent.uid)
           : await supabase.from("student_details").insert([updateValues]);
 
         console.log(status);
@@ -187,7 +176,7 @@ const StudentDetailsForm = ({ uid }) => {
         let allEmailsSuccessful = true;
 
         // Info email for updates
-        if (uid) {
+        if (selectedStudent) {
           const changes = getChanges(studentDetails, capitalizedValues);
           if (Object.keys(changes).length > 0) {
             try {
@@ -223,7 +212,7 @@ const StudentDetailsForm = ({ uid }) => {
         console.log("Database operation status:", status);
         console.log("All emails successful:", allEmailsSuccessful);
         console.log("Updated values:", updateValues);
-        if (uid) {
+        if (selectedStudent) {
           console.log("Changes detected:", getChanges(studentDetails, capitalizedValues));
         }
         if (sendEmailFlag) {
@@ -284,7 +273,7 @@ const StudentDetailsForm = ({ uid }) => {
 
   const handleMonthlyRentChange = (e) => {
     formik.handleChange(e);
-    if (!uid) {
+    if (!selectedStudent) {
       formik.setFieldValue("security_deposit", e.target.value);
     }
   };
@@ -349,7 +338,7 @@ const StudentDetailsForm = ({ uid }) => {
 
   return (
     <div>
-      {toggleForm ? (
+      {selectedStudent ? (
         <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
           {showValidationStep ? (
             <div>
@@ -397,7 +386,7 @@ const StudentDetailsForm = ({ uid }) => {
             <div>
               <h2 className="text-2xl font-bold mb-4">Student Details Form</h2>
               <form
-                onSubmit={uid ? formik.handleSubmit : handleSaveAndEmail}
+                onSubmit={selectedStudent ? formik.handleSubmit : handleSaveAndEmail}
                 className="space-y-4"
               >
                 <div>
@@ -439,7 +428,7 @@ const StudentDetailsForm = ({ uid }) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     className={`w-full p-2 bg-gray-800 text-white rounded ${
-                      uid ? "opacity-75 cursor-not-allowed" : ""
+                      selectedStudent ? "opacity-75 cursor-not-allowed" : ""
                     }`}
                     readOnly={!showValidationStep}
                   />
@@ -625,7 +614,7 @@ const StudentDetailsForm = ({ uid }) => {
                       </div>
                     )}
                 </div>
-                {uid && (
+                {selectedStudent && (
                   <div>
                     <label
                       htmlFor="remarks"
@@ -684,11 +673,11 @@ const StudentDetailsForm = ({ uid }) => {
                     onChange={handleMonthlyRentChange}
                     onBlur={formik.handleBlur}
                     className={`w-full p-2 bg-gray-800 text-white rounded ${
-                      uid && formik.values.approved
+                      selectedStudent && formik.values.approved
                         ? "opacity-75 cursor-not-allowed"
                         : ""
                     }`}
-                    readOnly={uid && formik.values.approved}
+                    readOnly={selectedStudent && formik.values.approved}
                   />
                   {formik.touched.monthly_rent && formik.errors.monthly_rent && (
                     <div className="text-red-500 text-sm mt-1">
@@ -696,7 +685,7 @@ const StudentDetailsForm = ({ uid }) => {
                     </div>
                   )}
                 </div>
-                {uid && (
+                {selectedStudent && (
                   <div>
                     <label
                       htmlFor="security_deposit"
@@ -726,7 +715,7 @@ const StudentDetailsForm = ({ uid }) => {
                       )}
                   </div>
                 )}
-                {uid && (
+                {selectedStudent && (
                   <div>
                     <label
                       htmlFor="laundry_charge"
@@ -756,7 +745,7 @@ const StudentDetailsForm = ({ uid }) => {
                       )}
                   </div>
                 )}
-                {uid && (
+                {selectedStudent && (
                   <div>
                     <label
                       htmlFor="other_charge"
@@ -800,11 +789,11 @@ const StudentDetailsForm = ({ uid }) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     className={`w-full p-2 bg-gray-800 text-white rounded ${
-                      uid && formik.values.approved
+                      selectedStudent && formik.values.approved
                         ? "opacity-75 cursor-not-allowed"
                         : ""
                     }`}
-                    readOnly={uid && formik.values.approved}
+                    readOnly={selectedStudent && formik.values.approved}
                   />
                   {formik.touched.start_date && formik.errors.start_date && (
                     <div className="text-red-500 text-sm mt-1">
@@ -812,7 +801,7 @@ const StudentDetailsForm = ({ uid }) => {
                     </div>
                   )}
                 </div>
-                {uid && (
+                {selectedStudent && (
                   <div>
                     <label
                       htmlFor="end_date"
@@ -836,7 +825,7 @@ const StudentDetailsForm = ({ uid }) => {
                     )}
                   </div>
                 )}
-                {uid && (
+                {selectedStudent && (
                   <div className="flex items-center">
                     <input
                       type="checkbox"
@@ -852,7 +841,7 @@ const StudentDetailsForm = ({ uid }) => {
                     </label>
                   </div>
                 )}
-                {uid && (
+                {selectedStudent && (
                   <div className="flex items-center">
                     <input
                       type="checkbox"
@@ -868,7 +857,7 @@ const StudentDetailsForm = ({ uid }) => {
                     </label>
                   </div>
                 )}
-                {(uid && (
+                {(selectedStudent && (
                   <div className="flex flex-row space-x-2">
                     <button
                       type="submit"
@@ -879,7 +868,7 @@ const StudentDetailsForm = ({ uid }) => {
                     <button
                       type="button"
                       className="w-full bg-gray-400 text-black p-2 rounded hover:bg-gray-200 transition"
-                      onClick={() => setToggleForm(null)}
+                      onClick={() => setSelectedStudent(null)}
                     >
                       Return to List
                     </button>

@@ -12,19 +12,20 @@ import {
 } from "flowbite-react";
 import StudentDetailsForm from "./StudentDetailsForm";
 import CollectionForm from "./CollectionForm";
+import { useStudent } from "@/context/StudentContext";
 
 export function StudentList() {
   const [allStudents, setAllStudents] = useState([]);
   const [error, setError] = useState(null);
-  const [selectedStudentUID, setSelectedStudentUID] = useState(null);
   const [collectionUID, setCollectionUID] = useState(null);
   const [showActiveRecords, setShowActiveRecords] = useState(true);
+  const { selectedStudent, setSelectedStudent } = useStudent();
 
   useEffect(() => {
     const fetchStudents = async () => {
       const { data, error } = await supabase
         .from("student_details")
-        .select("uid,original_room,first_name,student_mobile,active")
+        .select("*")
         .order('original_room', { ascending: true });
 
       if (error) {
@@ -45,8 +46,8 @@ export function StudentList() {
 
   return (
     <div>
-      {selectedStudentUID ? (
-        <StudentDetailsForm uid={selectedStudentUID} />
+      {selectedStudent ? (
+        <StudentDetailsForm />
       ) : collectionUID ? (
         <CollectionForm uid={collectionUID} returnToBill={false} />
       ) : (
@@ -81,7 +82,7 @@ export function StudentList() {
                     <Link
                       href="#"
                       onClick={() => {
-                        setSelectedStudentUID(student.uid);
+                        setSelectedStudent(student);
                       }}
                       className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
                     >

@@ -22,6 +22,9 @@ const AdminButtons = () => {
         <Button href="/collectionList" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">
           Collection List
         </Button>
+        <Button href="/ledger" className="flex items-center justify-center gap-x-1 text-sm text-white font-medium custom-btn-bg border border-gray-500 active:bg-gray-900">
+          Ledger
+        </Button>
       </div>
       <div className="mt-8 flex justify-center">
         <LogoutButton />

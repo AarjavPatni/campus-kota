@@ -176,47 +176,79 @@ export function CollectionList() {
             </Link>
           </div>
 
-          <Table striped>
-            <TableHead>
-              <TableHeadCell>Room-Student</TableHeadCell>
-              <TableHeadCell>Payment Date</TableHeadCell>
-              <TableHeadCell>Total Amount</TableHeadCell>
-              <TableHeadCell>Payment Method</TableHeadCell>
-              <TableHeadCell>
-                <span className="sr-only">Edit</span>
-              </TableHeadCell>
-            </TableHead>
-            <TableBody className="divide-y">
-              {collectionList.map((invoice, index) => (
-                <TableRow
-                  key={index}
-                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                >
-                  <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    {studentDetailsMap[invoice.uid] 
-                      ? `${studentDetailsMap[invoice.uid].original_room}-${studentDetailsMap[invoice.uid].first_name}`
-                      : 'Loading...'}
-                  </TableCell>
-                  <TableCell>{new Date(invoice.payment_date).toLocaleDateString('en-GB')}</TableCell>
-                  <TableCell>{invoice.total_amount}</TableCell>
-                  <TableCell>{invoice.payment_method}</TableCell>
-                  <TableCell>
-                    <Link
-                      href="#"
-                      onClick={() => {
-                        console.log(invoice.invoice_key);
-                        setSelectedInvoiceKey(invoice.invoice_key);
-                        setSelectedUID(invoice.uid);
-                      }}
-                      className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                    >
-                      Edit
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {/* Card view for mobile */}
+          <div className="block md:hidden space-y-2">
+            {collectionList.map((invoice, index) => (
+              <div
+                key={index}
+                className="bg-white text-black rounded-md shadow flex items-center justify-between px-3 py-2 max-w-xs mx-auto cursor-pointer"
+                onClick={() => {
+                  setSelectedInvoiceKey(invoice.invoice_key);
+                  setSelectedUID(invoice.uid);
+                }}
+              >
+                {/* Left: Name and Date */}
+                <div className="flex flex-col justify-center">
+                  <span className="text-base font-semibold text-blue-700">
+                    {studentDetailsMap[invoice.uid] ? `${studentDetailsMap[invoice.uid].original_room}-${studentDetailsMap[invoice.uid].first_name}` : 'Loading...'}
+                  </span>
+                  <span className="text-sm text-gray-600">
+                    {new Date(invoice.payment_date).toLocaleDateString('en-GB')}
+                  </span>
+                </div>
+                {/* Right: Amount and Payment Type */}
+                <div className="flex flex-col items-end">
+                  <span className="text-base font-semibold">₹{invoice.total_amount}</span>
+                  <span className="text-sm text-gray-600">{invoice.payment_method}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Table view for desktop */}
+          <div className="overflow-x-auto w-full hidden md:block">
+            <Table striped className="min-w-[600px]">
+              <TableHead>
+                <TableHeadCell>Room-Student</TableHeadCell>
+                <TableHeadCell>Payment Date</TableHeadCell>
+                <TableHeadCell>Total Amount</TableHeadCell>
+                <TableHeadCell>Payment Method</TableHeadCell>
+                <TableHeadCell>
+                  <span className="sr-only">Edit</span>
+                </TableHeadCell>
+              </TableHead>
+              <TableBody className="divide-y">
+                {collectionList.map((invoice, index) => (
+                  <TableRow
+                    key={index}
+                    className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  >
+                    <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      {studentDetailsMap[invoice.uid] 
+                        ? `${studentDetailsMap[invoice.uid].original_room}-${studentDetailsMap[invoice.uid].first_name}`
+                        : 'Loading...'}
+                    </TableCell>
+                    <TableCell>{new Date(invoice.payment_date).toLocaleDateString('en-GB')}</TableCell>
+                    <TableCell>{invoice.total_amount}</TableCell>
+                    <TableCell>{invoice.payment_method}</TableCell>
+                    <TableCell>
+                      <Link
+                        href="#"
+                        onClick={() => {
+                          console.log(invoice.invoice_key);
+                          setSelectedInvoiceKey(invoice.invoice_key);
+                          setSelectedUID(invoice.uid);
+                        }}
+                        className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                      >
+                        Edit
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
 
           {/* Totals by Payment Method */}
           <div className="mt-6">

@@ -88,7 +88,7 @@ export function StudentList() {
                   </button>
                   <span className="text-sm text-gray-700">{student.student_mobile}</span>
                 </div>
-                <div className="flex gap-2 pr-2">
+                <div className="flex gap-2">
                   <Button
                     size="sm"
                     color="success"

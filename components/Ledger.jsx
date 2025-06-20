@@ -15,7 +15,6 @@ import Link from "next/link";
 export function Ledger () {
   const [ledgerData, setLedgerData] = useState([]);
   const [error, setError] = useState(null);
-  const [selectedUid, setSelectedUid] = useState(null);
   const [detailedEntries, setDetailedEntries] = useState([]);
   const [showOnlyPositive, setShowOnlyPositive] = useState(true);
 
@@ -63,12 +62,20 @@ export function Ledger () {
           acc.push({
             uid: curr.uid,
             room_student: student ? `${student.original_room}-${student.first_name}` : 'Unknown',
+            original_room: student ? student.original_room : '', // Store original_room for sorting
             total: curr.total || 0,
             deposit: curr.deposit || 0
           });
         }
         return acc;
       }, []);
+
+      // Sort by room number (original_room)
+      processedData.sort((a, b) => {
+        const roomA = parseInt(a.original_room) || 0;
+        const roomB = parseInt(b.original_room) || 0;
+        return roomA - roomB;
+      });
 
       setLedgerData(processedData);
       setDetailedEntries(ledgerData);
@@ -146,8 +153,8 @@ export function Ledger () {
                   </button>
                 </Popover>
               </TableCell>
-              <TableCell>{entry.total}</TableCell>
-              <TableCell>{entry.deposit}</TableCell>
+              <TableCell>₹{entry.total.toLocaleString('en-IN')}</TableCell>
+              <TableCell>₹{entry.deposit.toLocaleString('en-IN')}</TableCell>
             </TableRow>
           ))}
         </TableBody>

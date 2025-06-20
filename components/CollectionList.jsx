@@ -101,29 +101,20 @@ export function CollectionList() {
         <CollectionForm uid={selectedUID} invoice_key={selectedInvoiceKey} />
       ) : (
         <div className="mx-auto max-w-screen-md">
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-5 mx-6 sm:mx-0">
             <div className="flex items-center gap-4">
-              <div className="w-1/5">
+              <div className="w-20">
                 <select
                   id="month"
                   name="month"
-                  className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="block w-full px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
                   defaultValue={new Date().getMonth() + 1}
                 >
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
-                  <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
+                  {Array.from({length: 12}, (_, i) => 
+                    <option key={i+1} value={i+1}>{new Date(0, i).toLocaleString('default', {month: 'short'})}</option>
+                  )}
                 </select>
               </div>
 
@@ -142,26 +133,6 @@ export function CollectionList() {
                       </option>
                     )
                   )}
-                </select>
-              </div>
-
-              <div>
-                <select
-                  id="room_name"
-                  name="room_name"
-                  className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  value={room_name}
-                  onChange={(e) => {
-                    setRoomName(e.target.value);
-                    console.log(e.target.value);
-                  }}
-                >
-                  <option value={""}>All</option>
-                  {[...new Set(rooms)].sort((a, b) => a.localeCompare(b)).map((room_name, index) => (
-                    <option key={index} value={room_name}>
-                      {room_name}
-                    </option>
-                  ))}
                 </select>
               </div>
             </div>
@@ -198,7 +169,7 @@ export function CollectionList() {
                 </div>
                 {/* Right: Amount and Payment Type */}
                 <div className="flex flex-col items-end">
-                  <span className="text-base font-semibold">₹{invoice.total_amount}</span>
+                  <span className="text-base font-semibold">₹{invoice.total_amount.toLocaleString('en-IN')}</span>
                   <span className="text-sm text-gray-600">{invoice.payment_method}</span>
                 </div>
               </div>
@@ -251,44 +222,33 @@ export function CollectionList() {
           </div>
 
           {/* Totals by Payment Method */}
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-0 text-center bg-white dark:bg-gray-800 p-2">
-              Totals by Payment Method
-            </h3>
+          <div className="mt-6 mx-6 sm:mx-0 overflow-hidden sm:rounded-none rounded-lg">
             <Table striped>
-              <TableHead>
-                <TableHeadCell className="text-center">
-                  Payment Method
-                </TableHeadCell>
-                <TableHeadCell className="text-center">
-                  Total Amount
-                </TableHeadCell>
-              </TableHead>
               <TableBody className="divide-y">
+                <TableRow className="bg-gray-100 dark:bg-gray-900 font-bold">
+                  <TableCell className="text-lg text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                    GRAND TOTAL
+                  </TableCell>
+                  <TableCell className="text-lg text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                    ₹
+                    {Math.floor(Object.values(paymentTotals)
+                      .reduce((sum, total) => sum + total, 0))
+                      .toLocaleString('en-IN')}
+                  </TableCell>
+                </TableRow>
                 {Object.entries(paymentTotals).map(([method, total], index) => (
                   <TableRow
                     key={index}
-                    className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                    className="text-lg bg-white dark:border-gray-700 dark:bg-gray-800"
                   >
-                    <TableCell className="text-center font-medium text-gray-900 dark:text-white">
+                    <TableCell className="text-lg text-center font-medium text-gray-900 dark:text-white">
                       {method}
                     </TableCell>
-                    <TableCell className="text-center">
-                      ₹{total.toFixed(2)}
+                    <TableCell className="text-lg text-center">
+                      ₹{Math.floor(total).toLocaleString('en-IN')}
                     </TableCell>
                   </TableRow>
                 ))}
-                <TableRow className="bg-gray-100 dark:bg-gray-900 font-bold">
-                  <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    GRAND TOTAL
-                  </TableCell>
-                  <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    ₹
-                    {Object.values(paymentTotals)
-                      .reduce((sum, total) => sum + total, 0)
-                      .toFixed(2)}
-                  </TableCell>
-                </TableRow>
               </TableBody>
             </Table>
           </div>

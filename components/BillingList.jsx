@@ -148,40 +148,36 @@ export function BillingList() {
       ) : (
         <div className="mx-auto max-w-screen-md">
           <div className="flex items-center justify-between mb-5">
-            <div className="flex-1">
-              <BillGenerator />
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div>
+            <div className="flex items-center space-x-2 w-48">
+              <div className="w-1/2">
                 <select
                   id="month"
                   name="month"
-                  className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="w-full px-2 py-2 text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
                   defaultValue={new Date().getMonth() + 1}
                 >
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
+                  <option value="1">Jan</option>
+                  <option value="2">Feb</option>
+                  <option value="3">Mar</option>
+                  <option value="4">Apr</option>
                   <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
+                  <option value="6">Jun</option>
+                  <option value="7">Jul</option>
+                  <option value="8">Aug</option>
+                  <option value="9">Sep</option>
+                  <option value="10">Oct</option>
+                  <option value="11">Nov</option>
+                  <option value="12">Dec</option>
                 </select>
               </div>
 
-              <div>
+              <div className="w-1/2">
                 <select
                   id="year"
                   name="year"
-                  className="block px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="w-full px-2 py-2 text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
                 >
@@ -196,7 +192,9 @@ export function BillingList() {
               </div>
             </div>
 
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 flex justify-end space-x-2">
+              <BillGenerator />
+
               <Link href="/admin" prefetch>
                 <Button
                   color="purple"
@@ -214,12 +212,12 @@ export function BillingList() {
             </div>
           )}
 
-          <Table striped>
+          <Table striped className="w-full">
             <TableHead>
-              <TableHeadCell>Room-Student</TableHeadCell>
-              <TableHeadCell>Monthly Rent</TableHeadCell>
-              <TableHeadCell>Electricity</TableHeadCell>
-              <TableHeadCell>Laundry</TableHeadCell>
+              <TableHeadCell className="px-2">Room-Student</TableHeadCell>
+              <TableHeadCell className="px-2">Electricity</TableHeadCell>
+              <TableHeadCell className="px-2">Laundry</TableHeadCell>
+              <TableHeadCell className="px-2">Monthly Rent</TableHeadCell>
             </TableHead>
             <TableBody className="divide-y">
               {billingDetails
@@ -234,40 +232,12 @@ export function BillingList() {
                   key={index}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
-                  <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white px-2">
                     {studentDetailsMap[bill.uid] 
                       ? `${studentDetailsMap[bill.uid].original_room}-${studentDetailsMap[bill.uid].first_name}`
                       : 'Loading...'}
                   </TableCell>
-                  <TableCell className="relative">
-                    {editingCell === `${bill.bill_key}-monthly_rent` ? (
-                      <div ref={editInputRef} className="absolute inset-0 flex items-center space-x-2 bg-white z-10">
-                        <input
-                          type="number"
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              handleSave(bill.bill_key, 'monthly_rent');
-                            }
-                          }}
-                          className="w-20 px-2 py-1 border rounded select-all"
-                          autoFocus
-                        />
-                        <Button size="xs" color="success" onClick={() => handleSave(bill.bill_key, 'monthly_rent')}>
-                          {loading ? <Spinner size="sm" /> : '✓'}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div
-                        onClick={() => handleEdit(bill.bill_key, 'monthly_rent', bill.monthly_rent)}
-                        className="cursor-pointer hover:bg-gray-100 p-1 rounded"
-                      >
-                        {bill.monthly_rent}
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="relative">
+                  <TableCell className="relative px-2">
                     {editingCell === `${bill.bill_key}-electricity_charge` ? (
                       <div ref={editInputRef} className="absolute inset-0 flex items-center space-x-2 bg-white z-10">
                         <input
@@ -295,7 +265,7 @@ export function BillingList() {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="relative">
+                  <TableCell className="relative px-2">
                     {editingCell === `${bill.bill_key}-laundry_charge` ? (
                       <div ref={editInputRef} className="absolute inset-0 flex items-center space-x-2 bg-white z-10">
                         <input
@@ -320,6 +290,34 @@ export function BillingList() {
                         className="cursor-pointer hover:bg-gray-100 p-1 rounded"
                       >
                         {bill.laundry_charge}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="relative px-2">
+                    {editingCell === `${bill.bill_key}-monthly_rent` ? (
+                      <div ref={editInputRef} className="absolute inset-0 flex items-center space-x-2 bg-white z-10">
+                        <input
+                          type="number"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSave(bill.bill_key, 'monthly_rent');
+                            }
+                          }}
+                          className="w-20 px-2 py-1 border rounded select-all"
+                          autoFocus
+                        />
+                        <Button size="xs" color="success" onClick={() => handleSave(bill.bill_key, 'monthly_rent')}>
+                          {loading ? <Spinner size="sm" /> : '✓'}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => handleEdit(bill.bill_key, 'monthly_rent', bill.monthly_rent)}
+                        className="cursor-pointer hover:bg-gray-100 p-1 rounded"
+                      >
+                        {bill.monthly_rent}
                       </div>
                     )}
                   </TableCell>

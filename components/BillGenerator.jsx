@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "flowbite-react";
 import supabase from "@/supabaseClient";
 import { useCallback, useState } from "react";
@@ -111,16 +112,19 @@ export const BillGenerator = () => {
 
   return (
     <div className="flex items-center justify-between">
-      <Button
-        role="button"
-        className="w-30 font-medium text-sm text-center duration-150"
-        color="gray"
-        onClick={() => {
+      <Link
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
           generateBill();
         }}
       >
-        Generate Bill
-      </Button>
+        <Button
+          size="sm"
+        >
+          Generate
+        </Button>
+      </Link>
     </div>
   );
 };

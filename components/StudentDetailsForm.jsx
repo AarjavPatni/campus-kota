@@ -344,23 +344,24 @@ export default function StudentDetailsForm() {
       {/* Actual form UI */}
       <div className="flex justify-between mb-4">
         <div className="flex gap-2">
-          <Button 
-            onClick={() => {
-              if (selectedStudent) {
-                setSelectedStudent(null);
-              } else {
-                reset();
-              }
-            }} 
-            color="gray" 
-            size="sm"
-          >
-            {selectedStudent ? 'Back' : 'Reset Form'}
-          </Button>
+          {selectedStudent && (
+            <Button 
+              onClick={() => {
+                if (selectedStudent) {
+                  setSelectedStudent(null);
+                } else {
+                  reset();
+                }
+              }} 
+              color="gray" 
+              size="sm"
+            >
+              Back
+            </Button>
+          )}
           {!selectedStudent && (
             <Button onClick={generateTestData} color="success" size="sm">
-              <HiBeaker className="mr-2 h-4 w-4" />
-              Test Data
+              <HiBeaker/>
             </Button>
           )}
         </div>

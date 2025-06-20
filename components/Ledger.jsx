@@ -88,7 +88,7 @@ export function Ledger () {
 
   return (
     <div className="mx-auto max-w-screen-md">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mx-6 sm:mx-0 mb-4 flex items-center justify-between">
         <Button
           color={showOnlyPositive ? "success" : "gray"}
           onClick={() => setShowOnlyPositive(!showOnlyPositive)}

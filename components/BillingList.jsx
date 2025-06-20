@@ -147,9 +147,9 @@ export function BillingList() {
         <CollectionForm uid={selectedUID} />
       ) : (
         <div className="mx-auto max-w-screen-md">
-          <div className="flex items-center justify-between mb-5">
+          <div className="mx-6 sm:mx-0 flex items-center justify-between mb-5">
             <div className="flex items-center space-x-2 w-48">
-              <div className="w-1/2">
+              <div className="w-18">
                 <select
                   id="month"
                   name="month"
@@ -215,8 +215,8 @@ export function BillingList() {
           <Table striped className="w-full">
             <TableHead>
               <TableHeadCell className="px-2">Room-Student</TableHeadCell>
-              <TableHeadCell className="px-2">Electricity</TableHeadCell>
-              <TableHeadCell className="px-2">Laundry</TableHeadCell>
+              <TableHeadCell className="px-2">Light Charge</TableHeadCell>
+              <TableHeadCell className="px-2">Laundry, Etc</TableHeadCell>
               <TableHeadCell className="px-2">Monthly Rent</TableHeadCell>
             </TableHead>
             <TableBody className="divide-y">

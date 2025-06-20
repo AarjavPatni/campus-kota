@@ -34,6 +34,7 @@ const CollectionForm = ({
   const [toastOpacity, setToastOpacity] = useState(1);
   const [toastMessage, setToastMessage] = useState({ text: "", type: "" });
   const [changes, setChanges] = useState({});
+  const [balance, setBalance] = useState(null);
 
   useEffect(() => {
     const fetchPastCollections = async () => {
@@ -89,6 +90,23 @@ const CollectionForm = ({
     };
 
     fetchPastCollections();
+  }, [uid]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!uid) return;
+      const { data, error } = await supabase
+        .from("ledger")
+        .select("total")
+        .eq("uid", uid);
+      if (error) {
+        setBalance(null);
+        return;
+      }
+      const sum = data?.reduce((acc, curr) => acc + (curr.total || 0), 0) ?? 0;
+      setBalance(sum);
+    };
+    fetchBalance();
   }, [uid]);
 
   const getChanges = (oldData, newData) => {
@@ -354,18 +372,13 @@ const CollectionForm = ({
   return (
     <div>
       {toggleForm ? (
-        <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
-          <div className="flex justify-end mb-4">
-            <Link href="/admin" prefetch>
-              <Button
-                color="purple"
-                size="sm"
-              >
-                Admin
-              </Button>
-            </Link>
+        <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto relative">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold">Collection</h2>
+            <span className="inline-block px-4 py-1 rounded-md bg-purple-600 text-white font-semibold text-lg shadow">
+              Rent Due: {balance === null ? '...' : `₹${Math.max(0, balance)}`}
+            </span>
           </div>
-          <h2 className="text-2xl font-bold mb-4">Student Collection</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             {/* Receipt No */}
             <div>

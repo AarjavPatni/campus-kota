@@ -38,6 +38,7 @@ export default function StudentDetailsForm() {
   const [step, setStep] = useState(0);
   const [maxHeight, setMaxHeight] = useState(0);
   const stepRef = useRef(null);
+  const measureRefs = useRef([]);
   const [sendEmailFlag, setSendEmailFlag] = useState(false);
   const [toggleToast, setToggleToast] = useState(false);
   const [toastOpacity, setToastOpacity] = useState(1);
@@ -48,10 +49,10 @@ export default function StudentDetailsForm() {
   const fromInsert = router.pathname === "/insert";
 
   const steps = [
-    ["first_name", "last_name", "student_mobile"],
-    ["original_room", "father_name", "email", "start_date"],
-    ["parent_mobile", "guardian_mobile", "address", "course", "institute", ...(selectedStudent ? ["remarks"] : [])],
-    ["monthly_rent", ...(selectedStudent ? ["security_deposit"] : []), "laundry_charge", ...(selectedStudent ? ["end_date"] : []), "active", "approved"],
+    ["first_name", "last_name", "student_mobile", "active", "approved"],
+    ["original_room", "father_name", "email", "start_date", "address"],
+    ["parent_mobile", "guardian_mobile", "course", "institute", ...(selectedStudent ? ["remarks"] : [])],
+    ["monthly_rent", ...(selectedStudent ? ["security_deposit"] : []), "laundry_charge", ...(selectedStudent ? ["end_date"] : [])],
   ];
 
   const {
@@ -100,13 +101,16 @@ export default function StudentDetailsForm() {
     if (selectedStudent) reset(selectedStudent);
   }, [selectedStudent]);
 
-  // measure tallest step
+  // measure tallest step (all steps)
   useEffect(() => {
-    if (stepRef.current) {
-      const h = stepRef.current.clientHeight;
-      setMaxHeight(prev => Math.max(prev, h));
-    }
-  }, [step]);
+    // Create refs for each step
+    measureRefs.current = measureRefs.current.slice(0, steps.length);
+    // After rendering, measure all step heights
+    setTimeout(() => {
+      const heights = measureRefs.current.map(ref => ref?.clientHeight || 0);
+      setMaxHeight(Math.max(...heights, 0));
+    }, 0);
+  }, [steps, selectedStudent]);
 
   const capitalize = str =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -309,6 +313,35 @@ export default function StudentDetailsForm() {
 
   return (
     <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
+      {/* Hidden step containers for measuring heights */}
+      <div style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', height: 0, overflow: 'hidden' }}>
+        {steps.map((fields, idx) => (
+          <div key={idx} ref={el => measureRefs.current[idx] = el}>
+            {fields.map(field => (
+              <div key={field} className="mb-4">
+                {!(field === 'active' || field === 'approved') && (
+                  <label htmlFor={field} className="block text-sm font-medium mb-1 capitalize">{capitalize(field.replace(/_/g, ' '))}:</label>
+                )}
+                {(field === 'remarks' || field === 'address') ? (
+                  <textarea id={field} className="w-full p-2 bg-gray-800 text-white rounded" />
+                ) : (field === 'active' || field === 'approved') ? (
+                  <div className="flex items-center">
+                    <input id={field} type="checkbox" className="mr-2" />
+                    <label htmlFor={field} className="text-sm font-medium">{capitalize(field)}</label>
+                  </div>
+                ) : (
+                  <input 
+                    id={field} 
+                    type={field.includes('date') ? 'date' : field === 'email' ? 'email' : field.includes('mobile') ? 'tel' : 'text'} 
+                    className={`w-full p-2 text-white rounded bg-gray-800`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {/* Actual form UI */}
       <div className="flex justify-between mb-4">
         <div className="flex gap-2">
           <Button 
@@ -331,9 +364,17 @@ export default function StudentDetailsForm() {
             </Button>
           )}
         </div>
-        <Link href="/admin" prefetch>
-          <Button color="purple" size="sm">Admin</Button>
-        </Link>
+        {!selectedStudent && (
+          <Link href="/admin" prefetch>
+            <Button 
+              color="purple" 
+              size="sm"
+              onClick={() => setSelectedStudent(null)}
+            >
+              Admin
+            </Button>
+          </Link>
+        )}
       </div>
       <form onSubmit={selectedStudent ? handleSubmit(onSubmit) : handleSaveAndEmail} className="space-y-4">
         <div ref={stepRef} style={{ minHeight: maxHeight ? `${maxHeight}px` : 'auto' }}>

@@ -13,7 +13,7 @@ import {
 import StudentDetailsForm from "./StudentDetailsForm";
 import CollectionForm from "./CollectionForm";
 import { useStudent } from "@/context/StudentContext";
-import { HiClipboardList, HiHand } from "react-icons/hi";
+import { HiCurrencyRupee, HiOutlineLogout } from "react-icons/hi";
 
 export function StudentList() {
   const [allStudents, setAllStudents] = useState([]);
@@ -95,7 +95,7 @@ export function StudentList() {
                     className="rounded-full p-2 h-9 w-9 flex items-center justify-center"
                     onClick={() => setCollectionUID(student.uid)}
                   >
-                    <HiClipboardList className="w-5 h-5" />
+                    <HiCurrencyRupee className="w-5 h-5" />
                   </Button>
                   <Button
                     size="sm"
@@ -103,7 +103,7 @@ export function StudentList() {
                     className="rounded-full p-2 h-9 w-9 flex items-center justify-center"
                     onClick={() => {}}
                   >
-                    <HiHand className="w-5 h-5" />
+                    <HiOutlineLogout className="w-5 h-5" />
                   </Button>
                 </div>
               </div>

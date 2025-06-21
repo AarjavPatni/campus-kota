@@ -21,7 +21,7 @@ const AdminButtons = () => {
   return (
     <div className="max-w-2xl mx-auto px-4">
       <h1 className="text-3xl font-bold text-white text-center mb-8">
-        {process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview'
+        {process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview'
           ? 'Admin Portal - TEST' 
           : 'Admin Portal'}
       </h1>
@@ -63,7 +63,7 @@ const AdminButtons = () => {
           </Link>
         </div>
       </div>
-      {process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview' && (
+      {process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' && (
         <div className="mt-8 flex justify-center">
           <LogoutButton />
         </div>

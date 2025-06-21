@@ -63,7 +63,7 @@ const AdminButtons = () => {
           </Link>
         </div>
       </div>
-      {process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview' && (
+      {(process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview') && (
         <div className="mt-8 flex justify-center">
           <LogoutButton />
         </div>

@@ -160,6 +160,18 @@ export default function StudentDetailsForm() {
       const values = await handleSubmit(onSubmit)();
       console.log('Form submission result:', values);
     } else {
+      // Show error summary for all fields
+      const errorMessages = Object.values(errors)
+        .map(e => e?.message)
+        .filter(Boolean)
+        .join('; ');
+      setToastMessage({
+        text: errorMessages || "Please fix the errors above.",
+        type: "error"
+      });
+      setToggleToast(true);
+      setToastOpacity(1);
+      setTimeout(() => setToastOpacity(0), 4000);
       console.log('Form validation errors:', errors);
     }
   };
@@ -264,11 +276,40 @@ export default function StudentDetailsForm() {
           setTimeout(() => setToastOpacity(0), 4000);
           return;
         }
+      } else {
+        // Show error summary for current step
+        const stepFields = ["first_name", "last_name", "student_mobile"];
+        const errorMessages = stepFields
+          .map(f => errors[f]?.message)
+          .filter(Boolean)
+          .join("; ");
+        setToastMessage({
+          text: errorMessages || "Please fix the errors above.",
+          type: "error"
+        });
+        setToggleToast(true);
+        setToastOpacity(1);
+        setTimeout(() => setToastOpacity(0), 4000);
+        return;
       }
     }
-    
+
     if (await trigger(steps[step])) {
       setStep(s => s + 1);
+    } else {
+      // Show error summary for current step
+      const stepFields = steps[step];
+      const errorMessages = stepFields
+        .map(f => errors[f]?.message)
+        .filter(Boolean)
+        .join("; ");
+      setToastMessage({
+        text: errorMessages || "Please fix the errors above.",
+        type: "error"
+      });
+      setToggleToast(true);
+      setToastOpacity(1);
+      setTimeout(() => setToastOpacity(0), 4000);
     }
   };
 

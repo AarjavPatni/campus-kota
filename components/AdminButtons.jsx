@@ -63,9 +63,11 @@ const AdminButtons = () => {
           </Link>
         </div>
       </div>
-      <div className="mt-8 flex justify-center">
-        <LogoutButton />
-      </div>
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mt-8 flex justify-center">
+          <LogoutButton />
+        </div>
+      )}
     </div>
   );
 };

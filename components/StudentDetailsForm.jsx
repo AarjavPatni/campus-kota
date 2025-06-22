@@ -81,9 +81,9 @@ export default function StudentDetailsForm() {
       security_deposit: "",
       monthly_rent: "",
       laundry_charge: "",
-      other_charge: "",
+      other_charge: 0,
       start_date: new Date().toISOString().split("T")[0],
-      end_date: "",
+      end_date: "2026-12-31",
       active: true,
       approved: false,
     },
@@ -165,14 +165,14 @@ export default function StudentDetailsForm() {
         .map(e => e?.message)
         .filter(Boolean)
         .join('; ');
+
       setToastMessage({
         text: errorMessages || "Please fix the errors above.",
         type: "error"
       });
+
       setToggleToast(true);
       setToastOpacity(1);
-      setTimeout(() => setToastOpacity(0), 4000);
-      console.log('Form validation errors:', errors);
     }
   };
 
@@ -233,10 +233,14 @@ export default function StudentDetailsForm() {
       setToggleToast(true);
       setToastOpacity(1);
       if (!selectedStudent) {
-        router.push('/admin');
+        setTimeout(() => {
+          router.push('/admin');
+        }, 3000);
       } else {
-        setSelectedStudent(null);
-        reset();
+        setTimeout(() => {
+          setSelectedStudent(null);
+          reset();
+        }, 3000);
       }
     } catch (err) {
       console.error('Error in form submission:', err);
@@ -272,8 +276,6 @@ export default function StudentDetailsForm() {
           });
           setToggleToast(true);
           setToastOpacity(1);
-          // Keep toast visible for 5 seconds
-          setTimeout(() => setToastOpacity(0), 4000);
           return;
         }
       } else {
@@ -289,7 +291,6 @@ export default function StudentDetailsForm() {
         });
         setToggleToast(true);
         setToastOpacity(1);
-        setTimeout(() => setToastOpacity(0), 4000);
         return;
       }
     }
@@ -309,7 +310,6 @@ export default function StudentDetailsForm() {
       });
       setToggleToast(true);
       setToastOpacity(1);
-      setTimeout(() => setToastOpacity(0), 4000);
     }
   };
 
@@ -320,7 +320,7 @@ export default function StudentDetailsForm() {
       const t = setTimeout(() => setToastOpacity(0), 3000);
       return () => clearTimeout(t);
     }
-  }, [toastOpacity]);
+  }, [toastOpacity, toastMessage.type]);
 
   const generateTestData = () => {
     const firstNames = ["John", "Jane", "Michael", "Sarah", "David", "Emma", "James", "Sophia", "William", "Olivia", "Benjamin", "Ava", "Lucas", "Mia", "Henry", "Charlotte", "Alexander", "Amelia", "Daniel", "Harper", "Matthew", "Evelyn", "Joseph", "Abigail", "Samuel", "Emily", "Jackson", "Elizabeth", "Sebastian", "Ella", "David", "Scarlett", "Carter", "Grace", "Wyatt", "Chloe", "Jayden", "Victoria", "Gabriel", "Riley", "Owen", "Aria", "Dylan", "Lily", "Luke", "Hannah", "Anthony", "Natalie", "Isaac", "Zoe"];
@@ -466,7 +466,7 @@ export default function StudentDetailsForm() {
               {toastMessage.type === 'success' ? <HiCheck className="h-5 w-5" /> : <HiX className="h-5 w-5" />}
             </div>
             <div className="ml-3 text-sm font-normal">{toastMessage.text}</div>
-            <Toast.Toggle />
+            <Toast.Toggle onDismiss={() => { setToggleToast(false); setToastOpacity(0); }} />
           </Toast>
         </div>
       )}

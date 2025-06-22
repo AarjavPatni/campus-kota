@@ -45,7 +45,6 @@ export default function StudentDetailsForm() {
   const [maxHeight, setMaxHeight] = useState(0);
   const stepRef = useRef(null);
   const measureRefs = useRef([]);
-  const [sendEmailFlag, setSendEmailFlag] = useState(false);
   const [toggleToast, setToggleToast] = useState(false);
   const [toastOpacity, setToastOpacity] = useState(1);
   const [toastMessage, setToastMessage] = useState({ text: "", type: "" });
@@ -143,8 +142,9 @@ export default function StudentDetailsForm() {
   };
 
   const sendNewEntryEmail = async values => {
+    try {
       // Send to student
-      await fetch("/api/send", {
+      const response = await fetch("/api/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -154,23 +154,36 @@ export default function StudentDetailsForm() {
           bcc: "campuskota@outlook.com",
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      console.log("Sending email...")
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error sending new entry email:', error);
+      // Optionally handle the error in the UI or rethrow it
+      throw error;
+    }
   };
 
   const handleSaveAndEmail = async (e) => {
     e.preventDefault();
     console.log('Save and Email clicked');
-    setSendEmailFlag(true);
     const isValid = await trigger();
     console.log('Form validation result:', isValid);
     if (isValid) {
-      const values = await handleSubmit(onSubmit)();
-      console.log('Form submission result:', values);
+      await handleSubmit((values) => onSubmit(values, true))();
     } else {
       // Show error summary for all fields
       const errorMessages = Object.values(errors)
         .map(e => e?.message)
         .filter(Boolean)
         .join('; ');
+
+      console.log("errors", errorMessages);
 
       setToastMessage({
         text: errorMessages || "Please fix the errors above.",
@@ -182,7 +195,7 @@ export default function StudentDetailsForm() {
     }
   };
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values, shouldSendEmail = false) => {
     console.log('onSubmit called with values:', values);
     if (!values) {
       console.error('No values provided to onSubmit');
@@ -212,6 +225,7 @@ export default function StudentDetailsForm() {
     try {
       let res;
       const { room_name, ...updateData } = caps;
+
       if (selectedStudent) {
         console.log('Updating student with data:', updateData);
         res = await supabase.from("student_details").update(updateData).eq("uid", selectedStudent.uid);
@@ -222,6 +236,7 @@ export default function StudentDetailsForm() {
         console.log('Inserting new student with data:', caps);
         res = await supabase.from("student_details").insert([caps]);
       }
+
       console.log('Database response:', res);
       if (res.error) throw res.error;
       // email logic
@@ -230,11 +245,12 @@ export default function StudentDetailsForm() {
         console.log('Changes detected:', changes);
         if (Object.keys(changes).length) await sendUpdatedInfoEmail(changes, caps);
       }
-      if (sendEmailFlag) {
+
+      if (shouldSendEmail) {
         console.log('Sending new entry email to:', caps.email);
         await sendNewEntryEmail(caps);
-        setSendEmailFlag(false);
       }
+
       setToastMessage({ text: "Data saved!", type: "success" });
       setToggleToast(true);
       setToastOpacity(1);
@@ -342,7 +358,7 @@ export default function StudentDetailsForm() {
       course: courses[Math.floor(Math.random() * courses.length)],
       institute: institutes[Math.floor(Math.random() * institutes.length)],
       student_mobile: `9${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`,
-      email: `student${Math.floor(Math.random() * 1000)}@example.com`,
+      email: `niteshpatni+${Math.floor(Math.random() * 1000)}@hotmail.com`,
       parent_mobile: `9${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`,
       guardian_mobile: `9${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`,
       address: `${Math.floor(Math.random() * 100)} Main Street, City ${Math.floor(Math.random() * 1000)}`,
@@ -426,7 +442,7 @@ export default function StudentDetailsForm() {
           </Link>
         )}
       </div>
-      <form onSubmit={selectedStudent ? handleSubmit(onSubmit) : handleSaveAndEmail} className="space-y-4">
+      <form onSubmit={selectedStudent ? handleSubmit((values) => onSubmit(values, false)) : handleSaveAndEmail} className="space-y-4">
         <div ref={stepRef} style={{ minHeight: maxHeight ? `${maxHeight}px` : 'auto' }}>
           {steps[step].map(field => (
             <div key={field} className="mb-4">
@@ -463,7 +479,7 @@ export default function StudentDetailsForm() {
             <>
               <Button type="submit" color="success" className="hover:brightness-110">{selectedStudent ? 'Update' : 'Save & Email'}</Button>
               {!selectedStudent && (
-                <Button onClick={handleSubmit(onSubmit)} color="gray" size="sm">Save</Button>
+                <Button onClick={handleSubmit((values) => onSubmit(values, false))} color="gray" size="sm">Save</Button>
               )}
             </>
           )}

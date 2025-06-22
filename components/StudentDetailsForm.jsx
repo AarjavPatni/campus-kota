@@ -448,7 +448,7 @@ export default function StudentDetailsForm() {
                   type={field.includes('date') ? 'date' : field === 'email' ? 'email' : field.includes('mobile') ? 'tel' : 'text'} 
                   {...register(field)} 
                   className={`w-full p-2 text-white rounded ${(field === 'first_name' || field === 'student_mobile') && selectedStudent ? 'bg-gray-700 opacity-60 cursor-not-allowed' : 'bg-gray-800'}`}
-                  disabled={field === 'first_name' && selectedStudent}
+                  disabled={(field === 'first_name' || field === 'student_mobile') && selectedStudent}
                 />
               )}
               {errors[field] && <p className="text-red-500 text-sm mt-1">{errors[field].message}</p>}

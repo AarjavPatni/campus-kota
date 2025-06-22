@@ -369,7 +369,7 @@ export default function StudentDetailsForm() {
       course: courses[Math.floor(Math.random() * courses.length)],
       institute: institutes[Math.floor(Math.random() * institutes.length)],
       student_mobile: `9${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`,
-      email: `niteshpatni+${Math.floor(Math.random() * 1000)}@hotmail.com`,
+      email: `delivered+${Math.floor(Math.random() * 1000)}@resend.dev`,
       parent_mobile: `9${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`,
       guardian_mobile: `9${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`,
       address: `${Math.floor(Math.random() * 100)} Main Street, City ${Math.floor(Math.random() * 1000)}`,

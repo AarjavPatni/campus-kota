@@ -241,12 +241,12 @@ export default function StudentDetailsForm() {
       if (!selectedStudent) {
         setTimeout(() => {
           router.push('/admin');
-        }, 3000);
+        }, 1000);
       } else {
         setTimeout(() => {
           setSelectedStudent(null);
           reset();
-        }, 3000);
+        }, 1000);
       }
     } catch (err) {
       console.error('Error in form submission:', err);

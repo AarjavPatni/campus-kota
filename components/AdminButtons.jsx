@@ -1,7 +1,7 @@
 import { Button } from "flowbite-react";
 import LogoutButton from "./LogoutButton";
 import Link from 'next/link';
-import { HiPlus, HiUsers, HiCurrencyDollar, HiClipboardList, HiBookOpen } from "react-icons/hi";
+import { HiPlus, HiUsers, HiClipboardList, HiBookOpen, HiCurrencyRupee } from "react-icons/hi";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -41,16 +41,16 @@ const AdminButtons = () => {
               Student List
             </Button>
           </Link>
-          <Link href="/billingList" prefetch className="w-full">
-            <Button className="w-full flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-yellow-600 border border-yellow-700 hover:bg-yellow-700 active:bg-yellow-800">
-              <HiCurrencyDollar className="mr-2 h-5 w-5" />
-              Billing List
-            </Button>
-          </Link>
           <Link href="/collectionList" prefetch className="w-full">
             <Button className="w-full flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-red-600 border border-red-700 hover:bg-red-700 active:bg-red-800">
-              <HiClipboardList className="mr-2 h-5 w-5" />
+              <HiCurrencyRupee className="mr-2 h-5 w-5" />
               Collection List
+            </Button>
+          </Link>
+          <Link href="/billingList" prefetch className="w-full">
+            <Button className="w-full flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-yellow-600 border border-yellow-700 hover:bg-yellow-700 active:bg-yellow-800">
+              <HiClipboardList className="mr-2 h-5 w-5" />
+              Billing List
             </Button>
           </Link>
         </div>

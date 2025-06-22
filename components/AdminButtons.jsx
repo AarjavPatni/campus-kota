@@ -26,21 +26,21 @@ const AdminButtons = () => {
           : 'Admin Portal'}
       </h1>
       <div className="flex flex-col gap-4 mt-6">
-        <div className="flex justify-center w-full">
+        <div className="flex flex-row sm:flex-col gap-4 w-full">
           <Link href="/insert" prefetch className="w-full">
-            <Button className="w-full flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-blue-600 border border-blue-700 hover:bg-blue-700 active:bg-blue-800">
+            <Button className="w-full h-24 sm:h-12 flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-blue-600 border border-blue-700 hover:bg-blue-700 active:bg-blue-800">
               <HiPlus className="mr-2 h-5 w-5" />
-              New Student Details
+              New Student
             </Button>
           </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
           <Link href="/studentList" prefetch className="w-full">
-            <Button className="w-full flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-green-600 border border-green-700 hover:bg-green-700 active:bg-green-800">
+            <Button className="w-full h-24 sm:h-12 flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-green-600 border border-green-700 hover:bg-green-700 active:bg-green-800">
               <HiUsers className="mr-2 h-5 w-5" />
               Student List
             </Button>
           </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
           <Link href="/collectionList" prefetch className="w-full">
             <Button className="w-full flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-red-600 border border-red-700 hover:bg-red-700 active:bg-red-800">
               <HiCurrencyRupee className="mr-2 h-5 w-5" />
@@ -53,8 +53,6 @@ const AdminButtons = () => {
               Billing List
             </Button>
           </Link>
-        </div>
-        <div className="flex justify-center w-full">
           <Link href="/ledger" prefetch className="w-full">
             <Button className="w-full flex items-center justify-center gap-x-1 text-sm text-white font-medium bg-purple-600 border border-purple-700 hover:bg-purple-700 active:bg-purple-800">
               <HiBookOpen className="mr-2 h-5 w-5" />

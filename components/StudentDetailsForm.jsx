@@ -34,6 +34,12 @@ const validationSchema = Yup.object().shape({
   approved: Yup.boolean(),
 });
 
+// Add field label mapping
+const FIELD_LABELS = {
+  original_room: "Room Number",
+  laundry_charge: "Laundry, Wifi, Etc"
+};
+
 export default function StudentDetailsForm() {
   const [step, setStep] = useState(0);
   const [maxHeight, setMaxHeight] = useState(0);
@@ -361,7 +367,9 @@ export default function StudentDetailsForm() {
             {fields.map(field => (
               <div key={field} className="mb-4">
                 {!(field === 'active' || field === 'approved') && (
-                  <label htmlFor={field} className="block text-sm font-medium mb-1 capitalize">{capitalize(field.replace(/_/g, ' '))}:</label>
+                  <label htmlFor={field} className="block text-sm font-medium mb-1">
+                    {FIELD_LABELS[field] || capitalize(field.replace(/_/g, ' '))}:
+                  </label>
                 )}
                 {(field === 'remarks' || field === 'address') ? (
                   <textarea id={field} className="w-full p-2 bg-gray-800 text-white rounded" />
@@ -423,7 +431,9 @@ export default function StudentDetailsForm() {
           {steps[step].map(field => (
             <div key={field} className="mb-4">
               {!(field === 'active' || field === 'approved') && (
-                <label htmlFor={field} className="block text-sm font-medium mb-1 capitalize">{capitalize(field.replace(/_/g, ' '))}:</label>
+                <label htmlFor={field} className="block text-sm font-medium mb-1">
+                  {FIELD_LABELS[field] || capitalize(field.replace(/_/g, ' '))}:
+                </label>
               )}
               {(field === 'remarks' || field === 'address') ? (
                 <textarea id={field} {...register(field)} className="w-full p-2 bg-gray-800 text-white rounded" />

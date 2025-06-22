@@ -81,10 +81,7 @@ export const BillGenerator = () => {
                 uid: student.uid,
                 room_name: student.room_name,
                 monthly_rent: monthly_rent,
-                security_deposit:
-                  startYear === currYear && startMonth === currMonth
-                    ? student.security_deposit
-                    : 0,
+                security_deposit: 0,
                 laundry_charge: student.laundry_charge,
                 other_charge: student.other_charge,
                 year: end.split("-")[0],

@@ -123,7 +123,9 @@ export default function StudentDetailsForm() {
   const getChanges = (oldData, newData) => {
     const changes = {};
     Object.keys(newData).forEach(key => {
-      if (oldData[key] !== newData[key]) changes[key] = { old: oldData[key], new: newData[key] };
+      let oldVal = oldData[key];
+      let newVal = newData[key];
+      if (oldVal !== newVal) changes[key] = { old: oldVal, new: newVal };
     });
     return changes;
   };
@@ -221,6 +223,15 @@ export default function StudentDetailsForm() {
       address: capitalize(values.address),
       ...values,
     };
+
+    // Normalize date fields
+    ["start_date", "end_date"].forEach(field => {
+      if (caps[field] instanceof Date) {
+        const d = caps[field];
+        caps[field] = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      }
+    });
+
     console.log('Processed data:', caps);
     try {
       let res;

@@ -216,7 +216,7 @@ export function BillingList() {
             <TableHead>
               <TableHeadCell className="px-2">Room-Student</TableHeadCell>
               <TableHeadCell className="px-2">Light Charge</TableHeadCell>
-              <TableHeadCell className="px-2">Laundry, Etc</TableHeadCell>
+              <TableHeadCell className="px-2">Laundry, Wifi, Etc</TableHeadCell>
               <TableHeadCell className="px-2">Monthly Rent</TableHeadCell>
             </TableHead>
             <TableBody className="divide-y">

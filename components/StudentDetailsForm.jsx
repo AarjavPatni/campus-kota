@@ -20,14 +20,14 @@ const validationSchema = Yup.object().shape({
   institute: Yup.string().required("Institute is required"),
   student_mobile: Yup.string()
     .required("Student Mobile is required")
-    .matches(/^[0-9]{10}$/, "Must be a 10-digit number"),
+    .matches(/^[0-9]+$/, "Must be a valid number"),
   email: Yup.string().required("Email is required").email("Invalid email"),
   parent_mobile: Yup.string()
     .required("Parent Mobile is required")
-    .matches(/^[0-9]{10}$/, "Must be a 10-digit number"),
+    .matches(/^[0-9]+$/, "Must be a valid number"),
   guardian_mobile: Yup.string()
     .required("Guardian Mobile is required")
-    .matches(/^[0-9]{10}$/, "Must be a 10-digit number"),
+    .matches(/^[0-9]+$/, "Must be a valid number"),
   remarks: Yup.string().nullable(),
   address: Yup.string().required("Address is required"),
   security_deposit: Yup.number().required("Security Deposit is required").integer(),
@@ -46,7 +46,7 @@ const FIELD_LABELS = {
   laundry_charge: "Laundry, Wifi, Etc"
 };
 
-export default function StudentDetailsForm() {
+export default function StudentDetailsForm({ refreshStudents }) {
   const [step, setStep] = useState(0);
   const [maxHeight, setMaxHeight] = useState(0);
   const stepRef = useRef(null);
@@ -272,11 +272,13 @@ export default function StudentDetailsForm() {
       setToggleToast(true);
       setToastOpacity(1);
       if (!selectedStudent) {
-        setTimeout(() => {
+        setTimeout(async () => {
+          if (refreshStudents) await refreshStudents();
           router.push('/admin');
         }, 1000);
       } else {
-        setTimeout(() => {
+        setTimeout(async () => {
+          if (refreshStudents) await refreshStudents();
           setSelectedStudent(null);
           reset();
         }, 1000);

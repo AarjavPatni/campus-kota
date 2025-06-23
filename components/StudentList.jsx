@@ -37,7 +37,18 @@ export function StudentList() {
     };
 
     fetchStudents();
+    // Expose fetchStudents for refresh
+    StudentList.fetchStudents = fetchStudents;
   }, []);
+
+  // Add a refresh function to pass to StudentDetailsForm
+  const refreshStudents = async () => {
+    const { data, error } = await supabase
+      .from("student_details")
+      .select("*")
+      .order('original_room', { ascending: true });
+    if (!error) setAllStudents(data);
+  };
 
   if (error) return <div>Error fetching data: {error.message}</div>;
 
@@ -48,7 +59,7 @@ export function StudentList() {
   return (
     <div>
       {selectedStudent ? (
-        <StudentDetailsForm />
+        <StudentDetailsForm refreshStudents={refreshStudents} />
       ) : collectionUID ? (
         <CollectionForm uid={collectionUID} returnToBill={false} />
       ) : (

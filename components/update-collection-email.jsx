@@ -61,7 +61,7 @@ export const UpdateCollectionTemplate = ({ changes, collection }) => {
                     <div style={{ color: '#ef4444', textDecoration: 'line-through' }}>
                       {formatValue(field, values.old)}
                     </div>
-                    <div style={{ color: '#10b981', marginTop: '4px' }}>
+                    <div style={{ color: '#77f943', marginTop: '4px' }}>
                       {formatValue(field, values.new)}
                     </div>
                   </td>

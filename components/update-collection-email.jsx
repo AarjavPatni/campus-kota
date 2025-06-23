@@ -88,7 +88,7 @@ export const UpdateCollectionTemplate = ({ changes, collection }) => {
             Payment Details
           </h3>
           <div style={{ color: '#9ca3af', lineHeight: '1.5' }}>
-            <div>Invoice #: {collection.invoice_key}</div>
+            <div>Receipt #: {collection.receipt_no}</div>
             <div>Monthly Charge: ₹{Number(collection.monthly_charge).toLocaleString('en-IN')}</div>
             <div>Security Deposit: ₹{Number(collection.security_deposit).toLocaleString('en-IN')}</div>
             <div>Payment Date: {new Date(collection.payment_date).toLocaleDateString('en-IN')}</div>

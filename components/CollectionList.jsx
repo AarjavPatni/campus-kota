@@ -65,20 +65,19 @@ export function CollectionList() {
 
         // Fetch student details for all collections
         const uniqueUids = [...new Set(data.map(invoice => invoice.uid))];
-        const studentDetails = {};
-        
-        for (const uid of uniqueUids) {
-          const { data: studentData, error: studentError } = await supabase
+        let studentDetails = {};
+        if (uniqueUids.length > 0) {
+          const { data: studentsData, error: studentsError } = await supabase
             .from('student_details')
-            .select('original_room, first_name')
-            .eq('uid', uid)
-            .single();
-            
-          if (!studentError && studentData) {
-            studentDetails[uid] = studentData;
+            .select('uid, original_room, first_name')
+            .in('uid', uniqueUids);
+          if (!studentsError && studentsData) {
+            studentDetails = studentsData.reduce((acc, student) => {
+              acc[student.uid] = student;
+              return acc;
+            }, {});
           }
         }
-        
         setStudentDetailsMap(studentDetails);
       }
     };

@@ -35,7 +35,23 @@ export function BillingList() {
     const fetchBillDetails = async () => {
       let { data, error } = await supabase
         .from("billing")
-        .select("bill_key,uid,room_name,monthly_rent,electricity_charge,laundry_charge,other_charge,year,month,bill_date,approved")
+        .select(`
+          bill_key,
+          uid,
+          room_name,
+          monthly_rent,
+          electricity_charge,
+          laundry_charge,
+          other_charge,
+          year,
+          month,
+          bill_date,
+          approved,
+          student_details (
+            original_room,
+            first_name
+          )
+        `)
         .eq("year", year)
         .eq("month", month);
 
@@ -43,23 +59,6 @@ export function BillingList() {
         setError(error);
       } else {
         setBillingDetails(data);
-        // Fetch student details for all bills
-        const uniqueUids = [...new Set(data.map(bill => bill.uid))];
-        const studentDetails = {};
-        
-        for (const uid of uniqueUids) {
-          const { data: studentData, error: studentError } = await supabase
-            .from('student_details')
-            .select('original_room, first_name')
-            .eq('uid', uid)
-            .single();
-            
-          if (!studentError && studentData) {
-            studentDetails[uid] = studentData;
-          }
-        }
-        
-        setStudentDetailsMap(studentDetails);
       }
     };
 
@@ -221,10 +220,10 @@ export function BillingList() {
             </TableHead>
             <TableBody className="divide-y">
               {billingDetails
-                .filter(bill => studentDetailsMap[bill.uid]) // Only show bills where we have student details
+                .filter(bill => bill.student_details) // Only show bills where we have student details
                 .sort((a, b) => {
-                  const roomA = parseInt(studentDetailsMap[a.uid].original_room) || 0;
-                  const roomB = parseInt(studentDetailsMap[b.uid].original_room) || 0;
+                  const roomA = parseInt(a.student_details.original_room) || 0;
+                  const roomB = parseInt(b.student_details.original_room) || 0;
                   return roomA - roomB;
                 })
                 .map((bill, index) => (
@@ -233,8 +232,8 @@ export function BillingList() {
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white px-2">
-                    {studentDetailsMap[bill.uid] 
-                      ? `${studentDetailsMap[bill.uid].original_room}-${studentDetailsMap[bill.uid].first_name}`
+                    {bill.student_details 
+                      ? `${bill.student_details.original_room}-${bill.student_details.first_name}`
                       : 'Loading...'}
                   </TableCell>
                   <TableCell className="relative px-2">

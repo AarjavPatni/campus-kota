@@ -26,13 +26,24 @@ export function StudentList() {
     const fetchStudents = async () => {
       const { data, error } = await supabase
         .from("student_details")
-        .select("*")
-        .order('original_room', { ascending: true });
+        .select("*");
 
       if (error) {
         setError(error);
       } else {
-        setAllStudents(data);
+        // Sort by active first, then by original_room
+        const sorted = data.sort((a, b) => {
+          if (a.active === b.active) {
+            // Compare room numbers as numbers if possible
+            const roomA = isNaN(Number(a.original_room)) ? a.original_room : Number(a.original_room);
+            const roomB = isNaN(Number(b.original_room)) ? b.original_room : Number(b.original_room);
+            if (roomA < roomB) return -1;
+            if (roomA > roomB) return 1;
+            return 0;
+          }
+          return b.active - a.active; // active students first
+        });
+        setAllStudents(sorted);
       }
     };
 
@@ -45,9 +56,21 @@ export function StudentList() {
   const refreshStudents = async () => {
     const { data, error } = await supabase
       .from("student_details")
-      .select("*")
-      .order('original_room', { ascending: true });
-    if (!error) setAllStudents(data);
+      .select("*");
+    if (!error) {
+      // Sort by active first, then by original_room
+      const sorted = data.sort((a, b) => {
+        if (a.active === b.active) {
+          const roomA = isNaN(Number(a.original_room)) ? a.original_room : Number(a.original_room);
+          const roomB = isNaN(Number(b.original_room)) ? b.original_room : Number(b.original_room);
+          if (roomA < roomB) return -1;
+          if (roomA > roomB) return 1;
+          return 0;
+        }
+        return b.active - a.active;
+      });
+      setAllStudents(sorted);
+    }
   };
 
   if (error) return <div>Error fetching data: {error.message}</div>;

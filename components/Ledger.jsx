@@ -36,7 +36,7 @@ export function Ledger () {
       // Get student details
       const { data: studentData, error: studentError } = await supabase
         .from("student_details")
-        .select("uid, first_name, original_room");
+        .select("uid, first_name, original_room, active");
 
       if (studentError) {
         setError(studentError);
@@ -63,6 +63,7 @@ export function Ledger () {
             uid: curr.uid,
             room_student: student ? `${student.original_room}-${student.first_name}` : 'Unknown',
             original_room: student ? student.original_room : '', // Store original_room for sorting
+            active: student ? student.active : false, // Store active status for sorting
             total: curr.total || 0,
             deposit: curr.deposit || 0
           });
@@ -70,11 +71,16 @@ export function Ledger () {
         return acc;
       }, []);
 
-      // Sort by room number (original_room)
+      // Sort by active first, then by room number (original_room)
       processedData.sort((a, b) => {
-        const roomA = parseInt(a.original_room) || 0;
-        const roomB = parseInt(b.original_room) || 0;
-        return roomA - roomB;
+        if (a.active === b.active) {
+          const roomA = isNaN(Number(a.original_room)) ? a.original_room : Number(a.original_room);
+          const roomB = isNaN(Number(b.original_room)) ? b.original_room : Number(b.original_room);
+          if (roomA < roomB) return -1;
+          if (roomA > roomB) return 1;
+          return 0;
+        }
+        return b.active - a.active; // active students first
       });
 
       setLedgerData(processedData);

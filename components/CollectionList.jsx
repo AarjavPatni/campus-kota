@@ -226,10 +226,10 @@ export function CollectionList() {
             <Table striped>
               <TableBody className="divide-y">
                 <TableRow className="bg-gray-100 dark:bg-gray-900 font-bold">
-                  <TableCell className="text-lg text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  <TableCell className="text-md font-bold text-center whitespace-nowrap text-gray-900 dark:text-white">
                     GRAND TOTAL
                   </TableCell>
-                  <TableCell className="text-lg text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  <TableCell className="text-md text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
                     ₹
                     {Math.floor(Object.values(paymentTotals)
                       .reduce((sum, total) => sum + total, 0))
@@ -239,12 +239,12 @@ export function CollectionList() {
                 {Object.entries(paymentTotals).map(([method, total], index) => (
                   <TableRow
                     key={index}
-                    className="text-lg bg-white dark:border-gray-700 dark:bg-gray-800"
+                    className="text-md bg-white dark:border-gray-700 dark:bg-gray-800"
                   >
-                    <TableCell className="text-lg text-center font-medium text-gray-900 dark:text-white">
+                    <TableCell className="text-md text-center font-medium text-gray-900 dark:text-white">
                       {method}
                     </TableCell>
-                    <TableCell className="text-lg text-center">
+                    <TableCell className="text-md text-center">
                       ₹{Math.floor(total).toLocaleString('en-IN')}
                     </TableCell>
                   </TableRow>

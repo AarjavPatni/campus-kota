@@ -441,9 +441,9 @@ export default function StudentDetailsForm() {
               Back
             </Button>
           )}
-          {!selectedStudent && (
-            <Button onClick={generateTestData} color="success" size="sm">
-              <HiBeaker/>
+          {(process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview') && !selectedStudent && (
+            <Button onClick={generateTestData} color="success" size="sm" className="flex items-center justify-center p-0">
+              <HiBeaker className="h-5 w-5"/>
             </Button>
           )}
         </div>

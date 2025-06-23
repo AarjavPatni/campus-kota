@@ -18,10 +18,16 @@ const validationSchema = Yup.object().shape({
   father_name: Yup.string().required("Father's Name is required"),
   course: Yup.string().required("Course is required"),
   institute: Yup.string().required("Institute is required"),
-  student_mobile: Yup.string().required("Student Mobile is required"),
+  student_mobile: Yup.string()
+    .required("Student Mobile is required")
+    .matches(/^[0-9]{10}$/, "Must be a 10-digit number"),
   email: Yup.string().required("Email is required").email("Invalid email"),
-  parent_mobile: Yup.string().required("Parent Mobile is required"),
-  guardian_mobile: Yup.string().required("Guardian Mobile is required"),
+  parent_mobile: Yup.string()
+    .required("Parent Mobile is required")
+    .matches(/^[0-9]{10}$/, "Must be a 10-digit number"),
+  guardian_mobile: Yup.string()
+    .required("Guardian Mobile is required")
+    .matches(/^[0-9]{10}$/, "Must be a 10-digit number"),
   remarks: Yup.string().nullable(),
   address: Yup.string().required("Address is required"),
   security_deposit: Yup.number().required("Security Deposit is required").integer(),

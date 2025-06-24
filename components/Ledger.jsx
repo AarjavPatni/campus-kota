@@ -23,10 +23,11 @@ export function Ledger () {
       // First get the ledger data
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("ledger")
-        .select("uid, type, month, year, total, deposit")
+        .select("uid, type, month, year, date, total, deposit")
         .order('year', { ascending: false })
         .order('month', { ascending: false })
-        .order('type', { ascending: false });
+        .order('type', { ascending: false })
+        .order('date', { ascending: false });
 
       if (ledgerError) {
         setError(ledgerError);
@@ -139,6 +140,13 @@ export function Ledger () {
                         <TableBody>
                           {detailedEntries
                             .filter(e => e.uid === entry.uid)
+                            .sort((a, b) => {
+                              if (b.year !== a.year) return b.year - a.year;
+                              if (b.month !== a.month) return b.month - a.month;
+                              if (a.type < b.type) return 1;
+                              if (a.type > b.type) return -1;
+                              return a.date - b.date;
+                            })
                             .map((detailEntry, idx) => (
                               <TableRow key={idx}>
                                 <TableCell className="text-xs py-1">{detailEntry.year + "-" + detailEntry.month}</TableCell>

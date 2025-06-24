@@ -14,7 +14,6 @@ import { Button } from "flowbite-react";
 
 export function CollectionList() {
   const [collectionList, setCollectionList] = useState([]);
-  const [studentDetailsMap, setStudentDetailsMap] = useState({});
   const [error, setError] = useState(null);
   const [selectedInvoiceKey, setSelectedInvoiceKey] = useState(null);
   const [selectedUID, setSelectedUID] = useState(null);
@@ -27,58 +26,54 @@ export function CollectionList() {
 
   useEffect(() => {
     const fetchCollectionDetails = async () => {
-      let { data, error } = room_name
+      // Fetch collection data with joined student_details
+      let { data: collectionData, error: collectionError } = room_name
         ? await supabase
             .from("collection")
-            .select(
-              "invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved,payment_method"
-            )
+            .select(`invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved,payment_method,student_details(original_room,first_name)`)
             .eq("year", year)
             .eq("month", month)
             .eq("room_name", room_name)
         : await supabase
             .from("collection")
-            .select(
-              "invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved,payment_method"
-            )
+            .select(`invoice_key,uid,room_name,monthly_charge,security_deposit,year,month,payment_date,total_amount,approved,payment_method,student_details(original_room,first_name)`)
             .eq("year", year)
             .eq("month", month);
 
-      if (rooms.length === 0) {
-        setRooms([...new Set(data.map((invoice) => invoice.room_name))]);
+      if (collectionError) {
+        setError(collectionError);
+        return;
       }
 
-      if (error) {
-        setError(error);
-      } else {
-        const sortedData = data.sort((a, b) => {
-          return a.room_name.localeCompare(b.room_name);
-        });
-        setCollectionList(sortedData);
-        setPaymentTotals(
-          data.reduce((totals, invoice) => {
-            totals[invoice.payment_method] =
-              (totals[invoice.payment_method] || 0) + invoice.total_amount;
-            return totals;
-          }, {})
-        );
+      // Sort using the joined student_details
+      const sortedData = collectionData.sort((a, b) => {
+        const aDetails = a.student_details || { original_room: '', first_name: '' };
+        const bDetails = b.student_details || { original_room: '', first_name: '' };
 
-        // Fetch student details for all collections
-        const uniqueUids = [...new Set(data.map(invoice => invoice.uid))];
-        let studentDetails = {};
-        if (uniqueUids.length > 0) {
-          const { data: studentsData, error: studentsError } = await supabase
-            .from('student_details')
-            .select('uid, original_room, first_name')
-            .in('uid', uniqueUids);
-          if (!studentsError && studentsData) {
-            studentDetails = studentsData.reduce((acc, student) => {
-              acc[student.uid] = student;
-              return acc;
-            }, {});
-          }
-        }
-        setStudentDetailsMap(studentDetails);
+        // Sort by original_room (numeric if possible)
+        const roomA = isNaN(Number(aDetails.original_room)) ? aDetails.original_room : Number(aDetails.original_room);
+        const roomB = isNaN(Number(bDetails.original_room)) ? bDetails.original_room : Number(bDetails.original_room);
+        if (roomA < roomB) return -1;
+        if (roomA > roomB) return 1;
+
+        // If room is same, sort by first_name
+        if (aDetails.first_name < bDetails.first_name) return -1;
+        if (aDetails.first_name > bDetails.first_name) return 1;
+        // If still same, sort by payment_date (descending)
+        return new Date(b.payment_date) - new Date(a.payment_date);
+      });
+
+      setCollectionList(sortedData);
+      setPaymentTotals(
+        collectionData.reduce((totals, invoice) => {
+          totals[invoice.payment_method] =
+            (totals[invoice.payment_method] || 0) + invoice.total_amount;
+          return totals;
+        }, {})
+      );
+
+      if (rooms.length === 0) {
+        setRooms([...new Set(collectionData.map((invoice) => invoice.room_name))]);
       }
     };
 
@@ -160,7 +155,7 @@ export function CollectionList() {
                 {/* Left: Name and Date */}
                 <div className="flex flex-col justify-center">
                   <span className="text-base font-semibold text-blue-700">
-                    {studentDetailsMap[invoice.uid] ? `${studentDetailsMap[invoice.uid].original_room}-${studentDetailsMap[invoice.uid].first_name}` : 'Loading...'}
+                    {invoice.student_details ? `${invoice.student_details.original_room}-${invoice.student_details.first_name}` : 'Loading...'}
                   </span>
                   <span className="text-sm text-gray-600">
                     {new Date(invoice.payment_date).toLocaleDateString('en-GB')}
@@ -194,8 +189,8 @@ export function CollectionList() {
                     className="bg-white dark:border-gray-700 dark:bg-gray-800"
                   >
                     <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                      {studentDetailsMap[invoice.uid] 
-                        ? `${studentDetailsMap[invoice.uid].original_room}-${studentDetailsMap[invoice.uid].first_name}`
+                      {invoice.student_details 
+                        ? `${invoice.student_details.original_room}-${invoice.student_details.first_name}`
                         : 'Loading...'}
                     </TableCell>
                     <TableCell>{new Date(invoice.payment_date).toLocaleDateString('en-GB')}</TableCell>

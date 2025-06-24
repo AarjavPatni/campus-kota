@@ -363,6 +363,14 @@ export default function StudentDetailsForm({ refreshStudents }) {
     }
   }, [toastOpacity, toastMessage.type]);
 
+  // Add 7-second timer for error toast
+  useEffect(() => {
+    if (toastOpacity === 1 && toastMessage.type === "error") {
+      const t = setTimeout(() => setToastOpacity(0), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [toastOpacity, toastMessage.type]);
+
   const generateTestData = () => {
     const firstNames = ["John", "Jane", "Michael", "Sarah", "David", "Emma", "James", "Sophia", "William", "Olivia", "Benjamin", "Ava", "Lucas", "Mia", "Henry", "Charlotte", "Alexander", "Amelia", "Daniel", "Harper", "Matthew", "Evelyn", "Joseph", "Abigail", "Samuel", "Emily", "Jackson", "Elizabeth", "Sebastian", "Ella", "David", "Scarlett", "Carter", "Grace", "Wyatt", "Chloe", "Jayden", "Victoria", "Gabriel", "Riley", "Owen", "Aria", "Dylan", "Lily", "Luke", "Hannah", "Anthony", "Natalie", "Isaac", "Zoe"];
     const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson", "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts"];

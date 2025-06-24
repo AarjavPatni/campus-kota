@@ -338,6 +338,9 @@ export default function StudentDetailsForm({ refreshStudents }) {
 
     if (await trigger(steps[step])) {
       setStep(s => s + 1);
+      // Dismiss error toast when moving to next stage
+      setToastOpacity(0);
+      setToggleToast(false);
     } else {
       // Show error summary for current step
       const stepFields = steps[step];
@@ -359,14 +362,6 @@ export default function StudentDetailsForm({ refreshStudents }) {
   useEffect(() => {
     if (toastOpacity === 1 && toastMessage.type === "success") {
       const t = setTimeout(() => setToastOpacity(0), 3000);
-      return () => clearTimeout(t);
-    }
-  }, [toastOpacity, toastMessage.type]);
-
-  // Add 7-second timer for error toast
-  useEffect(() => {
-    if (toastOpacity === 1 && toastMessage.type === "error") {
-      const t = setTimeout(() => setToastOpacity(0), 4000);
       return () => clearTimeout(t);
     }
   }, [toastOpacity, toastMessage.type]);

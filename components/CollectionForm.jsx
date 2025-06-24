@@ -36,59 +36,60 @@ const CollectionForm = ({
   const [changes, setChanges] = useState({});
   const [balance, setBalance] = useState(null);
 
-  useEffect(() => {
-    const fetchPastCollections = async () => {
-      let collection_data;
-      let collection_error;
-      if (invoice_key === undefined) {
-        collection_data = await supabase
-          .from("collection")
-          .select("*")
-          .eq("uid", uid);
-      } else {
-        collection_data = await supabase
-          .from("collection")
-          .select("*")
-          .eq("invoice_key", invoice_key);
-      }
-      collection_data = collection_data.data;
-
-      let { data: student_details, error: student_error } = await supabase
-        .from("student_details")
-        .select(
-          "uid,room_name,security_deposit,monthly_rent,email,laundry_charge,other_charge"
-        )
+  const fetchPastCollections = async () => {
+    let collection_data;
+    let collection_error;
+    if (invoice_key === undefined) {
+      collection_data = await supabase
+        .from("collection")
+        .select("*")
         .eq("uid", uid);
+    } else {
+      collection_data = await supabase
+        .from("collection")
+        .select("*")
+        .eq("invoice_key", invoice_key);
+    }
+    collection_data = collection_data.data;
 
-      if (student_error) {
-        console.error("Error fetching student details:", student_error);
-      } else {
-        setStudentDetails(student_details[0]);
-      }
+    let { data: student_details, error: student_error } = await supabase
+      .from("student_details")
+      .select(
+        "uid,room_name,security_deposit,monthly_rent,email,laundry_charge,other_charge"
+      )
+      .eq("uid", uid);
 
-      if (collection_error) {
-        console.error("Error fetching collection data:", collection_error);
-      } else {
-        if (invoice_key === undefined) {
-          if (collection_data.length > 0) {
-            collection_data.sort((a, b) => {
-              const invoiceKeyA = a.invoice_key.replace(/-/g, "");
-              const invoiceKeyB = b.invoice_key.replace(/-/g, "");
-              return parseInt(invoiceKeyB) - parseInt(invoiceKeyA);
-            });
-            const nextInvoiceIndex =
-              parseInt(collection_data[0].invoice_key.split("-").pop()) + 1;
-            setNextInvoiceKey(
-              `${new Date().getUTCFullYear()}-${uid}-${nextInvoiceIndex}`
-            );
-          } else {
-            setNextInvoiceKey(`${new Date().getUTCFullYear()}-${uid}-1`);
-          }
+    if (student_error) {
+      console.error("Error fetching student details:", student_error);
+    } else {
+      setStudentDetails(student_details[0]);
+    }
+
+    if (collection_error) {
+      console.error("Error fetching collection data:", collection_error);
+    } else {
+      if (invoice_key === undefined) {
+        if (collection_data.length > 0) {
+          collection_data.sort((a, b) => {
+            const invoiceKeyA = a.invoice_key.replace(/-/g, "");
+            const invoiceKeyB = b.invoice_key.replace(/-/g, "");
+            return parseInt(invoiceKeyB) - parseInt(invoiceKeyA);
+          });
+          const nextInvoiceIndex =
+            parseInt(collection_data[0].invoice_key.split("-").pop()) + 1;
+          setNextInvoiceKey(
+            `${new Date().getUTCFullYear()}-${uid}-${nextInvoiceIndex}`
+          );
+        } else {
+          setNextInvoiceKey(`${new Date().getUTCFullYear()}-${uid}-1`);
         }
-        setCollectionDetails(collection_data[0] || null);
       }
-    };
+      setCollectionDetails(collection_data[0] || null);
+      console.log(collection_data[0]);
+    }
+  };
 
+  useEffect(() => {
     fetchPastCollections();
   }, [uid]);
 
@@ -163,13 +164,16 @@ const CollectionForm = ({
 
       try {
         if (!invoice_key) {
+          console.log("Creating new record with values:", submissionValues);
           const response = await supabase
             .from("collection")
             .insert([submissionValues])
             .select();
           resp = response;
           status = resp.status;
+          console.log("Insert response:", resp);
         } else {
+          console.log("Updating record with values:", submissionValues);
           const response = await supabase
             .from("collection")
             .update(submissionValues)
@@ -177,9 +181,11 @@ const CollectionForm = ({
             .select();
           resp = response;
           status = resp.status;
+          console.log("Update response:", resp);
         }
 
         if (resp.error) {
+          console.error("Database error:", resp.error);
           setToastMessage({
             text: `Database Error: ${resp.error.message}`,
             type: "error",
@@ -188,16 +194,19 @@ const CollectionForm = ({
         }
 
         if (status === 201 || status === 200) {
+          console.log("Database operation successful");
           let emailSent = true;
 
           // Track changes if editing
           if (invoice_key && !values.approved) {
             const changes = getChanges(collectionDetails, values);
             setChanges(changes);
+            console.log("Changes detected:", changes);
 
             // Send update email if there are changes
             if (Object.keys(changes).length > 0) {
               try {
+                console.log("Sending update email...");
                 await fetch("/api/send", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -216,6 +225,7 @@ const CollectionForm = ({
             }
           } else if (!invoice_key) {
             try {
+              console.log("Sending new payment email...");
               const emailResponse = await fetch("/api/send", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -255,6 +265,7 @@ const CollectionForm = ({
 
           // Show changes in toast message if editing
           if (invoice_key && Object.keys(changes).length > 0) {
+            console.log("Showing changes in toast");
             setToastMessage({
               text: `Payment record updated. Changes: ${JSON.stringify(
                 changes
@@ -262,6 +273,7 @@ const CollectionForm = ({
               type: "success",
             });
           } else {
+            console.log("Showing success message in toast");
             setToastMessage({
               text: values.approved
                 ? "Payment record updated successfully"
@@ -276,6 +288,7 @@ const CollectionForm = ({
 
           // Only redirect if email was successful or not required
           if (emailSent || values.approved) {
+            console.log("Redirecting to student list");
             setTimeout(() => {
               setToastOpacity(0);
               setTimeout(() => {
@@ -289,6 +302,7 @@ const CollectionForm = ({
             setToggleForm(false);
           }, 2000);
         } else {
+          console.warn("Unexpected status code:", status);
           setToastMessage({
             text: `Unexpected status code: ${status}`,
             type: "error",
@@ -297,7 +311,8 @@ const CollectionForm = ({
           setToastOpacity(1);
         }
       } catch (error) {
-        console.log(values);
+        console.error("Error in form submission:", error);
+        console.log("Submitted values:", values);
         setToastMessage({
           text: `Error: ${error.message}`,
           type: "error",
@@ -339,9 +354,7 @@ const CollectionForm = ({
                   (studentDetails.other_charge || 0)
                 : 0),
             invoice_key: invoice_key || nextInvoiceKey,
-            receipt_no: `${invoice_key || nextInvoiceKey || ""} (${
-              studentDetails?.room_name || ""
-            })`,
+            receipt_no: collectionDetails?.receipt_no,
           }
         : {
             ...formik.values,

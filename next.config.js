@@ -4,6 +4,9 @@ const nextConfig = {
   images: {
     domains: ['placehold.co'],
   },
+  env: {
+    NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV
+  }
 }
 
 module.exports = nextConfig

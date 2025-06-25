@@ -7,7 +7,7 @@ import Testimonial from "@/components/ui/Testimonial";
 import VisualFeatures from "@/components/ui/VisualFeatures";
 import Location from "@/components/ui/Location";
 
-export default function Home() {
+function Home() {
   return (
     <>
       <Hero />
@@ -21,3 +21,7 @@ export default function Home() {
     </>
   );
 }
+
+Home.publicPage = true;
+
+export default Home;

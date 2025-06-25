@@ -9,10 +9,13 @@ const App = () => (
         <EmblaCarousel slides={SLIDES} options={OPTIONS} />
 )
 
-export default function Carousel() {
+function Gallery() {
     return (
         <div>
         <App />
         </div>
     )
 }
+
+Gallery.publicPage = true;
+export default Gallery;

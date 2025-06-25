@@ -1,9 +1,6 @@
-import supabase from "@/supabaseClient";
-
 export default function LogoutButton() {
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) window.location.href = '/auth/login';
+  const handleLogout = () => {
+    window.location.href = '/auth/logout';
   };
 
   return (

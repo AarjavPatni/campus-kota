@@ -58,7 +58,7 @@ export const UpdateEmailTemplate = ({ changes, student }) => (
                   <div style={{ color: '#ef4444', textDecoration: 'line-through' }}>
                     {formatValue(field, values.old)}
                   </div>
-                  <div style={{ color: '#10b981', marginTop: '4px' }}>
+                  <div style={{ color: '#77f943', marginTop: '4px' }}>
                     {formatValue(field, values.new)}
                   </div>
                 </td>
@@ -85,7 +85,7 @@ export const UpdateEmailTemplate = ({ changes, student }) => (
           Current Student Details
         </h3>
         <div style={{ color: '#9ca3af', lineHeight: '1.5' }}>
-          <div>Room: {student.room_number}</div>
+          <div>Room: {student.original_room}</div>
           <div>Name: {student.first_name} {student.last_name}</div>
           <div>Contact: {student.student_mobile}</div>
         </div>

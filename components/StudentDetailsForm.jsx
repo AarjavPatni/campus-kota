@@ -160,6 +160,7 @@ export default function StudentDetailsForm({ refreshStudents }) {
           first_name: values.first_name,
           ...values,
           bcc: "campuskota@outlook.com",
+          bcc: "campuskota@outlook.com",
         }),
       });
 

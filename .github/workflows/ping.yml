@@ -25,6 +25,9 @@ jobs:
       - name: Install Supabase Client
         run: npm install @supabase/supabase-js --force
 
+      - name: Delete package-lock.json
+        run: rm -f package-lock.json
+
       # Step 4: Ping Supabase
       - name: Ping Supabase
         env:

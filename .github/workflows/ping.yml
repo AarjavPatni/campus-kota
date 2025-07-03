@@ -11,46 +11,36 @@ jobs:
     environment: production
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # Use Node.js 18
+          node-version: '18'
 
-      # Step 3: Install Supabase Client
-      - name: Install Supabase Client
-        run: npm install @supabase/supabase-js --force
+      - name: Install Yarn
+        run: npm install -g yarn
 
-      - name: Delete package-lock.json
-        run: rm -f package-lock.json
+      - name: Install dependencies
+        run: yarn install
 
-      # Step 4: Ping Supabase
       - name: Ping Supabase
         env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} # Supabase project URL
-          SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} # Supabase service role key
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           node -e "
           (async () => {
             try {
-              // Import Supabase client
               const { createClient } = require('@supabase/supabase-js');
               const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-              // Ping Supabase by querying a table (e.g., 'songs')
               const { data, error } = await supabase.from('student_details').select('*').limit(10);
 
-              // Handle errors
               if (error) throw error;
-
-              // Log success
               console.log('Ping successful:', data);
             } catch (err) {
-              // Log and exit with error
               console.error('Error pinging Supabase:', err.message);
               process.exit(1);
             }

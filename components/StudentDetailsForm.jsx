@@ -55,6 +55,8 @@ export default function StudentDetailsForm({ refreshStudents }) {
   const [toastOpacity, setToastOpacity] = useState(1);
   const [toastMessage, setToastMessage] = useState({ text: "", type: "" });
 
+  const formContainerRef = useRef(null);
+
   const { selectedStudent, setSelectedStudent } = useStudent();
   const router = useRouter();
   const fromInsert = router.pathname === "/insert";
@@ -122,6 +124,12 @@ export default function StudentDetailsForm({ refreshStudents }) {
       setMaxHeight(Math.max(...heights, 0));
     }, 0);
   }, [steps, selectedStudent]);
+
+  useEffect(() => {
+    if ((selectedStudent || fromInsert) && formContainerRef.current) {
+      formContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [selectedStudent, fromInsert]);
 
   const capitalize = str =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -398,7 +406,7 @@ export default function StudentDetailsForm({ refreshStudents }) {
   if (!selectedStudent && !fromInsert) return <StudentList />;
 
   return (
-    <div className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
+    <div ref={formContainerRef} className="bg-black text-white p-8 rounded-lg max-w-lg mx-auto">
       {/* Hidden step containers for measuring heights */}
       <div style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', height: 0, overflow: 'hidden' }}>
         {steps.map((fields, idx) => (
